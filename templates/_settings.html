@@ -1,0 +1,61 @@
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% if serviceProviderClass is not defined %}{% set serviceProviderClass = null %}{% endif %}
+
+{% if service is not defined %}
+    {% if serviceProviderClass %}
+        {% set service = craft.oauth.getServiceByProviderClass(serviceProviderClass) %}
+
+        {% if not service %}{% exit 404 %}{% endif %}
+    {% else %}
+        {% set service = null %}
+    {% endif %}
+{% endif %}
+
+
+{% set title = serviceProviderClass~" Settings"|t %}
+
+{% set crumbs = [
+    { label: "OAuth"|t, url: url('oauth') }
+] %}
+
+{% set content %}
+
+    <form method="post" action="" accept-charset="UTF-8">
+        <input type="hidden" name="action" value="oauth/settings/saveService">
+        <input type="hidden" name="redirect" value="oauth" />
+        <input type="hidden" name="serviceProviderClass" value="{{ serviceProviderClass }}" />
+
+
+        {{ forms.textField({
+            label: 'Client Id'|t,
+            required: true,
+            name: 'service[clientId]',
+            value: service ? service.clientId : null,
+            errors: service ? service.errors('clientId') : null,
+            disabled: ((service.token is defined and service.token|length) > 0 ? true : false)
+        }) }}
+
+        {{ forms.textField({
+            label: 'Client Secret'|t,
+            required: true,
+            name: 'service[clientSecret]',
+            value: service ? service.clientSecret : null,
+            errors: service ? service.errors('clientSecret') : null,
+            disabled: (service.token is defined and service.token|length > 0 ? true : false)
+        }) }}
+
+        <div class="buttons">
+            {% if (service.token is defined and service.token|length == 0) or service.token is not defined %}
+            <input class="btn submit" type="submit" value="{{ 'Save'|t }}">
+            {% elseif service.id is defined %}
+                <a class="btn" href="{{actionUrl('connect/settings/resetServiceToken', {providerClass:serviceProviderClass})}}">Reset Token</a>
+            {% endif %}
+        </div>
+
+        {#{inspect(service.token)}#}
+        {#{inspect(craft.campaigns.serviceSend(service.id, 'campaigns'))}#}
+    </form>
+
+{% endset %}

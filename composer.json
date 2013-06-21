@@ -1,0 +1,17 @@
+{
+    "autoload": {
+        "psr-0": { "Dukt\\Connect" : "libraries/" }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/dukt/oauth"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "chrisnharvey/oauth": "dev-dukt.videos",
+        "symfony/finder": "2.2.*@dev",
+        "guzzle/http": "~3.0"
+    }
+}
