@@ -57,8 +57,7 @@
                 <th scope="col">{{ "User"|t }}</th>
                 <th scope="col">{{ "Namespace"|t }}</th>
                 <th scope="col">{{ "Provider"|t }}</th>
-                <th scope="col">{{ "Type"|t }}</th>
-                <th scope="col">{{ "Options"|t }}</th>
+                <!-- <th scope="col">{{ "Scope"|t }}</th> -->
                 <th scope="col">{{ "Created"|t }}</th>
                 <th scope="col">{{ "Updated"|t }}</th>
                 <th></th>
@@ -71,9 +70,8 @@
                     <td>{{token.user.email}}</td>
                     <td>{{token.namespace}}</td>
                     <td>{{token.provider}}</td>
-                    <td>{{token.type}}</td>
                     <!-- <td>{{token.token}}</td> -->
-                    <td>{{inspect(token.options)}}</td>
+                    <!-- <td>{{inspect(token.scope)}}</td> -->
                     <td>{{token.dateCreated}}</td>
                     <td>{{token.dateUpdated}}</td>
                 </tr>
