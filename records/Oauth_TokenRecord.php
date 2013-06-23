@@ -22,9 +22,8 @@ class Oauth_TokenRecord extends BaseRecord
         return array(
             'namespace' => array(AttributeType::String, 'required' => true),
             'provider' => array(AttributeType::String, 'required' => true),
-            'type' => array(AttributeType::String, 'required' => true),
+            'scope' => array(AttributeType::Mixed, 'required' => false),
             'token' => array(AttributeType::String, 'column' => ColumnType::Text),
-            'options' => array(AttributeType::Mixed, 'required' => false),
         );
     }
 
@@ -39,14 +38,14 @@ class Oauth_TokenRecord extends BaseRecord
         );
     }
 
-    public function create()
-    {
-        $class = get_class($this);
+    // public function create()
+    // {
+    //     $class = get_class($this);
 
-        $record = new $class();
+    //     $record = new $class();
 
-        return $record;
-    }
+    //     return $record;
+    // }
 
 
 }

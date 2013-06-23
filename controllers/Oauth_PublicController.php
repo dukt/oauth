@@ -175,7 +175,6 @@ class Oauth_PublicController extends BaseController
         $tokenArray = array();
         $tokenArray['namespace'] = $namespace;
         $tokenArray['provider'] = $className;
-        $tokenArray['type'] = 'user';
         $tokenArray['userId'] = $user->id;
         $tokenArray['token'] = $token;
 
@@ -183,14 +182,12 @@ class Oauth_PublicController extends BaseController
         $criteriaConditions = '
             namespace=:namespace AND
             provider=:provider AND
-            type=:type AND
             userId=:userId
             ';
 
         $criteriaParams = array(
             ':namespace' => $tokenArray['namespace'],
             ':provider' => $tokenArray['provider'],
-            ':type' => $tokenArray['type'],
             ':userId' => $tokenArray['userId'],
             );
 
@@ -202,7 +199,6 @@ class Oauth_PublicController extends BaseController
 
         $tokenRecord->namespace = $tokenArray['namespace'];
         $tokenRecord->provider = $tokenArray['provider'];
-        $tokenRecord->type = $tokenArray['type'];
         $tokenRecord->token = $tokenArray['token'];
         $tokenRecord->userId = $tokenArray['userId'];
 
