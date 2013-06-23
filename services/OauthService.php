@@ -2,7 +2,7 @@
 
 namespace Craft;
 
-require_once(CRAFT_PLUGINS_PATH.'campaigns/vendor/autoload.php');
+require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
 
 use ReflectionClass;
 use Symfony\Component\Finder\Finder;
@@ -131,20 +131,25 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function authenticate($namespace, $providerClass, $scope) {
+    public function authenticate($namespace, $providerClass, $scope = NULL) {
         // {{ actionUrl('oauth/public/authenticate', {provider:provider, namespace:'connect.user'}) }}
-        return UrlHelper::getActionUrl('oauth/public/authenticate', array(
+        $params = array(
                     'namespace' => $namespace,
-                    'provider' => $providerClass,
-                    'scope' => base64_encode(serialize($scope))
-                    ));
+                    'provider' => $providerClass
+                    );
+
+        if($scope) {
+            $params['scope'] = base64_encode(serialize($scope));
+        }
+
+        return UrlHelper::getActionUrl('../../'.craft()->config->get('actionTrigger').'/oauth/public/authenticate', $params);
     }
 
     // --------------------------------------------------------------------
 
     public function deauthenticate($namespace, $providerClass)
     {
-        return UrlHelper::getActionUrl('oauth/public/deauthenticate', array(
+        return UrlHelper::getActionUrl('../../'.craft()->config->get('actionTrigger').'/oauth/public/deauthenticate', array(
                     'namespace' => $namespace,
                     'provider' => $providerClass
                     ));
@@ -213,7 +218,11 @@ class OauthService extends BaseApplicationComponent
             return NULL;
         }
 
-        $account = $provider->getAccount();
+        $account = @$provider->getAccount();
+
+        if(!$account) {
+            return NULL;
+        }
 
         return $account;
     }

@@ -95,7 +95,6 @@ class Oauth_PublicController extends BaseController
 
         $serviceRecord = Oauth_ServiceRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $className));
 
-
         $className = $serviceRecord->providerClass;
 
 

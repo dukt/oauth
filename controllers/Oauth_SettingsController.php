@@ -10,7 +10,9 @@ class Oauth_SettingsController extends BaseController
 
     public function actionSaveService()
     {
-        $class = craft()->request->getSegment(3);
+
+        // $class = craft()->request->getSegment(3);
+        $class = craft()->request->getParam('serviceProviderClass');
 
         $model = new Oauth_ServiceModel();
 
@@ -24,14 +26,12 @@ class Oauth_SettingsController extends BaseController
 
 
         if (craft()->oauth->saveService($model)) {
-
             craft()->userSession->setNotice(Craft::t('Service saved.'));
 
             $redirect = craft()->request->getPost('redirect');
 
             $this->redirect($redirect);
         } else {
-
             craft()->userSession->setError(Craft::t("Couldn't save service."));
 
             craft()->urlManager->setRouteVariables(array('service' => $model));
