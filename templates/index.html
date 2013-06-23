@@ -67,7 +67,7 @@
             {% set tokens = craft.oauth.getTokens() %}
             {% for token in tokens %}
                 <tr>
-                    <td>{{token.user.email}}</td>
+                    <td>{% if token.user.email is defined %}{{token.user.email}}{% else %}-{% endif %}</td>
                     <td>{{token.namespace}}</td>
                     <td>{{token.provider}}</td>
                     <!-- <td>{{token.token}}</td> -->

@@ -19,6 +19,19 @@ class OauthService extends BaseApplicationComponent
         }
     }
 
+    public function providerIsConfigured($providerClass)
+    {
+        $record = Oauth_ServiceRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $providerClass));
+
+        if ($record) {
+            if(!empty($record->clientId) && !empty($record->clientSecret)) {
+                return true;
+            }
+        }
+
+
+        return false;
+    }
     // --------------------------------------------------------------------
 
     public function run($namespace, $providerClass, $url) {
@@ -131,11 +144,19 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function authenticate($namespace, $providerClass, $scope = NULL) {
+    public function authenticate($namespace, $providerClass, $userToken = false, $scope = null) {
         // {{ actionUrl('oauth/public/authenticate', {provider:provider, namespace:'connect.user'}) }}
+
+        if($userToken === true) {
+            $userToken = 1;
+        } else {
+            $userToken = 0;
+        }
+
         $params = array(
                     'namespace' => $namespace,
-                    'provider' => $providerClass
+                    'provider' => $providerClass,
+                    'userToken' => $userToken
                     );
 
         if($scope) {
@@ -157,27 +178,40 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function getProvider($namespace, $providerClass)
+    public function getProvider($namespace, $providerClass, $userToken = false)
     {
-        $user = craft()->userSession->user;
         $userId = false;
 
-        if($user) {
-            $userId = $user->id;
+        if($userToken) {
+            $user = craft()->userSession->user;
+
+            if($user) {
+                $userId = $user->id;
+            }
+
+            $criteriaConditions = '
+                namespace=:namespace AND
+                provider=:provider AND
+                userId=:userId
+                ';
+
+            $criteriaParams = array(
+                ':namespace' => $namespace,
+                ':userId' => $userId,
+                ':provider' => $providerClass,
+                );
+        } else {
+            $criteriaConditions = '
+                namespace=:namespace AND
+                provider=:provider
+                ';
+
+            $criteriaParams = array(
+                ':namespace' => $namespace,
+                ':provider' => $providerClass,
+                );
         }
 
-
-        $criteriaConditions = '
-            namespace=:namespace AND
-            provider=:provider AND
-            userId=:userId
-            ';
-
-        $criteriaParams = array(
-            ':namespace' => $namespace,
-            ':userId' => $userId,
-            ':provider' => $providerClass,
-            );
 
         $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
 
@@ -466,9 +500,23 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function getTokens() {
-        $tokens = Oauth_TokenRecord::model()->findAll();
-        //array('order'=>'t.title')
+    public function getTokens($namespace = null)
+    {
+        $criteriaConditions = '';
+        $criteriaParams = array();
+
+        if($namespace) {
+            $criteriaConditions = '
+                namespace=:namespace
+                ';
+
+            $criteriaParams = array(
+                ':namespace' => $namespace
+                );
+        }
+
+        $tokens = Oauth_TokenRecord::model()->findAll($criteriaConditions, $criteriaParams);
+
         return $tokens;
     }
 

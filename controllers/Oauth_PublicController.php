@@ -45,23 +45,21 @@ class Oauth_PublicController extends BaseController
         $providerClass = craft()->request->getParam('provider');
         $namespace = craft()->request->getParam('namespace');
 
-        $user = craft()->userSession->user;
-        $userId = false;
+        // $user = craft()->userSession->user;
+        // $userId = false;
 
-        if($user) {
-            $userId = $user->id;
-        }
+        // if($user) {
+        //     $userId = $user->id;
+        // }
 
 
         $criteriaConditions = '
             namespace=:namespace AND
-            provider=:provider AND
-            userId=:userId
+            provider=:provider
             ';
 
         $criteriaParams = array(
             ':namespace' => $namespace,
-            ':userId' => $userId,
             ':provider' => $providerClass,
             );
 
@@ -78,6 +76,14 @@ class Oauth_PublicController extends BaseController
     {
         $className = craft()->request->getParam('provider');
         $namespace = craft()->request->getParam('namespace');
+
+        $userToken = craft()->httpSession->get('oauthUserToken');
+
+        if(!$userToken) {
+            $userToken = (bool) craft()->request->getParam('userToken');
+            craft()->httpSession->add('oauthUserToken', $userToken);
+        }
+
 
         $scope = craft()->request->getParam('scope');
         $scope = @unserialize(base64_decode($scope));
@@ -175,21 +181,40 @@ class Oauth_PublicController extends BaseController
         $tokenArray = array();
         $tokenArray['namespace'] = $namespace;
         $tokenArray['provider'] = $className;
-        $tokenArray['userId'] = $user->id;
+
         $tokenArray['token'] = $token;
 
 
-        $criteriaConditions = '
-            namespace=:namespace AND
-            provider=:provider AND
-            userId=:userId
-            ';
+        $userToken = craft()->httpSession->get('oauthUserToken');
+        craft()->httpSession->remove('oauthUserToken');
 
-        $criteriaParams = array(
-            ':namespace' => $tokenArray['namespace'],
-            ':provider' => $tokenArray['provider'],
-            ':userId' => $tokenArray['userId'],
-            );
+        if($userToken === true) {
+            $tokenArray['userId'] = $user->id;
+
+            $criteriaConditions = '
+                namespace=:namespace AND
+                provider=:provider AND
+                userId=:userId
+                ';
+
+            $criteriaParams = array(
+                ':namespace' => $tokenArray['namespace'],
+                ':provider' => $tokenArray['provider'],
+                ':userId' => $tokenArray['userId'],
+                );
+        } else {
+
+            $criteriaConditions = '
+                namespace=:namespace AND
+                provider=:provider
+                ';
+
+            $criteriaParams = array(
+                ':namespace' => $tokenArray['namespace'],
+                ':provider' => $tokenArray['provider']
+                );
+        }
+
 
         $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
 
@@ -200,11 +225,16 @@ class Oauth_PublicController extends BaseController
         $tokenRecord->namespace = $tokenArray['namespace'];
         $tokenRecord->provider = $tokenArray['provider'];
         $tokenRecord->token = $tokenArray['token'];
-        $tokenRecord->userId = $tokenArray['userId'];
+
+        if($userToken) {
+            $tokenRecord->userId = $tokenArray['userId'];
+        }
 
         $tokenRecord->save();
 
-        craft()->oauth_userSession->login($token);
+        if($userToken) {
+            craft()->oauth_userSession->login($token);
+        }
 
         $referer = craft()->httpSession->get('oauthReferer');
         craft()->httpSession->remove('oauthReferer');

@@ -9,13 +9,18 @@ use Symfony\Component\Finder\Finder;
 
 class OauthVariable
 {
+    public function providerIsConfigured($provider)
+    {
+        return craft()->oauth->providerIsConfigured($provider);
+    }
+
     public function run($namespace, $providerClass, $url) {
         return craft()->oauth->run($namespace, $providerClass, $url);
     }
 
-    public function authenticate($namespace, $providerClass, $scope = array())
+    public function authenticate($namespace, $providerClass, $scope = null, $userToken = false)
     {
-        return craft()->oauth->authenticate($namespace, $providerClass, $scope);
+        return craft()->oauth->authenticate($namespace, $providerClass, $scope, $userToken);
     }
 
     public function deauthenticate($namespace, $providerClass)
@@ -43,8 +48,8 @@ class OauthVariable
         return craft()->oauth->outputToken($providerClass);
     }
 
-    public function getTokens() {
-        return craft()->oauth->getTokens();
+    public function getTokens($namespace = null) {
+        return craft()->oauth->getTokens($namespace);
     }
 
     public function getAccount($namespace, $providerClass) {
