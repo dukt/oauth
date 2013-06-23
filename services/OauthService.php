@@ -9,7 +9,11 @@ use Symfony\Component\Finder\Finder;
 
 class OauthService extends BaseApplicationComponent
 {
+    // --------------------------------------------------------------------
+
     protected $serviceRecord;
+
+    // --------------------------------------------------------------------
 
     public function __construct($serviceRecord = null)
     {
@@ -18,6 +22,41 @@ class OauthService extends BaseApplicationComponent
             $this->serviceRecord = Oauth_ServiceRecord::model();
         }
     }
+
+    // --------------------------------------------------------------------
+
+    public function connect($namespace, $providerClass, $userToken = false, $scope = null)
+    {
+        if($userToken === true) {
+            $userToken = 1;
+        } else {
+            $userToken = 0;
+        }
+
+        $params = array(
+                    'namespace' => $namespace,
+                    'provider' => $providerClass,
+                    'userToken' => $userToken
+                    );
+
+        if($scope) {
+            $params['scope'] = base64_encode(serialize($scope));
+        }
+
+        return UrlHelper::getActionUrl('../../'.craft()->config->get('actionTrigger').'/oauth/public/authenticate', $params);
+    }
+
+    // --------------------------------------------------------------------
+
+    public function disconnect($namespace, $providerClass)
+    {
+        return UrlHelper::getActionUrl('../../'.craft()->config->get('actionTrigger').'/oauth/public/deauthenticate', array(
+                    'namespace' => $namespace,
+                    'provider' => $providerClass
+                    ));
+    }
+
+    // --------------------------------------------------------------------
 
     public function providerIsConfigured($providerClass)
     {
@@ -32,92 +71,10 @@ class OauthService extends BaseApplicationComponent
 
         return false;
     }
-    // --------------------------------------------------------------------
-
-    public function run($namespace, $providerClass, $url) {
-        $provider = $this->getProvider($namespace, $providerClass);
-
-        $url = $url.'?alt=json&'.http_build_query(array(
-            'access_token' => $provider->token->access_token,
-        ));
-        // echo $url;
-        // die();
-        $response = json_decode(file_get_contents($url), true);
-
-        return $response;
-    }
-
-    private function apiCall($url, $params = array(), $method='get')
-    {
-        $developerKey = $this->getDeveloperKey();
-
-        if(is_array($params))
-        {
-            $params['access_token'] = $this->provider->token->access_token;
-            $params['key'] = $developerKey;
-            $params['v'] = 2;
-        }
-
-        $url = 'https://gdata.youtube.com/feeds/api/'.$url;
-
-        if($method=="get")
-        {
-            $url .= '?'.http_build_query($params);
-        }
-
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                'Authorization:Bearer '.$this->provider->token->access_token,
-                'Content-Type:application/atom+xml',
-                'X-GData-Key:key='.$developerKey
-            ));
-
-        if($method=="post")
-        {
-            curl_setopt ($curl, CURLOPT_POST, true);
-            curl_setopt ($curl, CURLOPT_POSTFIELDS, $params);
-        }
-
-        if($method=='delete')
-        {
-            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
-        }
-
-        $result = curl_exec($curl);
-        $curlInfo = curl_getinfo($curl);
-        curl_close ($curl);
-
-
-        if($curlInfo['http_code'] == 401 && strpos($result, "Token invalid") !== false)
-        {
-            // refresh token
-            // $providerParams = array('grant_type' => 'refresh_token');
-            // $code = $provider
-            // $this->provider->access($code, $providerParams);
-            // var_dump($this->provider);
-            throw new \Exception('Provider Invalid Token');
-        }
-
-        if($method != 'delete')
-        {
-            $xml_obj = simplexml_load_string($result);
-
-            if(isset($xml_obj->error))
-            {
-                throw new \Exception($xml_obj->error->internalReason);
-            }
-
-            return $xml_obj;
-        }
-
-        return true;
-    }
 
     // --------------------------------------------------------------------
 
-    public function isAuthenticated($namespace, $providerClass, $user = NULL)
+    public function providerIsConnected($namespace, $providerClass, $user = NULL)
     {
         $userId = craft()->userSession->user->id;
 
@@ -144,41 +101,7 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function authenticate($namespace, $providerClass, $userToken = false, $scope = null) {
-        // {{ actionUrl('oauth/public/authenticate', {provider:provider, namespace:'connect.user'}) }}
-
-        if($userToken === true) {
-            $userToken = 1;
-        } else {
-            $userToken = 0;
-        }
-
-        $params = array(
-                    'namespace' => $namespace,
-                    'provider' => $providerClass,
-                    'userToken' => $userToken
-                    );
-
-        if($scope) {
-            $params['scope'] = base64_encode(serialize($scope));
-        }
-
-        return UrlHelper::getActionUrl('../../'.craft()->config->get('actionTrigger').'/oauth/public/authenticate', $params);
-    }
-
-    // --------------------------------------------------------------------
-
-    public function deauthenticate($namespace, $providerClass)
-    {
-        return UrlHelper::getActionUrl('../../'.craft()->config->get('actionTrigger').'/oauth/public/deauthenticate', array(
-                    'namespace' => $namespace,
-                    'provider' => $providerClass
-                    ));
-    }
-
-    // --------------------------------------------------------------------
-
-    public function getProvider($namespace, $providerClass, $userToken = false)
+    public function getProviderLibrary($namespace, $providerClass, $userToken = false)
     {
         $userId = false;
 
@@ -243,10 +166,11 @@ class OauthService extends BaseApplicationComponent
         return $provider;
     }
 
+    // --------------------------------------------------------------------
 
     public function getAccount($namespace, $providerClass)
     {
-        $provider = $this->getProvider($namespace, $providerClass);
+        $provider = $this->getProviderLibrary($namespace, $providerClass);
 
         if(!$provider) {
             return NULL;
@@ -285,23 +209,7 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function outputToken($providerClass)
-    {
-        //$provider = $this->getServiceByProviderClass($providerClass);
-
-        $token = craft()->httpSession->get('connectToken.'.$providerClass);
-        $token = base64_decode($token);
-        $token = unserialize($token);
-        return $token;
-
-        $service = $this->service($provider->id);
-
-        return $service->getUserInfo();
-    }
-
-    // --------------------------------------------------------------------
-
-    public function getServiceByProviderClass($providerClass)
+    public function getProvider($providerClass)
     {
 
         // get the option
@@ -524,7 +432,7 @@ class OauthService extends BaseApplicationComponent
 
     public function getProviders()
     {
-        $directory = CRAFT_PLUGINS_PATH.'connect/libraries/Dukt/Connect/';
+        $directory = CRAFT_PLUGINS_PATH.'oauth/libraries/Dukt/Connect/';
 
         $result = array();
 
@@ -585,6 +493,8 @@ class OauthService extends BaseApplicationComponent
 
         return false;
     }
+
+    // --------------------------------------------------------------------
 
 }
 

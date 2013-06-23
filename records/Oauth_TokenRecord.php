@@ -27,6 +27,7 @@ class Oauth_TokenRecord extends BaseRecord
         );
     }
 
+    // --------------------------------------------------------------------
 
     /**
      * @return array
@@ -38,6 +39,8 @@ class Oauth_TokenRecord extends BaseRecord
         );
     }
 
+    // --------------------------------------------------------------------
+
     // public function create()
     // {
     //     $class = get_class($this);
@@ -46,8 +49,6 @@ class Oauth_TokenRecord extends BaseRecord
 
     //     return $record;
     // }
-
-
 }
 
 

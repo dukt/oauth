@@ -19,7 +19,7 @@
             {% for provider in craft.oauth.getProviders() %}
 
 
-                {% set providerRecord = craft.oauth.getServiceByProviderClass(provider) %}
+                {% set providerRecord = craft.oauth.getProvider(provider) %}
 
                 <tr>
                     <td>{{provider}}</td>

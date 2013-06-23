@@ -27,6 +27,8 @@ class Oauth_ServiceRecord extends BaseRecord
         );
     }
 
+    // --------------------------------------------------------------------
+
     public function create()
     {
         $class = get_class($this);
@@ -35,4 +37,6 @@ class Oauth_ServiceRecord extends BaseRecord
 
         return $record;
     }
+
+    // --------------------------------------------------------------------
 }

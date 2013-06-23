@@ -22,4 +22,6 @@ class Oauth_ServiceModel extends BaseModel
 
         return $attributes;
     }
+
+    // --------------------------------------------------------------------
 }

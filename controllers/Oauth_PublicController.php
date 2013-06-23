@@ -3,72 +3,10 @@
 namespace Craft;
 
 require(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
-require(CRAFT_PLUGINS_PATH."oauth/etc/users/TokenIdentity.php");
 
 class Oauth_PublicController extends BaseController
 {
     protected $allowAnonymous = true;
-
-    // --------------------------------------------------------------------
-
-    public function actionLoginToken()
-    {
-        craft()->oauth_userSession->loginToken();
-
-        $this->redirect('oauth');
-    }
-
-    // --------------------------------------------------------------------
-
-    public function actionLogout()
-    {
-        $redirect = craft()->request->getParam('redirect');
-
-        craft()->userSession->logout();
-
-        $this->redirect($redirect);
-    }
-
-    // --------------------------------------------------------------------
-
-    public function actionLogin()
-    {
-        craft()->oauth_userSession->login();
-
-        $this->redirect('oauth');
-    }
-
-    // --------------------------------------------------------------------
-
-    public function actionDeauthenticate()
-    {
-        $providerClass = craft()->request->getParam('provider');
-        $namespace = craft()->request->getParam('namespace');
-
-        // $user = craft()->userSession->user;
-        // $userId = false;
-
-        // if($user) {
-        //     $userId = $user->id;
-        // }
-
-
-        $criteriaConditions = '
-            namespace=:namespace AND
-            provider=:provider
-            ';
-
-        $criteriaParams = array(
-            ':namespace' => $namespace,
-            ':provider' => $providerClass,
-            );
-
-        $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
-
-        $tokenRecord->delete();
-
-        $this->redirect($_SERVER['HTTP_REFERER']);
-    }
 
     // --------------------------------------------------------------------
 
@@ -232,8 +170,8 @@ class Oauth_PublicController extends BaseController
 
         $tokenRecord->save();
 
-        if($userToken) {
-            craft()->oauth_userSession->login($token);
+        if($userToken && isset(craft()->connect_userSession)) {
+            craft()->connect_userSession->login($token);
         }
 
         $referer = craft()->httpSession->get('oauthReferer');
@@ -249,28 +187,54 @@ class Oauth_PublicController extends BaseController
 
     // --------------------------------------------------------------------
 
+    public function actionDeauthenticate()
+    {
+        $providerClass = craft()->request->getParam('provider');
+        $namespace = craft()->request->getParam('namespace');
+
+        // $user = craft()->userSession->user;
+        // $userId = false;
+
+        // if($user) {
+        //     $userId = $user->id;
+        // }
+
+
+        $criteriaConditions = '
+            namespace=:namespace AND
+            provider=:provider
+            ';
+
+        $criteriaParams = array(
+            ':namespace' => $namespace,
+            ':provider' => $providerClass,
+            );
+
+        $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
+
+        $tokenRecord->delete();
+
+        $this->redirect($_SERVER['HTTP_REFERER']);
+    }
+
+    // --------------------------------------------------------------------
+
     private function _getSessionDuration($rememberMe)
     {
-        if ($rememberMe)
-        {
+        if ($rememberMe) {
             $duration = craft()->config->get('rememberedUserSessionDuration');
-        }
-        else
-        {
+        } else {
             $duration = craft()->config->get('userSessionDuration');
         }
 
         // Calculate how long the session should last.
-        if ($duration)
-        {
+        if ($duration) {
             $interval = new DateInterval($duration);
             $expire = DateTimeHelper::currentUTCDateTime();
             $currentTimeStamp = $expire->getTimestamp();
             $futureTimeStamp = $expire->add($interval)->getTimestamp();
             $seconds = $futureTimeStamp - $currentTimeStamp;
-        }
-        else
-        {
+        } else {
             $seconds = 0;
         }
 

@@ -5,7 +5,7 @@
 
 {% if service is not defined %}
     {% if serviceProviderClass %}
-        {% set service = craft.oauth.getServiceByProviderClass(serviceProviderClass) %}
+        {% set service = craft.oauth.getProvider(serviceProviderClass) %}
 
         {% if not service %}{% exit 404 %}{% endif %}
     {% else %}
