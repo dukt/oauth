@@ -1,12 +1,7 @@
-{% extends "_layouts/cp" %}
-{% import "_includes/forms" as forms %}
-{% set centered = true %}
-
-{% set title = "OAuth"|t %}
-
+{% extends "oauth/_layout" %}
+{% set selectedTab = 'providers' %}
 
 {% set content %}
-    <h2>Providers</h2>
 
     <table id="fields" class="data collapsible">
         <thead>
@@ -48,62 +43,5 @@
             {% endfor %}
         </tbody>
     </table>
-
-    <h2>Tokens</h2>
-
-    <table class="data collapsible">
-        <thead>
-            <tr>
-                <th scope="col">{{ "User"|t }}</th>
-                <th scope="col">{{ "Namespace"|t }}</th>
-                <th scope="col">{{ "Provider"|t }}</th>
-                <!-- <th scope="col">{{ "Scope"|t }}</th> -->
-                <th scope="col">{{ "Created"|t }}</th>
-                <th scope="col">{{ "Updated"|t }}</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% set tokens = craft.oauth.getTokens() %}
-            {% for token in tokens %}
-                <tr>
-                    <td>{% if token.user.email is defined %}{{token.user.email}}{% else %}-{% endif %}</td>
-                    <td>{{token.namespace}}</td>
-                    <td>{{token.provider}}</td>
-                    <!-- <td>{{token.token}}</td> -->
-                    <!-- <td>{{inspect(token.scope)}}</td> -->
-                    <td>{{token.dateCreated}}</td>
-                    <td>{{token.dateUpdated}}</td>
-                </tr>
-
-            {% endfor %}
-        </tbody>
-    </table>
-
-
-<!--
-
-# app 1
-facebook connect
-twitter connect
-- token is user specific
-
-# app 2
-videos plugin multiple account
-- one client id for each service
-- connection for each service with specific scope
-- token is system wide
-
-# app 3
-analytics plugin single account
-- one client id
-- one connection with one scope
-- token is system wide
-
-videos, Google:scope:youtube, Vimeo:scope:read/write
-videos, system, token
-videos, user, {userId}, {provider}, token
-
--->
 
 {% endset %}

@@ -2,10 +2,10 @@
 
 namespace Craft;
 
-require_once(CRAFT_PLUGINS_PATH.'connect/vendor/autoload.php');
+// require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
 
-use ReflectionClass;
-use Symfony\Component\Finder\Finder;
+// use ReflectionClass;
+// use Symfony\Component\Finder\Finder;
 
 class OauthVariable
 {

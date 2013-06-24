@@ -1,0 +1,34 @@
+{% extends "oauth/_layout" %}
+{% set selectedTab = 'systemTokens' %}
+
+{% set content %}
+
+    <table class="data collapsible">
+        <thead>
+            <tr>
+                <th scope="col">{{ "Namespace"|t }}</th>
+                <th scope="col">{{ "Provider"|t }}</th>
+                <th scope="col">{{ "Created"|t }}</th>
+                <th scope="col">{{ "Updated"|t }}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set tokens = craft.oauth.getTokens() %}
+            {% for token in tokens %}
+                {% if token.user.email is not defined %}
+                    <tr>
+                        <td>{{token.namespace}}</td>
+                        <td>{{token.provider}}</td>
+                        <!-- <td>{{token.token}}</td> -->
+                        <!-- <td>{{inspect(token.scope)}}</td> -->
+                        <td>{{token.dateCreated}}</td>
+                        <td>{{token.dateUpdated}}</td>
+                    </tr>
+                {% endif %}
+
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endset %}
