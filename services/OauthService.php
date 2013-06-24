@@ -113,8 +113,16 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function getProviderLibrary($namespace, $providerClass, $userToken = false)
+    public function getProviderLibrary($providerClass, $namespace = null , $userToken = false)
     {
+        if($namespace == null)
+        {
+            $class = "\\Dukt\\Connect\\$providerClass\\Provider";
+            $opts = array('id' => 'x', 'secret' => 'x', 'redirect_url' => 'x');
+            $provider = new $class($opts);
+            return $provider;
+        }
+
         $userId = false;
 
         if($userToken) {
@@ -182,7 +190,7 @@ class OauthService extends BaseApplicationComponent
 
     public function getAccount($namespace, $providerClass)
     {
-        $provider = $this->getProviderLibrary($namespace, $providerClass);
+        $provider = $this->getProviderLibrary($providerClass, $namespace);
 
         if(!$provider) {
             return NULL;

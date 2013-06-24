@@ -61,6 +61,13 @@ class OauthVariable
 
     // --------------------------------------------------------------------
 
+    public function getProviderLibrary($providerClass, $namespace = null , $userToken = false)
+    {
+        return craft()->oauth->getProviderLibrary($providerClass, $namespace, $userToken);
+    }
+
+    // --------------------------------------------------------------------
+
     public function getTokens($namespace = null)
     {
         return craft()->oauth->getTokens($namespace);
