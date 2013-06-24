@@ -4,6 +4,8 @@ namespace Dukt\Connect\Facebook;
 
 class Provider extends \OAuth\Provider\Facebook
 {
+    public $consoleUrl = 'https://code.facebook.com/apis/console/';
+
     public function getAccount()
     {
         $url = 'https://graph.facebook.com/me?'.http_build_query(array(
