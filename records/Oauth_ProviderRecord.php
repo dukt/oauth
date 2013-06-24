@@ -2,14 +2,14 @@
 
 namespace Craft;
 
-class Oauth_ServiceRecord extends BaseRecord
+class Oauth_ProviderRecord extends BaseRecord
 {
     /**
      * Get Table Name
      */
     public function getTableName()
     {
-        return 'oauth_services';
+        return 'oauth_providers';
     }
 
     // --------------------------------------------------------------------

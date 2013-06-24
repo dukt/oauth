@@ -19,7 +19,7 @@ class OauthService extends BaseApplicationComponent
     {
         $this->serviceRecord = $serviceRecord;
         if (is_null($this->serviceRecord)) {
-            $this->serviceRecord = Oauth_ServiceRecord::model();
+            $this->serviceRecord = Oauth_ProviderRecord::model();
         }
     }
 
@@ -62,7 +62,7 @@ class OauthService extends BaseApplicationComponent
 
     public function providerIsConfigured($providerClass)
     {
-        $record = Oauth_ServiceRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $providerClass));
+        $record = Oauth_ProviderRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $providerClass));
 
         if ($record) {
 
@@ -152,7 +152,7 @@ class OauthService extends BaseApplicationComponent
 
         $providerClass = $tokenRecord->provider;
 
-        $providerRecord = Oauth_ServiceRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $providerClass));
+        $providerRecord = Oauth_ProviderRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $providerClass));
 
         $opts = array(
             'id' => $providerRecord->clientId,
@@ -217,7 +217,7 @@ class OauthService extends BaseApplicationComponent
 
         // get the option
 
-        $record = Oauth_ServiceRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $providerClass));
+        $record = Oauth_ProviderRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $providerClass));
 
         if ($record) {
 
@@ -247,7 +247,7 @@ class OauthService extends BaseApplicationComponent
     {
         $class = $model->getAttribute('providerClass');
 
-        if (null === ($record = Oauth_ServiceRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $class)))) {
+        if (null === ($record = Oauth_ProviderRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $class)))) {
             $record = $this->serviceRecord->create();
         }
 
@@ -486,7 +486,7 @@ class OauthService extends BaseApplicationComponent
     {
         $providerClass = craft()->request->getParam('providerClass');
 
-        $record = Oauth_ServiceRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $providerClass));
+        $record = Oauth_ProviderRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $providerClass));
 
         if($record)
         {

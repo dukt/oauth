@@ -37,7 +37,7 @@ class Oauth_PublicController extends BaseController
             craft()->httpSession->add('oauthNamespace', $namespace);
         }
 
-        $serviceRecord = Oauth_ServiceRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $className));
+        $serviceRecord = Oauth_ProviderRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $className));
 
         $className = $serviceRecord->providerClass;
 
