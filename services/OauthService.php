@@ -43,17 +43,19 @@ class OauthService extends BaseApplicationComponent
             $params['scope'] = base64_encode(serialize($scope));
         }
 
-        return UrlHelper::getActionUrl('../../'.craft()->config->get('actionTrigger').'/oauth/public/authenticate', $params);
+        return UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/authenticate', $params);
     }
 
     // --------------------------------------------------------------------
 
     public function disconnect($namespace, $providerClass)
     {
-        return UrlHelper::getActionUrl('../../'.craft()->config->get('actionTrigger').'/oauth/public/deauthenticate', array(
+        $params = array(
                     'namespace' => $namespace,
                     'provider' => $providerClass
-                    ));
+                    );
+
+        return UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/authenticate', $params);
     }
 
     // --------------------------------------------------------------------
@@ -63,6 +65,7 @@ class OauthService extends BaseApplicationComponent
         $record = Oauth_ServiceRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $providerClass));
 
         if ($record) {
+
             if(!empty($record->clientId) && !empty($record->clientSecret)) {
                 return true;
             }
