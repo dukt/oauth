@@ -22,11 +22,23 @@
 
 {% set content %}
 
+    <h2>Client ID &amp; Secret</h2>
+
     <form method="post" action="" accept-charset="UTF-8">
         <input type="hidden" name="action" value="oauth/settings/saveService">
         <input type="hidden" name="redirect" value="oauth" />
         <input type="hidden" name="serviceProviderClass" value="{{ serviceProviderClass }}" />
 
+        {% set providerLibrary = craft.oauth.getProviderLibrary(serviceProviderClass) %}
+
+        <p>Create an OAuth 2.0 application and enable associated services in the <a target="_blank" href="{{providerLibrary.consoleUrl}}">{{serviceProviderClass}} API management Console</a>.</p>
+
+        <p>Once created, configure the application with the following settings. You might not need to use all of them.</p>
+
+        <ul>
+            <li>Authorized Redirect URI : {{craft.oauth.providerCallbackUrl(serviceProviderClass)}}</li>
+            <li>Authorized JavaScript Origins : {{siteUrl}}</li>
+        </ul>
 
         {{ forms.textField({
             label: 'Client Id'|t,
