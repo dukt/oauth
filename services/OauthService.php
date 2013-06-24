@@ -55,7 +55,7 @@ class OauthService extends BaseApplicationComponent
                     'provider' => $providerClass
                     );
 
-        return UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/authenticate', $params);
+        return UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/deauthenticate', $params);
     }
 
     // --------------------------------------------------------------------
