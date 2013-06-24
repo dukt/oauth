@@ -49,7 +49,7 @@ class Oauth_PublicController extends BaseController
         $opts = array(
             'id' => $serviceRecord->clientId,
             'secret' => $serviceRecord->clientSecret,
-            'redirect_url' => \Craft\UrlHelper::getActionUrl('oauth/public/authenticate/', array('provider' => $className)),
+            'redirect_url' => craft()->oauth->providerCallbackUrl($className),
         );
 
         if($scope) {
