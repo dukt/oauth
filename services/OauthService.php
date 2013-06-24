@@ -104,6 +104,15 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
+    public function providerCallbackUrl($providerClass)
+    {
+        $params = array('provider' => $providerClass);
+
+        return UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/authenticate', $params);
+    }
+
+    // --------------------------------------------------------------------
+
     public function getProviderLibrary($namespace, $providerClass, $userToken = false)
     {
         $userId = false;

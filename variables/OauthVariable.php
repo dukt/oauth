@@ -40,6 +40,13 @@ class OauthVariable
 
     // --------------------------------------------------------------------
 
+    public function providerCallbackUrl($providerClass)
+    {
+        return craft()->oauth->providerCallbackUrl($providerClass);
+    }
+
+    // --------------------------------------------------------------------
+
     public function getProviders()
     {
         return craft()->oauth->getProviders();
