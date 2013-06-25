@@ -5,8 +5,7 @@ OAuth has ben designed to help plugin developers get quickly started with OAuth.
 - [Installation](#install)
 - [Supported providers](#providers)
 - [OAuth Authentication](#authentication)
-- [Using OAuth in your plugins](#developers)
-- [API Reference](#api)
+- [Developer API Reference](#api)
 - [Licensing](#license)
 - [Feedback](#feedback)
 
@@ -49,59 +48,53 @@ Does the same as this :
 
     {{craft.oauth.connect('connect.user', 'Google', scope, true)}}
 
-<a id="developers"></a>
-## Using OAuth in your plugin
-
-If you're a developer and want to make use of the OAuth authentication in your plugins, you can ajust your code to make it auto download / install the OAuth plugin if required.
-
-In order to get a provider up and running, you need to go through three simple steps :
-
-- Auto download / install / enable the OAuth plugin
-- Configure provider's Client ID & Secret
-- Authenticate
-
-### Example Plugin Templates
-
-#### oauth/index.html
-#### oauth/_install.html
-#### oauth/_configure.html
-#### oauth/_authenticate.html
 
 <a id="api"></a>
-## API Reference
+## Developer API Reference
 
 ### craft.oauth.connect(namespace, providerClass, scope = null, userToken = false)
 
-Returns a link for connecting to the provider with given parameters
+Returns a link for connecting to the provider with given parameters.
 
 ### craft.oauth.disconnect(namespace, providerClass)
 
-Returns a link for disconnecting from the given provider
+Returns a link for disconnecting from the given provider.
 
 ### craft.oauth.providerIsConfigured(provider)
 
-Returns true or false
+Returns true or false.
 
 ### craft.oauth.providerIsConnected(namespace, providerClass, user = NULL)
 
-Returns true or false
+Returns true or false.
 
+### craft.oauth.providerCallbackUrl(providerClass)
+
+Return the callback URL of the provider.
 
 ### craft.oauth.getProviders()
 
-Returns an array of all providers found
+Returns an array of all providers found.
 
 ### craft.oauth.getProvider(providerClass)
 
-Returns an Oauth_ProviderRecord from given provider class
+Returns an Oauth_ProviderRecord from given provider class.
+
+### craft.oauth.getProviderLibrary(providerClass)
+
+Return a provider library object.
 
 ### craft.oauth.getTokens(namespace = null, providerClass = null, userToken = null)
 
-Returns an array of Oauth_TokenRecord
+Returns an array of Oauth_TokenRecord.
+
+### craft.oauth.getToken(encodedToken)
+
+Return an Oauth_TokenRecord from its encoded (serialize + base64encode) token.
 
 ### craft.oauth.getAccount(namespace, providerClass)
 
-Return an account object
+Return an account object.
 
 <a id="license"></a>
 ## Licensing
