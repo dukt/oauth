@@ -4,7 +4,8 @@ OAuth has ben designed to help plugin developers get quickly started with OAuth.
 
 - [Installation](#install)
 - [Supported providers](#providers)
-- [OAuth Authentication](#authentication)
+- [Set up a system token](#system-token)
+- [Set up a user token](#user-token)
 - [Developer API Reference](#api)
 - [Licensing](#license)
 - [Feedback](#feedback)
@@ -22,10 +23,10 @@ Unzip and drop the OAuth plugin in your `craft/plugin` directory.
 - Twiiter
 - Flickr
 
-<a id="authentication"></a>
-## OAuth Authentication
+<a id="system-token"></a>
+## Set up up a system token
 
-All you have to do is define a namespace, a provider, a scope and choose if the authentication is related to the current user.
+Set up a system wide token.
 
     {% set scope = [
         'https://www.googleapis.com/auth/userinfo.profile',
@@ -33,20 +34,21 @@ All you have to do is define a namespace, a provider, a scope and choose if the 
         'https://www.googleapis.com/auth/analytics'
         ] %}
 
-    {{craft.oauth.connect('analytics.sytem', 'Google', scope, false)}}
+    {{craft.oauth.connect('analytics.sytem', 'Google', scope)}}
 
-Of course, you can create basic wrappers in your Plugin, in order to simplify templates. For example, our Connect plugin for Craft has a simplified alias to the authenticate method, where doing this :
 
-    {{craft.connect.login()}}
+<a id="user-token"></a>
+## Set up up a user token
 
-Does the same as this :
+Set up a user-specific token.
 
     {% set scope = [
         'https://www.googleapis.com/auth/userinfo.profile',
-        'https://www.googleapis.com/auth/userinfo.email'
+        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/analytics'
         ] %}
 
-    {{craft.oauth.connect('connect.user', 'Google', scope, true)}}
+    {{craft.oauth.connect('analytics.sytem', 'Google', scope, userId)}}
 
 
 <a id="api"></a>
