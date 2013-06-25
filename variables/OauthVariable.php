@@ -75,6 +75,13 @@ class OauthVariable
 
     // --------------------------------------------------------------------
 
+    public function getToken($encodedToken)
+    {
+        return craft()->oauth->getToken($encodedToken);
+    }
+
+    // --------------------------------------------------------------------
+
     public function getAccount($namespace, $providerClass)
     {
         return craft()->oauth->getAccount($namespace, $providerClass);

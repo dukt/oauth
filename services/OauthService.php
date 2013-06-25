@@ -449,6 +449,24 @@ class OauthService extends BaseApplicationComponent
         return $tokens;
     }
 
+    public function getToken($encodedToken)
+    {
+        $criteriaConditions = '';
+        $criteriaParams = array();
+
+        $criteriaConditions = '
+            token=:token
+            ';
+
+        $criteriaParams = array(
+            ':token' => $encodedToken
+            );
+
+        $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
+
+        return $tokenRecord;
+    }
+
     // --------------------------------------------------------------------
 
     public function getProviders()
