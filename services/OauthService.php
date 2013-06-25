@@ -197,6 +197,31 @@ class OauthService extends BaseApplicationComponent
         }
 
 
+        // token expired : we need to refresh it
+        $difference = ($provider->token->expires - time());
+
+        if($difference < 3590)
+        {
+            $encodedToken = base64_encode(serialize($provider->token));
+
+            $tokenRecord = craft()->oauth->getToken($encodedToken);
+
+
+            if(method_exists($provider, 'access')) {
+                $accessToken = $provider->access($provider->token->refresh_token, array('grant_type' => 'refresh_token'));
+
+
+                // save token
+
+                $provider->token->access_token = $accessToken->access_token;
+                $provider->token->expires = $accessToken->expires;
+
+                $tokenRecord->token = base64_encode(serialize($provider->token));
+
+                $tokenRecord->save();
+            }
+        }
+
         $account = $provider->getAccount();
 
         if(!$account) {
