@@ -22,7 +22,6 @@ class Oauth_PublicController extends BaseController
             craft()->httpSession->add('oauthUserToken', $userToken);
         }
 
-
         $scope = craft()->request->getParam('scope');
         $scope = @unserialize(base64_decode($scope));
 
@@ -96,22 +95,8 @@ class Oauth_PublicController extends BaseController
 
         // $serviceRecord->token = $token;
 
-        $account = $provider->getAccount();
-
-        $user = craft()->users->getUserByUsernameOrEmail($account->email);
 
 
-        if(!$user) {
-            // the account email doesn't match any user, create one
-
-            $newUser = new UserModel();
-            $newUser->username = $account->email;
-            $newUser->email = $account->email;
-
-            craft()->users->saveUser($newUser);
-
-            $user = craft()->users->getUserByUsernameOrEmail($account->email);
-        }
 
 
         // oauth the user
@@ -127,6 +112,24 @@ class Oauth_PublicController extends BaseController
         craft()->httpSession->remove('oauthUserToken');
 
         if($userToken === true) {
+
+            $account = $provider->getAccount();
+
+            $user = craft()->users->getUserByUsernameOrEmail($account->email);
+
+
+            if(!$user) {
+                // the account email doesn't match any user, create one
+
+                $newUser = new UserModel();
+                $newUser->username = $account->email;
+                $newUser->email = $account->email;
+
+                craft()->users->saveUser($newUser);
+
+                $user = craft()->users->getUserByUsernameOrEmail($account->email);
+            }
+
             $tokenArray['userId'] = $user->id;
 
             $criteriaConditions = '
@@ -170,8 +173,8 @@ class Oauth_PublicController extends BaseController
 
         $tokenRecord->save();
 
-        if($userToken && isset(craft()->connect_userSession)) {
-            craft()->connect_userSession->login($token);
+        if($userToken && isset(craft()->social_userSession)) {
+            craft()->social_userSession->login($token);
         }
 
         $referer = craft()->httpSession->get('oauthReferer');

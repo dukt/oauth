@@ -196,7 +196,8 @@ class OauthService extends BaseApplicationComponent
             return NULL;
         }
 
-        $account = @$provider->getAccount();
+
+        $account = $provider->getAccount();
 
         if(!$account) {
             return NULL;
