@@ -57,21 +57,27 @@ class Oauth_PublicController extends BaseController
 
         $class = "\\Dukt\\Connect\\$className\\Provider";
 
+
         $provider = new $class($opts);
 
-        $provider = $provider->process(function($url, $token = null) {
+        try {
+            $provider = $provider->process(function($url, $token = null) {
 
-            if ($token) {
-                $_SESSION['token'] = base64_encode(serialize($token));
-            }
+                if ($token) {
+                    $_SESSION['token'] = base64_encode(serialize($token));
+                }
 
-            header("Location: {$url}");
+                header("Location: {$url}");
 
-            exit;
+                exit;
 
-        }, function() {
-            return unserialize(base64_decode($_SESSION['token']));
-        });
+            }, function() {
+
+                return unserialize(base64_decode($_SESSION['token']));
+            });
+        } catch(\Exception $e) {
+            $this->redirect($referer);
+        }
 
 
         $namespace = craft()->httpSession->get('oauthNamespace');
