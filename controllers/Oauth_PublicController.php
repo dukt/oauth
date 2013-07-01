@@ -12,6 +12,8 @@ class Oauth_PublicController extends BaseController
 
     public function actionAuthenticate()
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $className = craft()->request->getParam('provider');
         $namespace = craft()->request->getParam('namespace');
 
@@ -61,6 +63,8 @@ class Oauth_PublicController extends BaseController
         $provider = new $class($opts);
 
         try {
+            Craft::log(__METHOD__." : Provider processing", LogLevel::Info, true);
+
             $provider = $provider->process(function($url, $token = null) {
 
                 if ($token) {
@@ -76,6 +80,9 @@ class Oauth_PublicController extends BaseController
                 return unserialize(base64_decode($_SESSION['token']));
             });
         } catch(\Exception $e) {
+
+            Craft::log(__METHOD__." : Provider process failed : ".$e->getMessage(), LogLevel::Info, true);
+            Craft::log(__METHOD__." : Redirect : ".$redirect, LogLevel::Info, true);
             $this->redirect($referer);
         }
 
@@ -92,18 +99,6 @@ class Oauth_PublicController extends BaseController
         craft()->httpSession->add('oauthToken.'.$className, $token);
 
 
-        // $service = new {}($provider);
-
-
-
-        // save token
-
-
-        // $serviceRecord->token = $token;
-
-
-
-
 
         // oauth the user
 
@@ -118,6 +113,8 @@ class Oauth_PublicController extends BaseController
         craft()->httpSession->remove('oauthUserToken');
 
         if($userToken === true) {
+
+            Craft::log(__METHOD__." : User Token", LogLevel::Info, true);
 
             $account = $provider->getAccount();
 
@@ -151,6 +148,8 @@ class Oauth_PublicController extends BaseController
                 );
         } else {
 
+            Craft::log(__METHOD__." : System Token", LogLevel::Info, true);
+
             $criteriaConditions = '
                 namespace=:namespace AND
                 provider=:provider
@@ -177,7 +176,9 @@ class Oauth_PublicController extends BaseController
             $tokenRecord->userId = $tokenArray['userId'];
         }
 
-        $tokenRecord->save();
+        if(!$tokenRecord->save()) {
+            Craft::log(__METHOD__." : Could not save token", LogLevel::Info, true);
+        }
 
         if($userToken && isset(craft()->social_userSession)) {
             craft()->social_userSession->login($token);
@@ -189,6 +190,8 @@ class Oauth_PublicController extends BaseController
         // var_dump($referer);
         // die();
 
+        Craft::log(__METHOD__." : Redirect : ".$referer, LogLevel::Info, true);
+
         $this->redirect($referer);
 
         //$this->redirect($finalRedirect);
@@ -198,6 +201,8 @@ class Oauth_PublicController extends BaseController
 
     public function actionDeauthenticate()
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $providerClass = craft()->request->getParam('provider');
         $namespace = craft()->request->getParam('namespace');
 
@@ -223,6 +228,8 @@ class Oauth_PublicController extends BaseController
 
         $tokenRecord->delete();
 
+        Craft::log(__METHOD__." : Redirect : ".$_SERVER['HTTP_REFERER'], LogLevel::Info, true);
+
         $this->redirect($_SERVER['HTTP_REFERER']);
     }
 
@@ -230,6 +237,8 @@ class Oauth_PublicController extends BaseController
 
     private function _getSessionDuration($rememberMe)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         if ($rememberMe) {
             $duration = craft()->config->get('rememberedUserSessionDuration');
         } else {

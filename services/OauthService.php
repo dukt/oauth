@@ -27,6 +27,8 @@ class OauthService extends BaseApplicationComponent
 
     public function connect($namespace, $providerClass, $userToken = false, $scope = null)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         if($userToken === true) {
             $userToken = 1;
         } else {
@@ -43,34 +45,48 @@ class OauthService extends BaseApplicationComponent
             $params['scope'] = base64_encode(serialize($scope));
         }
 
-        return UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/authenticate', $params);
+        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/authenticate', $params);
+
+        Craft::log(__METHOD__." : Authenticate : ".$url, LogLevel::Info, true);
+
+        return $url;
     }
 
     // --------------------------------------------------------------------
 
     public function disconnect($namespace, $providerClass)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $params = array(
                     'namespace' => $namespace,
                     'provider' => $providerClass
                     );
 
-        return UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/deauthenticate', $params);
+
+        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/deauthenticate', $params);
+
+        Craft::log(__METHOD__." : Deauthenticate : ".$url, LogLevel::Info, true);
+
+        return $url;
     }
 
     // --------------------------------------------------------------------
 
     public function providerIsConfigured($providerClass)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $record = Oauth_ProviderRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $providerClass));
 
         if ($record) {
-
+            Craft::log(__METHOD__." : Yes", LogLevel::Info, true);
             if(!empty($record->clientId) && !empty($record->clientSecret)) {
                 return true;
             }
         }
 
+        Craft::log(__METHOD__." : No", LogLevel::Info, true);
 
         return false;
     }
@@ -79,6 +95,8 @@ class OauthService extends BaseApplicationComponent
 
     public function providerIsConnected($namespace, $providerClass, $user = NULL)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $userId = craft()->userSession->user->id;
 
         $criteriaConditions = '
@@ -96,9 +114,11 @@ class OauthService extends BaseApplicationComponent
         $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
 
         if($tokenRecord) {
+            Craft::log(__METHOD__." : Yes", LogLevel::Info, true);
             return true;
         }
 
+        Craft::log(__METHOD__." : No", LogLevel::Info, true);
         return false;
     }
 
@@ -106,17 +126,26 @@ class OauthService extends BaseApplicationComponent
 
     public function providerCallbackUrl($providerClass)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $params = array('provider' => $providerClass);
 
-        return UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/authenticate', $params);
+        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/authenticate', $params);
+
+        Craft::log(__METHOD__." : Authenticate : ".$url, LogLevel::Info, true);
+
+        return $url;
     }
 
     // --------------------------------------------------------------------
 
     public function getProviderLibrary($providerClass, $namespace = null , $userToken = false)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         if($namespace == null)
         {
+            Craft::log(__METHOD__." : Namespace null : Dummy provider", LogLevel::Info, true);
             $class = "\\Dukt\\Connect\\$providerClass\\Provider";
             $opts = array('id' => 'x', 'secret' => 'x', 'redirect_url' => 'x');
             $provider = new $class($opts);
@@ -161,6 +190,7 @@ class OauthService extends BaseApplicationComponent
         $token = @unserialize(base64_decode($tokenRecord->token));
 
         if(!$token) {
+            Craft::log(__METHOD__." : Token null", LogLevel::Info, true);
             return NULL;
         }
 
@@ -190,9 +220,12 @@ class OauthService extends BaseApplicationComponent
 
     public function getAccount($namespace, $providerClass)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $provider = $this->getProviderLibrary($providerClass, $namespace);
 
         if(!$provider) {
+            Craft::log(__METHOD__." : Provider null ", LogLevel::Info, true);
             return NULL;
         }
 
@@ -200,8 +233,10 @@ class OauthService extends BaseApplicationComponent
         // token expired : we need to refresh it
         $difference = ($provider->token->expires - time());
 
-        if($difference < 3590)
+        if($difference < 1)
         {
+            Craft::log(__METHOD__." : Refresh token ", LogLevel::Info, true);
+
             $encodedToken = base64_encode(serialize($provider->token));
 
             $tokenRecord = craft()->oauth->getToken($encodedToken);
@@ -210,7 +245,9 @@ class OauthService extends BaseApplicationComponent
             if(method_exists($provider, 'access')) {
                 $accessToken = $provider->access($provider->token->refresh_token, array('grant_type' => 'refresh_token'));
 
-
+                if(!$accessToken) {
+                    Craft::log(__METHOD__." : Could not refresh token", LogLevel::Info, true);
+                }
                 // save token
 
                 $provider->token->access_token = $accessToken->access_token;
@@ -218,13 +255,18 @@ class OauthService extends BaseApplicationComponent
 
                 $tokenRecord->token = base64_encode(serialize($provider->token));
 
-                $tokenRecord->save();
+                if($tokenRecord->save()) {
+                    Craft::log(__METHOD__." : Token saved", LogLevel::Info, true);
+                }
+            } else {
+                Craft::log(__METHOD__." : Access method (for refresh) doesn't exists for ".$providerClass, LogLevel::Info, true);
             }
         }
 
         $account = $provider->getAccount();
 
         if(!$account) {
+            Craft::log(__METHOD__." : Account null", LogLevel::Info, true);
             return NULL;
         }
 
@@ -235,6 +277,8 @@ class OauthService extends BaseApplicationComponent
 
     public function enable($id)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $record = $this->getServiceById($id);
         $record->enabled = true;
         $record->save();
@@ -246,6 +290,8 @@ class OauthService extends BaseApplicationComponent
 
     public function disable($id)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $record = $this->getServiceById($id);
         $record->enabled = false;
         $record->save();
@@ -257,6 +303,7 @@ class OauthService extends BaseApplicationComponent
 
     public function getProvider($providerClass)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
 
         // get the option
 
@@ -274,6 +321,8 @@ class OauthService extends BaseApplicationComponent
 
     public function getServiceById($id)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $record = $this->serviceRecord->findByPk($id);
 
         if ($record) {
@@ -288,6 +337,8 @@ class OauthService extends BaseApplicationComponent
 
     public function saveService(Oauth_ServiceModel &$model)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $class = $model->getAttribute('providerClass');
 
         if (null === ($record = Oauth_ProviderRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $class)))) {
@@ -318,6 +369,8 @@ class OauthService extends BaseApplicationComponent
 
     public function newService($attributes = array())
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $model = new Oauth_ServiceModel();
 
         $model->setAttributes($attributes);
@@ -329,8 +382,12 @@ class OauthService extends BaseApplicationComponent
 
     public function connectService($record = false)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         if(!$record)
         {
+            Craft::log(__METHOD__." : Record false", LogLevel::Info, true);
+
             $serviceId = craft()->request->getParam('id');
 
             $record = $this->serviceRecord->findByPk($serviceId);
@@ -339,17 +396,23 @@ class OauthService extends BaseApplicationComponent
 
         $className = $record->className;
 
+        $redirectUrl = \Craft\UrlHelper::getActionUrl('campaigns/settings/serviceCallback/', array('id' => $record->id));
+
         $provider = \OAuth\OAuth::provider($className, array(
             'id' => $record->clientId,
             'secret' => $record->clientSecret,
-            'redirect_url' => \Craft\UrlHelper::getActionUrl('campaigns/settings/serviceCallback/', array('id' => $record->id))
+            'redirect_url' => $redirectUrl
         ));
+
+        Craft::log(__METHOD__." : Provider process redirect_url :".$redirectUrl, LogLevel::Info, true);
 
         $provider = $provider->process(function($url, $token = null) {
 
             if ($token) {
                 $_SESSION['token'] = base64_encode(serialize($token));
             }
+
+            Craft::log(__METHOD__." : Provider processing header location : {$url}", LogLevel::Info, true);
 
             header("Location: {$url}");
 
@@ -365,16 +428,13 @@ class OauthService extends BaseApplicationComponent
         $record->token = base64_encode(serialize($token));
 
         $record->save();
-
-
-        craft()->request->redirect(UrlHelper::getUrl('campaigns/settings'));
-
     }
 
     // --------------------------------------------------------------------
 
     public function service($id)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
 
         $service = $this->serviceRecord->findByPk($id);
 
@@ -385,7 +445,13 @@ class OauthService extends BaseApplicationComponent
         $providerParams['redirect_url'] = "http://google.fr";
 
         try {
+            Craft::log(__METHOD__." : Creating oauth provider", LogLevel::Info, true);
+
             $provider = \OAuth\OAuth::provider($service->providerClass, $providerParams);
+
+            if(!$provider) {
+                Craft::log(__METHOD__." : Provider null", LogLevel::Info, true);
+            }
 
             $token = unserialize(base64_decode($service->token));
 
@@ -393,6 +459,8 @@ class OauthService extends BaseApplicationComponent
 
             if(!$token)
             {
+                Craft::log(__METHOD__." : Invalid token", LogLevel::Info, true);
+
                 throw new \Exception('Invalid Token');
             }
 
@@ -400,6 +468,7 @@ class OauthService extends BaseApplicationComponent
 
         } catch(\Exception $e)
         {
+            Craft::log(__METHOD__." : ".'Provider couln\'t instantiate : '.$e->getMessage(), LogLevel::Info, true);
             throw new Exception('Provider couln\'t instantiate : '.$e->getMessage());
         }
 
@@ -416,6 +485,8 @@ class OauthService extends BaseApplicationComponent
 
     public function serviceSend($serviceId, $method, $params = array())
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $service = $this->serviceRecord->findByPk($serviceId);
 
 
@@ -425,6 +496,8 @@ class OauthService extends BaseApplicationComponent
         $providerParams['redirect_url'] = "http://google.fr";
 
         try {
+            Craft::log(__METHOD__." : Creating oauth provider", LogLevel::Info, true);
+
             $provider = \OAuth\OAuth::provider($service->className, $providerParams);
 
             $token = unserialize(base64_decode($service->token));
@@ -433,6 +506,8 @@ class OauthService extends BaseApplicationComponent
 
             if(!$token)
             {
+                Craft::log(__METHOD__." : Invalid token", LogLevel::Info, true);
+
                 throw new \Exception('Invalid Token');
             }
 
@@ -440,6 +515,8 @@ class OauthService extends BaseApplicationComponent
 
         } catch(\Exception $e)
         {
+            Craft::log(__METHOD__." : ".'Provider couln\'t instantiate : '.$e->getMessage(), LogLevel::Info, true);
+
             throw new Exception('Provider couln\'t instantiate');
         }
 
@@ -456,6 +533,8 @@ class OauthService extends BaseApplicationComponent
 
     public function getTokens($namespace = null)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $criteriaConditions = '';
         $criteriaParams = array();
 
@@ -476,6 +555,8 @@ class OauthService extends BaseApplicationComponent
 
     public function getToken($encodedToken)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $criteriaConditions = '';
         $criteriaParams = array();
 
@@ -496,6 +577,8 @@ class OauthService extends BaseApplicationComponent
 
     public function getProviders()
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $directory = CRAFT_PLUGINS_PATH.'oauth/libraries/Dukt/Connect/';
 
         $result = array();
@@ -529,6 +612,8 @@ class OauthService extends BaseApplicationComponent
 
     public function getAllServices()
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $records = $this->serviceRecord->findAll(array('order'=>'t.title'));
 
         return Campaigns_ServiceModel::populateModels($records, 'id');
@@ -538,6 +623,8 @@ class OauthService extends BaseApplicationComponent
 
     public function deleteServiceById($id)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         return $this->serviceRecord->deleteByPk($id);
     }
 
@@ -545,6 +632,8 @@ class OauthService extends BaseApplicationComponent
 
     public function resetServiceToken($providerClass)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $providerClass = craft()->request->getParam('providerClass');
 
         $record = Oauth_ProviderRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $providerClass));
