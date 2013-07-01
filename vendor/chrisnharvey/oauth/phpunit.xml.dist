@@ -1,7 +1,0 @@
-<phpunit bootstrap="vendor/autoload.php" colors="true">
-    <testsuites>
-        <testsuite name="OAuth Test Suite">
-            <directory>./tests/</directory>
-        </testsuite>
-    </testsuites>
-</phpunit>
