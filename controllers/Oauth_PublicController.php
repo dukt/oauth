@@ -117,7 +117,22 @@ class Oauth_PublicController extends BaseController
 
             Craft::log(__METHOD__." : User Token", LogLevel::Info, true);
             //die('3');
-            $account = $provider->getAccount();
+            try {
+                $account = $provider->getAccount();
+            } catch (\Exception $e) {
+
+                $referer = craft()->httpSession->get('oauthReferer');
+                craft()->httpSession->remove('oauthReferer');
+
+                // var_dump($referer);
+                // die();
+
+                Craft::log(__METHOD__." : Could not get account, so we redirect.", LogLevel::Info, true);
+                Craft::log(__METHOD__." : Redirect : ".$referer, LogLevel::Info, true);
+
+                $this->redirect($referer);
+
+            }
             var_dump($account);
 
             if(isset($account->mapping)) {
