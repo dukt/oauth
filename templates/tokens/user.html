@@ -6,6 +6,7 @@
     <table class="data collapsible">
         <thead>
             <tr>
+                <th scope="col">{{ "User ID"|t }}</th>
                 <th scope="col">{{ "User"|t }}</th>
                 <th scope="col">{{ "Namespace"|t }}</th>
                 <th scope="col">{{ "Provider"|t }}</th>
@@ -19,6 +20,7 @@
             {% for token in tokens %}
                 {% if token.user.email is defined %}
                     <tr>
+                        <td>{{token.user.id}}</td>
                         <td>{{token.user.email}}</td>
                         <td>{{token.namespace}}</td>
                         <td>{{token.provider}}</td>
