@@ -81,8 +81,10 @@ class Oauth_PublicController extends BaseController
             });
         } catch(\Exception $e) {
 
-            Craft::log(__METHOD__." : Provider process failed : ".$e->getMessage(), LogLevel::Info, true);
+            Craft::log(__METHOD__." : Provider process failed : ".$e->getMessage(), LogLevel::Error);
+
             Craft::log(__METHOD__." : Referer : ".$referer, LogLevel::Info, true);
+
             $this->redirect($referer);
         }
 
@@ -115,7 +117,8 @@ class Oauth_PublicController extends BaseController
         if($userToken === true) {
 
 
-            Craft::log(__METHOD__." : User Token", LogLevel::Info, true);
+            Craft::log(__METHOD__."Token Type : User", LogLevel::Info, true);
+
             //die('3');
             try {
                 $account = $provider->getAccount();
@@ -127,7 +130,7 @@ class Oauth_PublicController extends BaseController
                 // var_dump($referer);
                 // die();
 
-                Craft::log(__METHOD__." : Could not get account, so we redirect.", LogLevel::Info, true);
+                Craft::log(__METHOD__." : Could not get account, so we redirect.", LogLevel::Error);
                 Craft::log(__METHOD__." : Redirect : ".$referer, LogLevel::Info, true);
 
                 $this->redirect($referer);
@@ -213,7 +216,7 @@ class Oauth_PublicController extends BaseController
                 );
         } else {
 
-            Craft::log(__METHOD__." : System Token", LogLevel::Info, true);
+            Craft::log(__METHOD__."Token Type : System", LogLevel::Info, true);
 
             $criteriaConditions = '
                 namespace=:namespace AND
@@ -246,7 +249,7 @@ class Oauth_PublicController extends BaseController
         }
 
         if(!$tokenRecord->save()) {
-            Craft::log(__METHOD__." : Could not save token", LogLevel::Info, true);
+            Craft::log(__METHOD__." : Could not save token", LogLevel::Error);
         }
 
         if($userToken && isset(craft()->social_userSession)) {
