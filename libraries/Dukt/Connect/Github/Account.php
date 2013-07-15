@@ -9,6 +9,6 @@ class Account extends AbstractAccount
 
     public function instantiate($response)
     {
-        $this->email = $response->email;
+        $this->email = $response['email'];
     }
 }

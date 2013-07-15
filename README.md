@@ -18,10 +18,10 @@ Unzip and drop the OAuth plugin in your `craft/plugin` directory.
 <a id="providers"></a>
 ## Supported providers
 
-- Google
 - Facebook
-- Twiiter
-- Flickr
+- GitHub
+- Google
+- Twitter
 
 <a id="system-token"></a>
 ## Set up up a system token

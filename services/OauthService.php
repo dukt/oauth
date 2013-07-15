@@ -218,11 +218,11 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function getAccount($namespace, $providerClass)
+    public function getAccount($namespace, $providerClass, $isUserToken = false)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
-        $provider = $this->getProviderLibrary($providerClass, $namespace);
+        $provider = $this->getProviderLibrary($providerClass, $namespace, $isUserToken);
 
         if(!$provider) {
             Craft::log(__METHOD__." : Provider null ", LogLevel::Info, true);
@@ -233,8 +233,17 @@ class OauthService extends BaseApplicationComponent
         // token expired : we need to refresh it
         $difference = ($provider->token->expires - time());
 
+        // var_dump($provider->token);
+        // var_dump($difference);
+
+        // die();
         if($difference < 1)
         {
+            // echo $providerClass;
+            // var_dump($provider->token);
+            // var_dump($difference);
+            // echo '<hr />';
+            // return;
             Craft::log(__METHOD__." : Refresh token ", LogLevel::Info, true);
 
             $encodedToken = base64_encode(serialize($provider->token));
@@ -242,7 +251,7 @@ class OauthService extends BaseApplicationComponent
             $tokenRecord = craft()->oauth->getToken($encodedToken);
 
 
-            if(method_exists($provider, 'access')) {
+            if(method_exists($provider, 'access') && $provider->token->refresh_token) {
                 $accessToken = $provider->access($provider->token->refresh_token, array('grant_type' => 'refresh_token'));
 
                 if(!$accessToken) {
@@ -261,6 +270,11 @@ class OauthService extends BaseApplicationComponent
             } else {
                 Craft::log(__METHOD__." : Access method (for refresh) doesn't exists for ".$providerClass, LogLevel::Info, true);
             }
+        } else {
+            // echo $providerClass;
+            // var_dump($provider->token);
+            // var_dump($difference);
+            // echo '<hr />';
         }
 
         $account = $provider->getAccount();

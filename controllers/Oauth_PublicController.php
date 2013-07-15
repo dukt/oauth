@@ -82,7 +82,7 @@ class Oauth_PublicController extends BaseController
         } catch(\Exception $e) {
 
             Craft::log(__METHOD__." : Provider process failed : ".$e->getMessage(), LogLevel::Info, true);
-            Craft::log(__METHOD__." : Redirect : ".$redirect, LogLevel::Info, true);
+            Craft::log(__METHOD__." : Referer : ".$referer, LogLevel::Info, true);
             $this->redirect($referer);
         }
 
@@ -103,26 +103,74 @@ class Oauth_PublicController extends BaseController
         // oauth the user
 
         $tokenArray = array();
+
         $tokenArray['namespace'] = $namespace;
         $tokenArray['provider'] = $className;
 
         $tokenArray['token'] = $token;
-
 
         $userToken = craft()->httpSession->get('oauthUserToken');
         craft()->httpSession->remove('oauthUserToken');
 
         if($userToken === true) {
 
+
             Craft::log(__METHOD__." : User Token", LogLevel::Info, true);
-
+            //die('3');
             $account = $provider->getAccount();
+            var_dump($account);
 
-            $user = craft()->users->getUserByUsernameOrEmail($account->email);
+            if(isset($account->mapping)) {
+                $tokenArray['userMapping'] = $account->mapping;
+            }
 
+            //die('4');
+
+            $user = null;
+            $userId =  craft()->userSession->id;
+
+            // use the current user if possible
+
+            if($userId) {
+                $user = craft()->users->getUserById($userId);
+            }
+
+            // otherwise check if we have a matching email
 
             if(!$user) {
-                // the account email doesn't match any user, create one
+                $user = craft()->users->getUserByUsernameOrEmail($account->email);
+            }
+
+
+            // check with mapping
+
+            if(!$user && isset($account->mapping)) {
+
+                $criteriaConditions = '
+                    namespace=:namespace AND
+                    provider=:provider AND
+                    userMapping=:userMapping
+                    ';
+
+                $criteriaParams = array(
+                    ':namespace' => $tokenArray['namespace'],
+                    ':provider' => $tokenArray['provider'],
+                    ':userMapping' => $tokenArray['userMapping'],
+                    );
+
+
+                $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
+
+                if($tokenRecord) {
+                    $userId = $tokenRecord->userId;
+                    $user = craft()->users->getUserById($userId);
+                }
+            }
+
+            // the account email doesn't match any user, create one
+
+            if(!$user) {
+                //die('1');
 
                 $newUser = new UserModel();
                 $newUser->username = $account->email;
@@ -133,6 +181,8 @@ class Oauth_PublicController extends BaseController
                 $user = craft()->users->getUserByUsernameOrEmail($account->email);
             }
 
+            
+            //die('2');
             $tokenArray['userId'] = $user->id;
 
             $criteriaConditions = '
@@ -168,6 +218,10 @@ class Oauth_PublicController extends BaseController
             $tokenRecord = new Oauth_TokenRecord();
         }
 
+        if(isset($tokenArray['userMapping'])) {
+            $tokenRecord->userMapping = $tokenArray['userMapping'];
+        }
+        
         $tokenRecord->namespace = $tokenArray['namespace'];
         $tokenRecord->provider = $tokenArray['provider'];
         $tokenRecord->token = $tokenArray['token'];

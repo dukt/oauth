@@ -20,6 +20,7 @@ class Oauth_TokenRecord extends BaseRecord
     public function defineAttributes()
     {
         return array(
+            'userMapping' => array(AttributeType::String, 'required' => false),
             'namespace' => array(AttributeType::String, 'required' => true),
             'provider' => array(AttributeType::String, 'required' => true),
             'scope' => array(AttributeType::Mixed, 'required' => false),
