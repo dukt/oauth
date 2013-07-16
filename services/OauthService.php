@@ -97,24 +97,37 @@ class OauthService extends BaseApplicationComponent
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
-        $userId = craft()->userSession->user->id;
+        if($user) {
+            $userId = craft()->userSession->user->id;
+            
+            $criteriaConditions = '
+                namespace=:namespace AND
+                provider=:provider AND
+                userId=:userId
+                ';
 
-        $criteriaConditions = '
-            namespace=:namespace AND
-            provider=:provider AND
-            userId=:userId
-            ';
+            $criteriaParams = array(
+                ':namespace' => $namespace,
+                ':userId' => $userId,
+                ':provider' => $providerClass,
+                );
+        } else {
+            $criteriaConditions = '
+                namespace=:namespace AND
+                provider=:provider
+                ';
 
-        $criteriaParams = array(
-            ':namespace' => $namespace,
-            ':userId' => $userId,
-            ':provider' => $providerClass,
-            );
+            $criteriaParams = array(
+                ':namespace' => $namespace,
+                ':provider' => $providerClass,
+                );
+        }
 
         $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
 
         if($tokenRecord) {
             Craft::log(__METHOD__." : Yes", LogLevel::Info, true);
+
             return true;
         }
 
