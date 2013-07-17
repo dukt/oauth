@@ -40,12 +40,19 @@ class Oauth_PublicController extends BaseController
 
         $serviceRecord = Oauth_ProviderRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $className));
 
+        if(!$serviceRecord) {
+            Craft::log(__METHOD__." : Provider record not found", LogLevel::Error);
+
+            Craft::log(__METHOD__." : Referer : ".$referer, LogLevel::Info, true);
+
+            if(isset($_SERVER['HTTP_REFERER'])) {
+                $referer = $_SERVER['HTTP_REFERER'];
+            }
+            
+            $this->redirect($referer);
+        }
+
         $className = $serviceRecord->providerClass;
-
-
-
-
-        //$provider = \OAuth\OAuth::provider($className, );
 
         $opts = array(
             'id' => $serviceRecord->clientId,
