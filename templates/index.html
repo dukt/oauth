@@ -45,13 +45,6 @@
                             #}
                         {% endif %}
                     </td>
-                    {% set account = craft.oauth.getAccount('oauth.user', provider) %}
-
-                    {% if not account %}
-                    <td><a href="{{craft.oauth.connect('oauth.user', provider, true)}}">Connect</a></td>
-                    {% else %}
-                    <td><a href="{{craft.oauth.disconnect('oauth.user', provider)}}">Disconnect</a></td>
-                    {% endif %}
 
                 </tr>
             {% endfor %}
