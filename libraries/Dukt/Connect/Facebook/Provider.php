@@ -19,4 +19,22 @@ class Provider extends \OAuth\Provider\Facebook
 
         return $account;
     }
+
+    public function api($uri, $opts = array())
+    {
+        $apiUrl = 'https://graph.facebook.com/';
+
+        $url = $apiUrl.$uri;
+
+        if(!isset($opts['access_token'])) {
+            $opts['access_token'] = $this->token->access_token;
+        }
+
+        $url .= '?'.http_build_query($opts);
+
+        $response = file_get_contents($url);
+        $response = json_decode($response, true);
+
+        return $response;
+    }
 }

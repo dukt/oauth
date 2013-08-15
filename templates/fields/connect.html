@@ -1,0 +1,51 @@
+{% if elementType == 'User' %}
+		&nbsp;<hr>
+	    {% for provider in craft.oauth.getProviders() %}
+	        {% set account = craft.oauth.getAccount('connect.user', provider) %}
+
+			<h3>{{provider}}</h3>
+
+	        {#% if account %}
+				<p>{{account.email}}</p>
+	        {% endif %#}
+
+			{% set tokens = craft.oauth.getTokensByProvider(provider, element.id) %}
+
+			{% if tokens|length > 0 %}
+			    <table class="data collapsible">
+			        <thead>
+			            <tr>
+			                <th scope="col">{{ "ID"|t }}</th>
+			                <th scope="col">{{ "Namespace"|t }}</th>
+			                <th scope="col">{{ "Scope"|t }}</th>
+			                <th scope="col">{{ "Created"|t }}</th>
+			                <th></th>
+			            </tr>
+			        </thead>
+			        <tbody>
+			            
+
+			            {% for token in tokens %}
+			                {% if token.user.email is defined %}
+			                    <tr>
+			                        <td>#{{token.id}}</td>
+			                        <td>{{token.namespace}}</td>
+			                        <td>-</td>
+			                        <td>{{token.dateCreated}}</td>
+			                    </tr>
+			                    {% endif %}
+			            {% endfor %}
+			        </tbody>
+			    </table>
+
+				<p><a href="{{craft.oauth.disconnect('*', provider)}}" class="btn small">Disconnect</a></p>
+
+			{% else %}
+				<p><a href="{{ craft.oauth.connect('connect.user', provider, true) }}" class="btn small">Connect</a></p>
+		    {% endif %}
+
+		    <hr>
+	    {% endfor %}
+{% else %}
+    This field can only be assigned to a User
+{% endif %}

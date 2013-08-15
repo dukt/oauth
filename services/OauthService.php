@@ -54,12 +54,30 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
+    // public function disconnect($namespace, $providerClass)
+    // {
+    //     Craft::log(__METHOD__, LogLevel::Info, true);
+
+    //     $params = array(
+    //                 'namespace' => $namespace,
+    //                 'provider' => $providerClass
+    //                 );
+
+
+    //     $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/deauthenticate', $params);
+
+    //     Craft::log(__METHOD__." : Deauthenticate : ".$url, LogLevel::Info, true);
+
+    //     return $url;
+    // }
+
+    // --------------------------------------------------------------------
+
     public function disconnect($namespace, $providerClass)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
         $params = array(
-                    'namespace' => $namespace,
                     'provider' => $providerClass
                     );
 
@@ -154,6 +172,7 @@ class OauthService extends BaseApplicationComponent
 
     public function getProviderLibrary($providerClass, $namespace = null , $userToken = false)
     {
+
         Craft::log(__METHOD__, LogLevel::Info, true);
 
         if($namespace == null)
@@ -196,6 +215,7 @@ class OauthService extends BaseApplicationComponent
                 ':provider' => $providerClass,
                 );
         }
+
 
 
         $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
@@ -572,6 +592,41 @@ class OauthService extends BaseApplicationComponent
 
             $criteriaParams = array(
                 ':namespace' => $namespace
+                );
+        }
+
+        $tokens = Oauth_TokenRecord::model()->findAll($criteriaConditions, $criteriaParams);
+
+        return $tokens;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getTokensByProvider($provider, $user = false)
+    {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
+        if($user) {
+            // $userId = craft()->userSession->user->id;
+
+            $userId = $user;
+            
+            $criteriaConditions = '
+                provider=:provider AND
+                userId=:userId
+                ';
+
+            $criteriaParams = array(
+                ':userId' => $userId,
+                ':provider' => $provider,
+                );
+        } else {
+            $criteriaConditions = '
+                provider=:provider
+                ';
+
+            $criteriaParams = array(
+                ':provider' => $provider
                 );
         }
 

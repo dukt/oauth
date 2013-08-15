@@ -293,19 +293,33 @@ class Oauth_PublicController extends BaseController
         // }
 
 
-        $criteriaConditions = '
-            namespace=:namespace AND
-            provider=:provider
-            ';
+        if($namespace) {
+            $criteriaConditions = '
+                provider=:provider
+                AND namespace=:namespace
+                ';
 
-        $criteriaParams = array(
-            ':namespace' => $namespace,
-            ':provider' => $providerClass,
+            $criteriaParams = array(
+                ':provider' => $providerClass,
+                ':namespace' => $namespace
             );
+        } else {
+            $criteriaConditions = '
+                provider=:provider
+                ';
+
+            $criteriaParams = array(
+                ':provider' => $providerClass
+                );
+        }
 
         $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
 
-        $tokenRecord->delete();
+        if($tokenRecord) {
+            $tokenRecord->delete();
+        } else {
+            die('no token');
+        }
 
         Craft::log(__METHOD__." : Redirect : ".$_SERVER['HTTP_REFERER'], LogLevel::Info, true);
 

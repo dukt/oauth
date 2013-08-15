@@ -54,7 +54,7 @@ Set up a user-specific token.
 <a id="api"></a>
 ## Developer API Reference
 
-### craft.oauth.connect(namespace, providerClass, scope = null, userToken = false)
+### craft.oauth.connect(namespace, providerClass, userToken = false, scope = null)
 
 Returns a link for connecting to the provider with given parameters.
 
