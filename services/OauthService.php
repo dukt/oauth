@@ -45,7 +45,7 @@ class OauthService extends BaseApplicationComponent
             $params['scope'] = base64_encode(serialize($scope));
         }
 
-        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/authenticate', $params);
+        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/connect', $params);
 
         Craft::log(__METHOD__." : Authenticate : ".$url, LogLevel::Info, true);
 
@@ -82,7 +82,7 @@ class OauthService extends BaseApplicationComponent
                     );
 
 
-        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/deauthenticate', $params);
+        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/disconnect', $params);
 
         Craft::log(__METHOD__." : Deauthenticate : ".$url, LogLevel::Info, true);
 
@@ -161,7 +161,7 @@ class OauthService extends BaseApplicationComponent
 
         $params = array('provider' => $providerClass);
 
-        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/authenticate', $params);
+        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/connect', $params);
 
         Craft::log(__METHOD__." : Authenticate : ".$url, LogLevel::Info, true);
 
@@ -237,7 +237,7 @@ class OauthService extends BaseApplicationComponent
         $opts = array(
             'id' => $providerRecord->clientId,
             'secret' => $providerRecord->clientSecret,
-            'redirect_url' => \Craft\UrlHelper::getActionUrl('oauth/public/authenticate/', array('provider' => $providerClass))
+            'redirect_url' => \Craft\UrlHelper::getActionUrl('oauth/public/connect/', array('provider' => $providerClass))
         );
 
         $class = "\\Dukt\\Connect\\$providerClass\\Provider";
@@ -708,6 +708,21 @@ class OauthService extends BaseApplicationComponent
         Craft::log(__METHOD__, LogLevel::Info, true);
 
         return $this->serviceRecord->deleteByPk($id);
+    }
+
+    // --------------------------------------------------------------------
+
+    public function deleteTokenById($id)
+    {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
+        $record = Oauth_TokenRecord::model()->findByPk($id);
+
+        if($record) {
+            return $record->delete();
+        }
+
+        return false;
     }
 
     // --------------------------------------------------------------------

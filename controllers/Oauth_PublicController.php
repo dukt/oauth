@@ -10,7 +10,7 @@ class Oauth_PublicController extends BaseController
 
     // --------------------------------------------------------------------
 
-    public function actionAuthenticate()
+    public function actionConnect()
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
@@ -278,7 +278,7 @@ class Oauth_PublicController extends BaseController
 
     // --------------------------------------------------------------------
 
-    public function actionDeauthenticate()
+    public function actionDisconnect()
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
@@ -313,13 +313,13 @@ class Oauth_PublicController extends BaseController
                 );
         }
 
-        $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
+        $tokenRecord = Oauth_TokenRecord::model()->deleteAll($criteriaConditions, $criteriaParams);
 
-        if($tokenRecord) {
-            $tokenRecord->delete();
-        } else {
-            die('no token');
-        }
+        // if($tokenRecord) {
+        //     $tokenRecord->delete();
+        // } else {
+        //     die('no token');
+        // }
 
         Craft::log(__METHOD__." : Redirect : ".$_SERVER['HTTP_REFERER'], LogLevel::Info, true);
 

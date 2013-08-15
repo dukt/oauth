@@ -1,7 +1,7 @@
 {% if elementType == 'User' %}
 		&nbsp;<hr>
 	    {% for provider in craft.oauth.getProviders() %}
-	        {% set account = craft.oauth.getAccount('connect.user', provider) %}
+	        {#% set account = craft.oauth.getAccount('connect.user', provider) %#}
 
 			<h3>{{provider}}</h3>
 
@@ -19,6 +19,7 @@
 			                <th scope="col">{{ "Namespace"|t }}</th>
 			                <th scope="col">{{ "Scope"|t }}</th>
 			                <th scope="col">{{ "Created"|t }}</th>
+			                <th scope="col">{{ "Delete"|t }}</th>
 			                <th></th>
 			            </tr>
 			        </thead>
@@ -32,6 +33,7 @@
 			                        <td>{{token.namespace}}</td>
 			                        <td>-</td>
 			                        <td>{{token.dateCreated}}</td>
+			                        <td><a href="{{actionUrl('oauth/settings/deleteToken', {id:token.id})}}">Delete</a></td>
 			                    </tr>
 			                    {% endif %}
 			            {% endfor %}

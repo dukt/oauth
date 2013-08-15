@@ -58,6 +58,21 @@ class Oauth_SettingsController extends BaseController
 
     // --------------------------------------------------------------------
 
+    public function actionDeleteToken()
+    {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
+        $id = craft()->request->getRequiredParam('id');
+
+        craft()->oauth->deleteTokenById($id);
+
+        craft()->userSession->setNotice(Craft::t('Token deleted.'));
+
+        $this->redirect($_SERVER['HTTP_REFERER']);
+    }
+
+    // --------------------------------------------------------------------
+
     public function actionResetServiceToken()
     {
         Craft::log(__METHOD__, LogLevel::Info, true);

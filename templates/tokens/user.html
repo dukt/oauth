@@ -7,11 +7,12 @@
         <thead>
             <tr>
                 <th scope="col">{{ "User ID"|t }}</th>
-                <th scope="col">{{ "User"|t }}</th>
+                <th scope="col">{{ "User Email"|t }}</th>
                 <th scope="col">{{ "Namespace"|t }}</th>
                 <th scope="col">{{ "Provider"|t }}</th>
                 <th scope="col">{{ "Created"|t }}</th>
                 <th scope="col">{{ "Updated"|t }}</th>
+                <th scope="col">{{ "Delete"|t }}</th>
                 <th></th>
             </tr>
         </thead>
@@ -27,6 +28,7 @@
                         <td>{{token.provider}}</td>
                         <td>{{token.dateCreated}}</td>
                         <td>{{token.dateUpdated}}</td>
+                        <td><a href="{{actionUrl('oauth/settings/deleteToken', {id:token.id})}}">Delete</a></td>
                     </tr>
                     {% endif %}
             {% endfor %}
