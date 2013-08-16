@@ -22,6 +22,7 @@
                         <td>{{token.namespace}}</td>
                         <td>{{token.dateCreated}}</td>
                         <td>{{token.dateUpdated}}</td>
+                        <td><a class="btn small" href="{{actionUrl('oauth/settings/deleteToken', {id:token.id})}}">Delete</a></td>
                     </tr>
                 {% endif %}
 

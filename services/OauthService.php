@@ -27,22 +27,20 @@ class OauthService extends BaseApplicationComponent
 
     public function connect($providerClass, $scope = null, $namespace = null, $userMode = false)
     {
-        return $this->connectUser($providerClass, $scope);
-    }
-
-
-    // --------------------------------------------------------------------
-
-    public function connectUser($providerClass, $scope = null)
-    {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
-        $params = array('provider' => $providerClass, 'userMode' => true);
+        $params = array('provider' => $providerClass);
 
         if($scope) {
-            $scope = base64_encode(serialize($scope));
+            $params['scope'] = base64_encode(serialize($scope));
+        }
 
-            $params['scope'] = $scope;
+        if($namespace) {
+            $params['namespace'] = $namespace;
+        }
+
+        if($userMode === true) {
+            $params['userMode'] = $userMode;
         }
 
         $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/connect', $params);
@@ -333,6 +331,9 @@ class OauthService extends BaseApplicationComponent
         Craft::log(__METHOD__, LogLevel::Info, true);
 
         $provider = $this->getProviderLibrary($providerClass, $namespace, $userMode);
+
+        // var_dump($providerClass, $namespace, $userMode);
+        // die();
 
         if(!$provider) {
             Craft::log(__METHOD__." : Provider null ", LogLevel::Info, true);
@@ -720,9 +721,6 @@ class OauthService extends BaseApplicationComponent
 
         $userId = craft()->userSession->user->id;
 
-        $criteriaConditions = '';
-        $criteriaParams = array();
-
         $criteriaConditions = '
             provider=:provider AND userId=:userId
             ';
@@ -730,6 +728,27 @@ class OauthService extends BaseApplicationComponent
         $criteriaParams = array(
             ':provider' => $providerClass,
             ':userId' => $userId
+            );
+
+        $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
+
+        return $tokenRecord;
+    }
+
+
+    // --------------------------------------------------------------------
+
+    public function getSystemToken($providerClass, $namespace)
+    {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
+        $criteriaConditions = '
+            provider=:provider AND namespace=:namespace
+            ';
+
+        $criteriaParams = array(
+            ':provider' => $providerClass,
+            ':namespace' => $namespace
             );
 
         $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);

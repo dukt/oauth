@@ -93,9 +93,9 @@ class OauthVariable
 
     // --------------------------------------------------------------------
 
-    public function getAccount($namespace, $providerClass)
+    public function getAccount($providerClass, $namespace = null, $userMode = false)
     {
-        return craft()->oauth->getAccount($namespace, $providerClass);
+        return craft()->oauth->getAccount($providerClass, $namespace, $userMode);
     }
 
     // --------------------------------------------------------------------

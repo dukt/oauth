@@ -34,8 +34,10 @@ class Oauth_PublicController extends BaseController
         // connect user or system
 
         if($userMode) {
+            // die('user');
             $this->actionConnectUser();
         } else {
+            // die('not user');
             $this->actionConnectSystem();
         }
     }
@@ -65,7 +67,7 @@ class Oauth_PublicController extends BaseController
 
             // scopeToken
 
-            $scopeToken = $this->tokenScope($providerClass);
+            $scopeToken = $this->userTokenScope($providerClass);
 
 
             // is scope enough ? 
@@ -160,9 +162,129 @@ class Oauth_PublicController extends BaseController
 
     public function actionConnectSystem()
     {
-        // remove systemToken records for this namespace and provider
 
-        // connect in order to create a new systemToken record for this namespace and provider
+        // namespace
+
+        $namespace = craft()->httpSession->get('oauth.namespace');
+
+        if(!$namespace) {
+
+            $namespace = craft()->request->getParam('namespace');
+
+            craft()->httpSession->add('oauth.namespace', $namespace);
+        }
+
+
+        // get params
+
+        $providerClass = craft()->request->getParam('provider');
+
+        $scope = craft()->httpSession->get('oauth.scope');
+
+
+        if(!$scope) {
+
+            
+
+            // scopeParam
+
+            $scopeParam = craft()->request->getParam('scope');
+            $scopeParam = unserialize(base64_decode($scopeParam));
+
+
+            // scopeToken
+
+            $scopeToken = $this->systemTokenScope($providerClass, $namespace);
+
+
+            // is scope enough ? 
+
+            $scopeEnough = craft()->oauth->isScopeEnough($scopeParam, $scopeToken);
+
+
+            // scope is not enough, connect user with new scope
+
+            if(!$scopeEnough) {
+                $scope = craft()->oauth->mixScopes($scopeParam, $scopeToken);
+
+                craft()->httpSession->add('oauth.scope', $scope);
+            }
+        }
+        
+        $this->_actionConnectSystem($providerClass);
+    }
+
+    // --------------------------------------------------------------------
+
+    private function _actionConnectSystem($providerClass)
+    {
+        // get session vars
+
+        $namespace = craft()->httpSession->get('oauth.namespace');
+        $scope = craft()->httpSession->get('oauth.scope');
+        $referer = craft()->httpSession->get('oauth.referer');
+
+
+        // initProvider
+
+        $provider = $this->initProvider($providerClass, $scope);
+
+
+        // remove httpSession variables
+
+        craft()->httpSession->remove('oauth.userMode');
+        craft()->httpSession->remove('oauth.referer');
+        craft()->httpSession->remove('oauth.scope');
+        craft()->httpSession->remove('oauth.namespace');
+        
+        if($provider) {
+
+            // success : save userToken record
+
+            $token = $provider->token();
+            $token = base64_encode(serialize($token));
+
+
+            // user provider default scope is none given
+
+            if(!$scope) {
+                $scope = $provider->scope;
+            }
+
+
+            $tokenRecord = craft()->oauth->getSystemToken($providerClass, $namespace);
+
+            // var_dump($tokenRecord, $providerClass, $namespace);
+
+            // die();
+
+            if(!$tokenRecord) {
+                $tokenRecord = new Oauth_TokenRecord();
+                $tokenRecord->provider = $providerClass;
+                $tokenRecord->namespace = $namespace;
+            }
+
+            $tokenRecord->token = $token;
+            $tokenRecord->scope = $scope;
+
+            // var_dump($tokenRecord->userId, $tokenRecord->provider, $tokenRecord->token, $tokenRecord->scope);
+
+            if($tokenRecord->save()) {
+                Craft::log(__METHOD__." : userToken Saved", LogLevel::Info, true);
+            } else {
+                Craft::log(__METHOD__." : Could not save userToken", LogLevel::Error);
+            }
+        } else {
+            die('fail');
+            // fail
+
+            Craft::log(__METHOD__." : Provider process failed", LogLevel::Error);
+        }
+
+        
+        // redirect
+
+        $this->_redirect($referer);
     }
 
     // --------------------------------------------------------------------
@@ -175,13 +297,13 @@ class Oauth_PublicController extends BaseController
 
         $providerClass = craft()->request->getParam('provider');
         $namespace = craft()->request->getParam('namespace');
+        $userMode = (bool) craft()->request->getParam('userMode');
 
 
         // criteria conditions & params
 
         $criteriaConditions = '
             provider=:provider 
-            AND userId is not null
             ';
 
         $criteriaParams = array(
@@ -191,6 +313,11 @@ class Oauth_PublicController extends BaseController
         if($namespace) {
             $criteriaConditions .= ' AND namespace=:namespace';
             $criteriaParams[':namespace']  = $namespace;
+        }
+
+        if($userMode) {
+            $criteriaConditions .= ' AND userId=:userId';
+            $criteriaParams[':userId']  = craft()->userSession->user->id;
         }
 
 
@@ -324,7 +451,33 @@ class Oauth_PublicController extends BaseController
 
     // --------------------------------------------------------------------
 
-    private function tokenScope($providerClass)
+    private function systemTokenRecord($providerClass, $namespace)
+    {
+        $tokenRecord = Oauth_TokenRecord::model()->find(
+
+            // conditions
+
+            'provider=:provider AND namespace=:namespace',
+
+            
+            // params
+
+            array(
+                ':provider' => $providerClass,
+                ':namespace' => $namespace,
+            )
+        );
+
+        if($tokenRecord) {
+            return $tokenRecord;
+        }
+
+        return null;
+    }
+
+    // --------------------------------------------------------------------
+
+    private function userTokenScope($providerClass)
     {
         // provider record
 
@@ -335,6 +488,31 @@ class Oauth_PublicController extends BaseController
             // user token record
 
             $tokenRecord = $this->userTokenRecord($providerClass);
+
+            if($tokenRecord) {
+
+                $tokenScope = @unserialize(base64_decode($tokenRecord->scope));
+
+                return $tokenScope;
+            }
+        }
+
+        return null;
+    }
+
+    // --------------------------------------------------------------------
+
+    private function systemTokenScope($providerClass, $namespace)
+    {
+        // provider record
+
+        $providerRecord = $this->providerRecord($providerClass);
+
+        if($providerRecord) {
+
+            // user token record
+
+            $tokenRecord = $this->systemTokenRecord($providerClass, $namespace);
 
             if($tokenRecord) {
 
