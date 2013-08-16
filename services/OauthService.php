@@ -140,46 +140,109 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function providerIsConnected($namespace, $providerClass, $user = NULL)
+    public function providerIsConnected($providerClass, $scope = null, $namespace = null, $userMode = false)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
-        if($user) {
+        $criteriaConditions = 'provider=:provider';
+        $criteriaParams = array(':provider' => $providerClass);
+
+        if($userMode) {
             $userId = craft()->userSession->user->id;
             
-            $criteriaConditions = '
-                namespace=:namespace AND
-                provider=:provider AND
-                userId=:userId
-                ';
+            $criteriaConditions .= ' AND userId=:userId';
+            $criteriaParams[':userId'] = $userId;
 
-            $criteriaParams = array(
-                ':namespace' => $namespace,
-                ':userId' => $userId,
-                ':provider' => $providerClass,
-                );
         } else {
-            $criteriaConditions = '
-                namespace=:namespace AND
-                provider=:provider
-                ';
 
-            $criteriaParams = array(
-                ':namespace' => $namespace,
-                ':provider' => $providerClass,
-                );
+            if($namespace) {
+                $criteriaConditions .= ' AND namespace=:namespace';
+                $criteriaParams[':namespace'] = $namespace;
+            }
         }
 
         $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
 
         if($tokenRecord) {
-            Craft::log(__METHOD__." : Yes", LogLevel::Info, true);
+            Craft::log(__METHOD__." : Token Record found", LogLevel::Info, true);
 
-            return true;
+            // check scope (isScopeEnough)
+
+            return $this->isScopeEnough($scope, $tokenRecord->scope);
         }
 
-        Craft::log(__METHOD__." : No", LogLevel::Info, true);
+        Craft::log(__METHOD__." : Token Record not found", LogLevel::Info, true);
+
         return false;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function isScopeEnough($scope1, $scope2)
+    {
+        $scopeEnough = false;
+
+        if(is_array($scope1) && is_array($scope2)) {
+            
+            $scopeEnough = true;
+
+            foreach($scope1 as $s1) {
+
+                $scopeFound = false;
+
+                foreach($scope2 as $s2) {
+                    if($s2 == $s1) {
+                        $scopeFound = true;
+                    }
+                }
+
+                if(!$scopeFound) {
+                    $scopeEnough = false;
+                    break;
+                }
+            }
+        }
+
+        return $scopeEnough;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function mixScopes($scope1, $scope2)
+    {
+        $scope = array();
+
+
+        if(is_array($scope1)) {
+
+            foreach($scope1 as $s1) {
+                array_push($scope, $s1);
+            }
+        }
+
+        if(is_array($scope2)) {
+
+            foreach($scope2 as $s1) {
+
+                $scopeFound = false;
+
+                foreach($scope as $s2) {
+                    if($s2 == $s1) {
+                        $scopeFound = true;
+                    }
+                }
+
+                if(!$scopeFound) {
+                    array_push($scope, $s1);
+                }
+            }
+        }
+
+        if(!empty($scope)) {
+            return $scope;
+        }
+
+        return null;
     }
 
     // --------------------------------------------------------------------
@@ -199,40 +262,37 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function getProviderLibrary($providerClass, $namespace = null , $userToken = false)
+    public function getProviderLibrary($providerClass, $namespace = null, $userMode = false)
     {
 
         Craft::log(__METHOD__, LogLevel::Info, true);
 
-        if($namespace == null)
-        {
-            Craft::log(__METHOD__." : Namespace null : Dummy provider", LogLevel::Info, true);
-            $class = "\\Dukt\\Connect\\$providerClass\\Provider";
-            $opts = array('id' => 'x', 'secret' => 'x', 'redirect_url' => 'x');
-            $provider = new $class($opts);
-            return $provider;
-        }
+        // if($namespace == null)
+        // {
+        //     Craft::log(__METHOD__." : Namespace null : Dummy provider", LogLevel::Info, true);
+        //     $class = "\\Dukt\\Connect\\$providerClass\\Provider";
+        //     $opts = array('id' => 'x', 'secret' => 'x', 'redirect_url' => 'x');
+        //     $provider = new $class($opts);
+        //     return $provider;
+        // }
 
         $criteriaConditions = 'provider=:provider';
         $criteriaParams = array(
                 ':provider' => $providerClass
             );
 
-        if($namespace == '*') {
-            $criteriaConditions .= ' AND namespace is not null';
-        } else {
-            $criteriaConditions .= ' AND namespace=:namespace';
-            $criteriaParams[':namespace'] = $namespace;
+        if($namespace) {
+            if($namespace == '*') {
+                $criteriaConditions .= ' AND namespace is not null';
+            } else {
+                $criteriaConditions .= ' AND namespace=:namespace';
+                $criteriaParams[':namespace'] = $namespace;
+            }
         }
         
-
-        if($userToken) {
-            $user = craft()->userSession->user;
-
-            if($user) {
-                $criteriaConditions .= ' AND userId=:userId';
-                $criteriaParams[':userId'] = $user->id;
-            }
+        if($userMode) {
+            $criteriaConditions .= ' AND userId=:userId';
+            $criteriaParams[':userId'] = craft()->userSession->user->id;
         }
 
         $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
@@ -268,11 +328,11 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function getAccount($namespace, $providerClass, $isUserToken = false)
+    public function getAccount($providerClass, $namespace = null, $userMode = false)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
-        $provider = $this->getProviderLibrary($providerClass, $namespace, $isUserToken);
+        $provider = $this->getProviderLibrary($providerClass, $namespace, $userMode);
 
         if(!$provider) {
             Craft::log(__METHOD__." : Provider null ", LogLevel::Info, true);

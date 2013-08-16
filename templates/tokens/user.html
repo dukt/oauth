@@ -3,13 +3,13 @@
 
 {% set content %}
 
-    <table class="data collapsible">
+    <table class="data">
         <thead>
             <tr>
+                <th scope="col">{{ "Provider"|t }}</th>
                 <th scope="col">{{ "User ID"|t }}</th>
                 <th scope="col">{{ "User Email"|t }}</th>
-                <th scope="col">{{ "Namespace"|t }}</th>
-                <th scope="col">{{ "Provider"|t }}</th>
+                <th scope="col">{{ "Scope"|t }}</th>
                 <th scope="col">{{ "Created"|t }}</th>
                 <th scope="col">{{ "Updated"|t }}</th>
                 <th scope="col">{{ "Delete"|t }}</th>
@@ -22,13 +22,19 @@
             {% for token in tokens %}
                 {% if token.user.email is defined %}
                     <tr>
+                        <td>{{token.provider}}</td>
                         <td>{{token.user.id}}</td>
                         <td>{{token.user.email}}</td>
-                        <td>{{token.namespace}}</td>
-                        <td>{{token.provider}}</td>
+                        <td>
+                            {% if token.scope is iterable %}
+                                {% for scopeRow in token.scope %}
+                                    {{scopeRow}} <br />
+                                {% endfor %}
+                            {% endif %}
+                        </td>
                         <td>{{token.dateCreated}}</td>
                         <td>{{token.dateUpdated}}</td>
-                        <td><a href="{{actionUrl('oauth/settings/deleteToken', {id:token.id})}}">Delete</a></td>
+                        <td><a class="btn small" href="{{actionUrl('oauth/settings/deleteToken', {id:token.id})}}">Delete</a></td>
                     </tr>
                     {% endif %}
             {% endfor %}

@@ -27,7 +27,6 @@ class Oauth_PublicController extends BaseController
         // referer
 
         if(!craft()->httpSession->get('oauth.referer')) {
-
             craft()->httpSession->add('oauth.referer', $_SERVER['HTTP_REFERER']);
         }
 
@@ -49,27 +48,41 @@ class Oauth_PublicController extends BaseController
 
         $providerClass = craft()->request->getParam('provider');
 
-        $scopeParam = craft()->request->getParam('scope');
-        $scopeParam = @unserialize(base64_decode($scopeParam));
+        $scope = craft()->httpSession->get('oauth.scope');
+
+        var_dump($scope);
 
 
-        // scopeToken
+        if(!$scope) {
 
-        $scopeToken = $this->tokenScope($providerClass);
+            
+
+            // scopeParam
+
+            $scopeParam = craft()->request->getParam('scope');
+            $scopeParam = unserialize(base64_decode($scopeParam));
 
 
-        // is scope enough ? 
+            // scopeToken
 
-        $scopeEnough = $this->isScopeEnough($scopeParam, $scopeToken);
+            $scopeToken = $this->tokenScope($providerClass);
 
 
-        // scope is not enough, connect user with new scope
+            // is scope enough ? 
 
-        if(!$scopeEnough) {
-            $scope = $this->mixScopes($scopeParam, $scopeToken);
+            $scopeEnough = craft()->oauth->isScopeEnough($scopeParam, $scopeToken);
 
-            $this->_actionConnectUser($providerClass, $scope);
+
+            // scope is not enough, connect user with new scope
+
+            if(!$scopeEnough) {
+                $scope = craft()->oauth->mixScopes($scopeParam, $scopeToken);
+
+                craft()->httpSession->add('oauth.scope', $scope);
+            }
         }
+        
+        $this->_actionConnectUser($providerClass);
     }
 
     // --------------------------------------------------------------------
@@ -80,23 +93,37 @@ class Oauth_PublicController extends BaseController
 
         $provider = $this->initProvider($providerClass, $scope);
 
+
         //referer
 
         $referer = craft()->httpSession->get('oauth.referer');
+
+
+        //scope
+
+        $scope = craft()->httpSession->get('oauth.scope');
+        //$scope = unserialize(base64_decode($scope));
 
         
         // remove httpSession variables
 
         craft()->httpSession->remove('oauth.userMode');
         craft()->httpSession->remove('oauth.referer');
+        craft()->httpSession->remove('oauth.scope');
         
         if($provider) {
 
             // success : save userToken record
 
             $token = $provider->token();
-
             $token = base64_encode(serialize($token));
+
+            // var_dump($scope);
+            // die();
+            if(!$scope) {
+                $scope = $provider->scope;
+            }
+
 
             $tokenRecord = craft()->oauth->getUserToken($providerClass);
 
@@ -107,6 +134,9 @@ class Oauth_PublicController extends BaseController
             }
 
             $tokenRecord->token = $token;
+            $tokenRecord->scope = $scope;
+
+            // var_dump($tokenRecord->userId, $tokenRecord->provider, $tokenRecord->token, $tokenRecord->scope);
 
             if($tokenRecord->save()) {
                 Craft::log(__METHOD__." : userToken Saved", LogLevel::Info, true);
@@ -240,75 +270,6 @@ class Oauth_PublicController extends BaseController
         }
 
         return $provider;
-    }
-
-    // --------------------------------------------------------------------
-
-    private function isScopeEnough($scope1, $scope2)
-    {
-        $scopeEnough = false;
-
-        if(is_array($scope1) && is_array($scope2)) {
-            
-            $scopeEnough = true;
-
-            foreach($scope1 as $s1) {
-
-                $scopeFound = false;
-
-                foreach($scope2 as $s2) {
-                    if($s2 == $s1) {
-                        $scopeFound = true;
-                    }
-                }
-
-                if(!$scopeFound) {
-                    $scopeEnough = false;
-                    break;
-                }
-            }
-        }
-
-        return $scopeEnough;
-    }
-
-    // --------------------------------------------------------------------
-
-    private function mixScopes($scope1, $scope2)
-    {
-        $scope = array();
-
-
-        if(is_array($scope1)) {
-
-            foreach($scope1 as $s1) {
-                array_push($scope, $s1);
-            }
-        }
-
-        if(is_array($scope2)) {
-
-            foreach($scope2 as $s1) {
-
-                $scopeFound = false;
-
-                foreach($scope as $s2) {
-                    if($s2 == $s1) {
-                        $scopeFound = true;
-                    }
-                }
-
-                if(!$scopeFound) {
-                    array_push($scope, $s1);
-                }
-            }
-        }
-
-        if(!empty($scope)) {
-            return $scope;
-        }
-
-        return null;
     }
 
     // --------------------------------------------------------------------

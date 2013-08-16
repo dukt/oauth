@@ -1,53 +1,44 @@
 {% if elementType == 'User' %}
-		&nbsp;<hr>
-	    {% for provider in craft.oauth.getProviders() %}
-	        {#% set account = craft.oauth.getAccount('connect.user', provider) %#}
+		
+	    <table class="data collapsible">
+	        <thead>
+	            <tr>
+	                <th scope="col">{{ "Provider"|t }}</th>
+	                <th scope="col">{{ "Account"|t }}</th>
+	                <th></th>
+	            </tr>
+	        </thead>
+	        <tbody>
 
-			<h3>{{provider}}</h3>
+			    {% for provider in craft.oauth.getProviders() %}
+			        {#% set account = craft.oauth.getAccount('connect.user', provider) %#}
 
-	        {#% if account %}
-				<p>{{account.email}}</p>
-	        {% endif %#}
+			        {#% if account %}
+						<p>{{account.email}}</p>
+			        {% endif %#}
 
-			{% set tokens = craft.oauth.getTokensByProvider(provider, element.id) %}
+			        <tr>
+			        	<td>{{provider}}</td>
+			        	<td>-</td>
+			        	<td>
+							{% set tokens = craft.oauth.getTokensByProvider(provider, element.id) %}
 
-			{% if tokens|length > 0 %}
-			    <table class="data collapsible">
-			        <thead>
-			            <tr>
-			                <th scope="col">{{ "ID"|t }}</th>
-			                <th scope="col">{{ "Namespace"|t }}</th>
-			                <th scope="col">{{ "Scope"|t }}</th>
-			                <th scope="col">{{ "Created"|t }}</th>
-			                <th scope="col">{{ "Delete"|t }}</th>
-			                <th></th>
-			            </tr>
-			        </thead>
-			        <tbody>
-			            
+							{% if tokens|length > 0 %}
+								<div class="right"><a href="{{craft.oauth.disconnect('*', provider)}}" class="btn small">Disconnect</a></div>
+							{% else %}
+								<div class="right"><a href="{{ craft.oauth.connect(provider, null, true) }}" class="btn small">Connect</a></div>
+						    {% endif %}
+			        	</td>
+			        </tr>
 
-			            {% for token in tokens %}
-			                {% if token.user.email is defined %}
-			                    <tr>
-			                        <td>#{{token.id}}</td>
-			                        <td>{{token.namespace}}</td>
-			                        <td>-</td>
-			                        <td>{{token.dateCreated}}</td>
-			                        <td><a href="{{actionUrl('oauth/settings/deleteToken', {id:token.id})}}">Delete</a></td>
-			                    </tr>
-			                    {% endif %}
-			            {% endfor %}
-			        </tbody>
-			    </table>
+					
 
-				<p><a href="{{craft.oauth.disconnect('*', provider)}}" class="btn small">Disconnect</a></p>
+			    {% endfor %}
 
-			{% else %}
-				<p><a href="{{ craft.oauth.connect(provider, null, true) }}" class="btn small">Connect</a></p>
-		    {% endif %}
 
-		    <hr>
-	    {% endfor %}
+	        </tbody>
+	    </table>
+
 {% else %}
     This field can only be assigned to a User
 {% endif %}
