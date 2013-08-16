@@ -43,7 +43,7 @@
 				<p><a href="{{craft.oauth.disconnect('*', provider)}}" class="btn small">Disconnect</a></p>
 
 			{% else %}
-				<p><a href="{{ craft.oauth.connect('connect.user', provider, true) }}" class="btn small">Connect</a></p>
+				<p><a href="{{ craft.oauth.connect(provider, null, true) }}" class="btn small">Connect</a></p>
 		    {% endif %}
 
 		    <hr>

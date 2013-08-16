@@ -25,7 +25,36 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function connect($namespace, $providerClass, $userToken = false, $scope = null)
+    public function connect($providerClass, $scope = null, $namespace = null, $userMode = false)
+    {
+        return $this->connectUser($providerClass, $scope);
+    }
+
+
+    // --------------------------------------------------------------------
+
+    public function connectUser($providerClass, $scope = null)
+    {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
+        $params = array('provider' => $providerClass, 'userMode' => true);
+
+        if($scope) {
+            $scope = base64_encode(serialize($scope));
+
+            $params['scope'] = $scope;
+        }
+
+        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/connect', $params);
+
+        Craft::log(__METHOD__." : Authenticate : ".$url, LogLevel::Info, true);
+
+        return $url;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function connectDeprecated($namespace, $providerClass, $userToken = false, $scope = null)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
@@ -51,7 +80,7 @@ class OauthService extends BaseApplicationComponent
 
         return $url;
     }
-
+    
     // --------------------------------------------------------------------
 
     // public function disconnect($namespace, $providerClass)
@@ -184,39 +213,27 @@ class OauthService extends BaseApplicationComponent
             return $provider;
         }
 
-        $userId = false;
+        $criteriaConditions = 'provider=:provider';
+        $criteriaParams = array(
+                ':provider' => $providerClass
+            );
+
+        if($namespace == '*') {
+            $criteriaConditions .= ' AND namespace is not null';
+        } else {
+            $criteriaConditions .= ' AND namespace=:namespace';
+            $criteriaParams[':namespace'] = $namespace;
+        }
+        
 
         if($userToken) {
             $user = craft()->userSession->user;
 
             if($user) {
-                $userId = $user->id;
+                $criteriaConditions .= ' AND userId=:userId';
+                $criteriaParams[':userId'] = $user->id;
             }
-
-            $criteriaConditions = '
-                namespace=:namespace AND
-                provider=:provider AND
-                userId=:userId
-                ';
-
-            $criteriaParams = array(
-                ':namespace' => $namespace,
-                ':userId' => $userId,
-                ':provider' => $providerClass,
-                );
-        } else {
-            $criteriaConditions = '
-                namespace=:namespace AND
-                provider=:provider
-                ';
-
-            $criteriaParams = array(
-                ':namespace' => $namespace,
-                ':provider' => $providerClass,
-                );
         }
-
-
 
         $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
 
@@ -634,6 +651,33 @@ class OauthService extends BaseApplicationComponent
 
         return $tokens;
     }
+
+    // --------------------------------------------------------------------
+
+    public function getUserToken($providerClass)
+    {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
+        $userId = craft()->userSession->user->id;
+
+        $criteriaConditions = '';
+        $criteriaParams = array();
+
+        $criteriaConditions = '
+            provider=:provider AND userId=:userId
+            ';
+
+        $criteriaParams = array(
+            ':provider' => $providerClass,
+            ':userId' => $userId
+            );
+
+        $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
+
+        return $tokenRecord;
+    }
+
+    // --------------------------------------------------------------------
 
     public function getToken($encodedToken)
     {

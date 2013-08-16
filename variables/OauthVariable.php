@@ -12,9 +12,13 @@ class OauthVariable
 
     // --------------------------------------------------------------------
 
-    public function connect($namespace, $providerClass, $scope = null, $userToken = false)
+    // public function connect($namespace, $providerClass, $scope = null, $userToken = false)
+    // {
+    //     return craft()->oauth->connect($namespace, $providerClass, $scope, $userToken);
+    // }
+    public function connect($providerClass, $scope = null, $namespace = null, $userMode = false)
     {
-        return craft()->oauth->connect($namespace, $providerClass, $scope, $userToken);
+        return craft()->oauth->connect($providerClass, $scope, $namespace, $userMode);
     }
 
     // --------------------------------------------------------------------

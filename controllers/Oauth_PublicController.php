@@ -12,62 +12,209 @@ class Oauth_PublicController extends BaseController
 
     public function actionConnect()
     {
+        // userMode
+
+        $userMode = craft()->httpSession->get('oauth.userMode');
+
+        if(!$userMode) {
+
+            $userMode = (bool) craft()->request->getParam('userMode');
+
+            craft()->httpSession->add('oauth.userMode', $userMode);
+        }
+
+
+        // referer
+
+        if(!craft()->httpSession->get('oauth.referer')) {
+
+            craft()->httpSession->add('oauth.referer', $_SERVER['HTTP_REFERER']);
+        }
+
+
+        // connect user or system
+
+        if($userMode) {
+            $this->actionConnectUser();
+        } else {
+            $this->actionConnectSystem();
+        }
+    }
+
+    // --------------------------------------------------------------------
+
+    public function actionConnectUser()
+    {
+        // get params
+
+        $providerClass = craft()->request->getParam('provider');
+
+        $scopeParam = craft()->request->getParam('scope');
+        $scopeParam = @unserialize(base64_decode($scopeParam));
+
+
+        // scopeToken
+
+        $scopeToken = $this->tokenScope($providerClass);
+
+
+        // is scope enough ? 
+
+        $scopeEnough = $this->isScopeEnough($scopeParam, $scopeToken);
+
+
+        // scope is not enough, connect user with new scope
+
+        if(!$scopeEnough) {
+            $scope = $this->mixScopes($scopeParam, $scopeToken);
+
+            $this->_actionConnectUser($providerClass, $scope);
+        }
+    }
+
+    // --------------------------------------------------------------------
+
+    private function _actionConnectUser($providerClass, $scope = null)
+    {
+        // initProvider
+
+        $provider = $this->initProvider($providerClass, $scope);
+
+        //referer
+
+        $referer = craft()->httpSession->get('oauth.referer');
+
+        
+        // remove httpSession variables
+
+        craft()->httpSession->remove('oauth.userMode');
+        craft()->httpSession->remove('oauth.referer');
+        
+        if($provider) {
+
+            // success : save userToken record
+
+            $token = $provider->token();
+
+            $token = base64_encode(serialize($token));
+
+            $tokenRecord = craft()->oauth->getUserToken($providerClass);
+
+            if(!$tokenRecord) {
+                $tokenRecord = new Oauth_TokenRecord();
+                $tokenRecord->userId = craft()->userSession->user->id;
+                $tokenRecord->provider = $providerClass;
+            }
+
+            $tokenRecord->token = $token;
+
+            if($tokenRecord->save()) {
+                Craft::log(__METHOD__." : userToken Saved", LogLevel::Info, true);
+            } else {
+                Craft::log(__METHOD__." : Could not save userToken", LogLevel::Error);
+            }
+        } else {
+            die('fail');
+            // fail
+
+            Craft::log(__METHOD__." : Provider process failed", LogLevel::Error);
+        }
+
+        
+        // redirect
+
+        $this->_redirect($referer);
+    }
+
+    // --------------------------------------------------------------------
+
+    public function actionConnectSystem()
+    {
+        // remove systemToken records for this namespace and provider
+
+        // connect in order to create a new systemToken record for this namespace and provider
+    }
+
+    // --------------------------------------------------------------------
+
+    public function actionDisconnect()
+    {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
-        $className = craft()->request->getParam('provider');
+        // get request params
+
+        $providerClass = craft()->request->getParam('provider');
         $namespace = craft()->request->getParam('namespace');
 
-        $userToken = craft()->httpSession->get('oauthUserToken');
 
-        if(!$userToken) {
-            $userToken = (bool) craft()->request->getParam('userToken');
-            craft()->httpSession->add('oauthUserToken', $userToken);
-        }
+        // criteria conditions & params
 
-        $scope = craft()->request->getParam('scope');
-        $scope = @unserialize(base64_decode($scope));
+        $criteriaConditions = '
+            provider=:provider 
+            AND userId is not null
+            ';
 
-        $referer = craft()->httpSession->get('oauthReferer');
-
-        if(!$referer && isset($_SERVER['HTTP_REFERER'])) {
-            $referer = $_SERVER['HTTP_REFERER'];
-            craft()->httpSession->add('oauthReferer', $referer);
-        }
+        $criteriaParams = array(
+            ':provider' => $providerClass
+            );
 
         if($namespace) {
-            craft()->httpSession->add('oauthNamespace', $namespace);
+            $criteriaConditions .= ' AND namespace=:namespace';
+            $criteriaParams[':namespace']  = $namespace;
         }
 
-        $serviceRecord = Oauth_ProviderRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $className));
 
-        if(!$serviceRecord) {
-            Craft::log(__METHOD__." : Provider record not found", LogLevel::Error);
+        // delete all matching records
 
-            Craft::log(__METHOD__." : Referer : ".$referer, LogLevel::Info, true);
+        Oauth_TokenRecord::model()->deleteAll($criteriaConditions, $criteriaParams);
 
-            if(isset($_SERVER['HTTP_REFERER'])) {
-                $referer = $_SERVER['HTTP_REFERER'];
-            }
-            
-            $this->redirect($referer);
-        }
 
-        $className = $serviceRecord->providerClass;
+        // redirect
+
+        $this->_redirect($_SERVER['HTTP_REFERER']);
+    }
+
+    // --------------------------------------------------------------------
+    // --------------------------------------------------------------------
+    // --------------------------------------------------------------------
+
+    private function initProvider($providerClass, $scope = null)
+    {
+        // providerRecord
+
+        $providerRecord = $this->providerRecord($providerClass);
+
+
+        // callbackUrl
+
+        $params = array('provider' => $providerClass);
+
+        $callbackUrl = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/connect', $params);
+
+
+        // define provider options (id, secret, redirect_url, scope)
 
         $opts = array(
-            'id' => $serviceRecord->clientId,
-            'secret' => $serviceRecord->clientSecret,
-            'redirect_url' => craft()->oauth->providerCallbackUrl($className),
+            'id' => $providerRecord->clientId,
+            'secret' => $providerRecord->clientSecret,
+            'redirect_url' => $callbackUrl
         );
 
-        if($scope) {
-            $opts['scope'] = $scope;
+        if(is_array($scope)) {
+            if(count($scope) > 0) {
+                $opts['scope'] = $scope;
+            }
         }
 
-        $class = "\\Dukt\\Connect\\$className\\Provider";
+        $class = "\\Dukt\\Connect\\$providerRecord->providerClass\\Provider";
 
+
+        // instantiate provider object
 
         $provider = new $class($opts);
+
+
+        // connect provider
 
         try {
             Craft::log(__METHOD__." : Provider processing", LogLevel::Info, true);
@@ -83,247 +230,169 @@ class Oauth_PublicController extends BaseController
                 exit;
 
             }, function() {
-
                 return unserialize(base64_decode($_SESSION['token']));
             });
         } catch(\Exception $e) {
 
             Craft::log(__METHOD__." : Provider process failed : ".$e->getMessage(), LogLevel::Error);
 
-            Craft::log(__METHOD__." : Referer : ".$referer, LogLevel::Info, true);
-
-            $this->redirect($referer);
+            $this->_redirect(craft()->httpSession->get('oauthReferer'));
         }
 
-
-        $namespace = craft()->httpSession->get('oauthNamespace');
-
-        craft()->httpSession->remove('oauthNamespace');
-
-
-        $token = $provider->token();
-
-        $token = base64_encode(serialize($token));
-
-        craft()->httpSession->add('oauthToken.'.$className, $token);
-
-
-
-        // oauth the user
-
-        $tokenArray = array();
-
-        $tokenArray['namespace'] = $namespace;
-        $tokenArray['provider'] = $className;
-
-        $tokenArray['token'] = $token;
-
-        $userToken = craft()->httpSession->get('oauthUserToken');
-        craft()->httpSession->remove('oauthUserToken');
-
-        if($userToken === true) {
-
-
-            Craft::log(__METHOD__."Token Type : User", LogLevel::Info, true);
-
-            //die('3');
-            try {
-                $account = $provider->getAccount();
-            } catch (\Exception $e) {
-
-                $referer = craft()->httpSession->get('oauthReferer');
-                craft()->httpSession->remove('oauthReferer');
-
-                // var_dump($referer);
-                // die();
-
-                Craft::log(__METHOD__." : Could not get account, so we redirect.", LogLevel::Error);
-                Craft::log(__METHOD__." : Redirect : ".$referer, LogLevel::Info, true);
-
-                $this->redirect($referer);
-
-            }
-            var_dump($account);
-
-            if(isset($account->mapping)) {
-                $tokenArray['userMapping'] = $account->mapping;
-            }
-
-            //die('4');
-
-            $user = null;
-            $userId =  craft()->userSession->id;
-
-            // use the current user if possible
-
-            if($userId) {
-                $user = craft()->users->getUserById($userId);
-            }
-
-            // otherwise check if we have a matching email
-
-            if(!$user) {
-                $user = craft()->users->getUserByUsernameOrEmail($account->email);
-            }
-
-
-            // check with mapping
-
-            if(!$user && isset($account->mapping)) {
-
-                $criteriaConditions = '
-                    namespace=:namespace AND
-                    provider=:provider AND
-                    userMapping=:userMapping
-                    ';
-
-                $criteriaParams = array(
-                    ':namespace' => $tokenArray['namespace'],
-                    ':provider' => $tokenArray['provider'],
-                    ':userMapping' => $tokenArray['userMapping'],
-                    );
-
-
-                $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
-
-                if($tokenRecord) {
-                    $userId = $tokenRecord->userId;
-                    $user = craft()->users->getUserById($userId);
-                }
-            }
-
-            // the account email doesn't match any user, create one
-
-            if(!$user) {
-                //die('1');
-
-                $newUser = new UserModel();
-                $newUser->username = $account->email;
-                $newUser->email = $account->email;
-
-                craft()->users->saveUser($newUser);
-
-                $user = craft()->users->getUserByUsernameOrEmail($account->email);
-            }
-
-            
-            //die('2');
-            $tokenArray['userId'] = $user->id;
-
-            $criteriaConditions = '
-                namespace=:namespace AND
-                provider=:provider AND
-                userId=:userId
-                ';
-
-            $criteriaParams = array(
-                ':namespace' => $tokenArray['namespace'],
-                ':provider' => $tokenArray['provider'],
-                ':userId' => $tokenArray['userId'],
-                );
-        } else {
-
-            Craft::log(__METHOD__."Token Type : System", LogLevel::Info, true);
-
-            $criteriaConditions = '
-                namespace=:namespace AND
-                provider=:provider
-                ';
-
-            $criteriaParams = array(
-                ':namespace' => $tokenArray['namespace'],
-                ':provider' => $tokenArray['provider']
-                );
-        }
-
-
-        $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
-
-        if(!$tokenRecord) {
-            $tokenRecord = new Oauth_TokenRecord();
-        }
-
-        if(isset($tokenArray['userMapping'])) {
-            $tokenRecord->userMapping = $tokenArray['userMapping'];
-        }
-        
-        $tokenRecord->namespace = $tokenArray['namespace'];
-        $tokenRecord->provider = $tokenArray['provider'];
-        $tokenRecord->token = $tokenArray['token'];
-
-        if($userToken) {
-            $tokenRecord->userId = $tokenArray['userId'];
-        }
-
-        if(!$tokenRecord->save()) {
-            Craft::log(__METHOD__." : Could not save token", LogLevel::Error);
-        }
-
-        if($userToken && isset(craft()->social_userSession)) {
-            craft()->social_userSession->login($token);
-        }
-
-        $referer = craft()->httpSession->get('oauthReferer');
-        craft()->httpSession->remove('oauthReferer');
-
-        // var_dump($referer);
-        // die();
-
-        Craft::log(__METHOD__." : Redirect : ".$referer, LogLevel::Info, true);
-
-        $this->redirect($referer);
-
-        //$this->redirect($finalRedirect);
+        return $provider;
     }
 
     // --------------------------------------------------------------------
 
-    public function actionDisconnect()
+    private function isScopeEnough($scope1, $scope2)
     {
-        Craft::log(__METHOD__, LogLevel::Info, true);
+        $scopeEnough = false;
 
-        $providerClass = craft()->request->getParam('provider');
-        $namespace = craft()->request->getParam('namespace');
+        if(is_array($scope1) && is_array($scope2)) {
+            
+            $scopeEnough = true;
 
-        // $user = craft()->userSession->user;
-        // $userId = false;
+            foreach($scope1 as $s1) {
 
-        // if($user) {
-        //     $userId = $user->id;
-        // }
+                $scopeFound = false;
 
+                foreach($scope2 as $s2) {
+                    if($s2 == $s1) {
+                        $scopeFound = true;
+                    }
+                }
 
-        if($namespace) {
-            $criteriaConditions = '
-                provider=:provider
-                AND namespace=:namespace
-                ';
-
-            $criteriaParams = array(
-                ':provider' => $providerClass,
-                ':namespace' => $namespace
-            );
-        } else {
-            $criteriaConditions = '
-                provider=:provider
-                ';
-
-            $criteriaParams = array(
-                ':provider' => $providerClass
-                );
+                if(!$scopeFound) {
+                    $scopeEnough = false;
+                    break;
+                }
+            }
         }
 
-        $tokenRecord = Oauth_TokenRecord::model()->deleteAll($criteriaConditions, $criteriaParams);
+        return $scopeEnough;
+    }
 
-        // if($tokenRecord) {
-        //     $tokenRecord->delete();
-        // } else {
-        //     die('no token');
-        // }
+    // --------------------------------------------------------------------
 
-        Craft::log(__METHOD__." : Redirect : ".$_SERVER['HTTP_REFERER'], LogLevel::Info, true);
+    private function mixScopes($scope1, $scope2)
+    {
+        $scope = array();
 
-        $this->redirect($_SERVER['HTTP_REFERER']);
+
+        if(is_array($scope1)) {
+
+            foreach($scope1 as $s1) {
+                array_push($scope, $s1);
+            }
+        }
+
+        if(is_array($scope2)) {
+
+            foreach($scope2 as $s1) {
+
+                $scopeFound = false;
+
+                foreach($scope as $s2) {
+                    if($s2 == $s1) {
+                        $scopeFound = true;
+                    }
+                }
+
+                if(!$scopeFound) {
+                    array_push($scope, $s1);
+                }
+            }
+        }
+
+        if(!empty($scope)) {
+            return $scope;
+        }
+
+        return null;
+    }
+
+    // --------------------------------------------------------------------
+
+    private function providerRecord($providerClass)
+    {
+        $providerRecord = Oauth_ProviderRecord::model()->find(
+
+            // conditions
+
+            'providerClass=:provider',
+
+            
+            // params
+
+            array(
+                ':provider' => $providerClass
+            )
+        );
+
+        if($providerRecord) {
+            return $providerRecord;
+        }
+
+        return null;
+    }
+    // --------------------------------------------------------------------
+
+    private function userTokenRecord($providerClass)
+    {
+        $tokenRecord = Oauth_TokenRecord::model()->find(
+
+            // conditions
+
+            'provider=:provider AND userId=:userId',
+
+            
+            // params
+
+            array(
+                ':provider' => $providerClass,
+                ':userId' => craft()->userSession->user->id,
+            )
+        );
+
+        if($tokenRecord) {
+            return $tokenRecord;
+        }
+
+        return null;
+    }
+
+    // --------------------------------------------------------------------
+
+    private function tokenScope($providerClass)
+    {
+        // provider record
+
+        $providerRecord = $this->providerRecord($providerClass);
+
+        if($providerRecord) {
+
+            // user token record
+
+            $tokenRecord = $this->userTokenRecord($providerClass);
+
+            if($tokenRecord) {
+
+                $tokenScope = @unserialize(base64_decode($tokenRecord->scope));
+
+                return $tokenScope;
+            }
+        }
+
+        return null;
+    }
+
+    // --------------------------------------------------------------------
+
+    private function _redirect($referer)
+    {
+        Craft::log(__METHOD__." : Referer : ".$referer, LogLevel::Info, true);
+
+        $this->redirect($referer);
     }
 
     // --------------------------------------------------------------------
