@@ -25,15 +25,54 @@ class Oauth_PublicController extends BaseController
         // connect user or system
 
         if(craft()->httpSession->get('oauth.userMode')) {
-            $this->actionConnectUser();
+            $this->_connectUser();
         } else {
-            $this->actionConnectSystem();
+            $this->_connectSystem();
         }
     }
 
     // --------------------------------------------------------------------
 
-    public function actionConnectUser()
+    public function actionDisconnect()
+    {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
+        // get request params
+
+        $providerClass = craft()->request->getParam('provider');
+        $namespace = craft()->request->getParam('namespace');
+        $userMode = (bool) craft()->request->getParam('userMode');
+
+
+        // criteria conditions & params
+
+        $criteriaConditions = 'provider=:provider';
+        $criteriaParams = array(':provider' => $providerClass);
+
+        if($namespace) {
+            $criteriaConditions .= ' AND namespace=:namespace';
+            $criteriaParams[':namespace']  = $namespace;
+        }
+
+        if($userMode) {
+            $criteriaConditions .= ' AND userId=:userId';
+            $criteriaParams[':userId']  = craft()->userSession->user->id;
+        }
+
+
+        // delete all matching records
+
+        Oauth_TokenRecord::model()->deleteAll($criteriaConditions, $criteriaParams);
+
+
+        // redirect
+
+        $this->_redirect($_SERVER['HTTP_REFERER']);
+    }
+
+    // --------------------------------------------------------------------
+
+    private function _connectUser()
     {
         // get providerClass
 
@@ -62,18 +101,18 @@ class Oauth_PublicController extends BaseController
 
             // scopeToken
 
-            $scopeToken = craft()->oauth->userTokenScope($providerClass);
+            $scopeToken = craft()->oauth->tokenScopeByCurrentUser($providerClass);
 
 
             // is scope enough ? 
 
-            $scopeEnough = craft()->oauth->isScopeEnough($scopeParam, $scopeToken);
+            $scopeEnough = craft()->oauth->scopeIsEnough($scopeParam, $scopeToken);
 
 
             // scope is not enough, connect user with new scope
 
             if(!$scopeEnough) {
-                $scope = craft()->oauth->mixScopes($scopeParam, $scopeToken);
+                $scope = craft()->oauth->scopeMix($scopeParam, $scopeToken);
 
                 craft()->httpSession->add('oauth.scope', $scope);
             }
@@ -87,12 +126,12 @@ class Oauth_PublicController extends BaseController
             array('provider' => $providerClass)
         );
 
-        $provider = craft()->oauth->instantiateProvider($providerClass, $callbackUrl, null, $scope);
+        $provider = craft()->oauth->providerInstantiate($providerClass, $callbackUrl, null, $scope);
 
 
         // connect provider
 
-        $provider = craft()->oauth->connectProviderObject($provider);
+        $provider = craft()->oauth->providerConnect($provider);
 
 
         // post-connect
@@ -173,7 +212,6 @@ class Oauth_PublicController extends BaseController
             }
         } else {
             die('fail');
-            // fail
 
             Craft::log(__METHOD__." : Provider process failed", LogLevel::Error);
         }
@@ -191,7 +229,7 @@ class Oauth_PublicController extends BaseController
 
     // --------------------------------------------------------------------
 
-    public function actionConnectSystem()
+    private function _connectSystem()
     {
 
         // namespace
@@ -222,18 +260,18 @@ class Oauth_PublicController extends BaseController
 
             // scopeToken
 
-            $scopeToken = craft()->oauth->systemTokenScope($providerClass, $namespace);
+            $scopeToken = craft()->oauth->tokenScopeByNamespace($providerClass, $namespace);
 
 
             // is scope enough ? 
 
-            $scopeEnough = craft()->oauth->isScopeEnough($scopeParam, $scopeToken);
+            $scopeEnough = craft()->oauth->scopeIsEnough($scopeParam, $scopeToken);
 
 
             // scope is not enough, connect user with new scope
 
             if(!$scopeEnough) {
-                $scope = craft()->oauth->mixScopes($scopeParam, $scopeToken);
+                $scope = craft()->oauth->scopeMix($scopeParam, $scopeToken);
 
                 craft()->httpSession->add('oauth.scope', $scope);
             }
@@ -254,12 +292,12 @@ class Oauth_PublicController extends BaseController
             array('provider' => $providerClass)
         );
 
-        $provider = craft()->oauth->instantiateProvider($providerClass, $callbackUrl, null, $scope);
+        $provider = craft()->oauth->providerInstantiate($providerClass, $callbackUrl, null, $scope);
 
 
         // connect provider
 
-        $provider = craft()->oauth->connectProviderObject($provider);
+        $provider = craft()->oauth->providerConnect($provider);
 
 
         // clean httpSession
@@ -282,7 +320,7 @@ class Oauth_PublicController extends BaseController
             }
 
 
-            $tokenRecord = craft()->oauth->getSystemToken($providerClass, $namespace);
+            $tokenRecord = craft()->oauth->tokenRecordByNamespace($providerClass, $namespace);
 
             if(!$tokenRecord) {
                 $tokenRecord = new Oauth_TokenRecord();
@@ -311,50 +349,6 @@ class Oauth_PublicController extends BaseController
         // redirect
 
         $this->_redirect($referer);
-    }
-
-    // --------------------------------------------------------------------
-
-    public function actionDisconnect()
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        // get request params
-
-        $providerClass = craft()->request->getParam('provider');
-        $namespace = craft()->request->getParam('namespace');
-        $userMode = (bool) craft()->request->getParam('userMode');
-
-
-        // criteria conditions & params
-
-        $criteriaConditions = '
-            provider=:provider 
-            ';
-
-        $criteriaParams = array(
-            ':provider' => $providerClass
-            );
-
-        if($namespace) {
-            $criteriaConditions .= ' AND namespace=:namespace';
-            $criteriaParams[':namespace']  = $namespace;
-        }
-
-        if($userMode) {
-            $criteriaConditions .= ' AND userId=:userId';
-            $criteriaParams[':userId']  = craft()->userSession->user->id;
-        }
-
-
-        // delete all matching records
-
-        Oauth_TokenRecord::model()->deleteAll($criteriaConditions, $criteriaParams);
-
-
-        // redirect
-
-        $this->_redirect($_SERVER['HTTP_REFERER']);
     }
 
     // --------------------------------------------------------------------
