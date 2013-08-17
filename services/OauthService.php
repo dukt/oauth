@@ -25,6 +25,34 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
+    public function httpSessionAdd($k, $v = null)
+    {
+        $returnValue = craft()->httpSession->get($k);
+
+        if(!$returnValue && $v) {
+            $returnValue = $v;
+
+            craft()->httpSession->add($k, $v);
+        }
+
+        return $returnValue;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function httpSessionClean()
+    {
+        craft()->httpSession->remove('oauth.userMode');
+        craft()->httpSession->remove('oauth.referer');
+        craft()->httpSession->remove('oauth.scope');
+        craft()->httpSession->remove('oauth.namespace');
+        craft()->httpSession->remove('oauth.provider');
+        craft()->httpSession->remove('oauth.providerClass');
+        craft()->httpSession->remove('oauth.token');
+    }
+
+    // --------------------------------------------------------------------
+
     public function connect($providerClass, $scope = null, $namespace = null, $userMode = false)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
@@ -52,54 +80,6 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function connectDeprecated($namespace, $providerClass, $userToken = false, $scope = null)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        if($userToken === true) {
-            $userToken = 1;
-        } else {
-            $userToken = 0;
-        }
-
-        $params = array(
-                    'namespace' => $namespace,
-                    'provider' => $providerClass,
-                    'userToken' => $userToken
-                    );
-
-        if($scope) {
-            $params['scope'] = base64_encode(serialize($scope));
-        }
-
-        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/connect', $params);
-
-        Craft::log(__METHOD__." : Authenticate : ".$url, LogLevel::Info, true);
-
-        return $url;
-    }
-    
-    // --------------------------------------------------------------------
-
-    // public function disconnect($namespace, $providerClass)
-    // {
-    //     Craft::log(__METHOD__, LogLevel::Info, true);
-
-    //     $params = array(
-    //                 'namespace' => $namespace,
-    //                 'provider' => $providerClass
-    //                 );
-
-
-    //     $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/deauthenticate', $params);
-
-    //     Craft::log(__METHOD__." : Deauthenticate : ".$url, LogLevel::Info, true);
-
-    //     return $url;
-    // }
-
-    // --------------------------------------------------------------------
-
     public function disconnect($namespace, $providerClass)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
@@ -114,6 +94,169 @@ class OauthService extends BaseApplicationComponent
         Craft::log(__METHOD__." : Deauthenticate : ".$url, LogLevel::Info, true);
 
         return $url;
+    }
+
+
+    // --------------------------------------------------------------------
+
+    public function userTokenRecord($providerClass)
+    {
+        if(!craft()->userSession->user) {
+            return null;
+        }
+
+        $conditions = 'provider=:provider';
+        $params = array(':provider' => $providerClass);
+
+        $conditions .= ' AND userId=:userId';
+        $params[':userId'] = craft()->userSession->user->id;
+
+        $tokenRecord = Oauth_TokenRecord::model()->find($conditions, $params);
+
+        if($tokenRecord) {
+            return $tokenRecord;
+        }
+
+        return null;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function userTokenRecordFromMapping($providerClass, $userMapping)
+    {
+        if(!craft()->userSession->user) {
+            return null;
+        }
+
+        $conditions = 'provider=:provider';
+        $params = array(':provider' => $providerClass);
+
+        // $conditions .= ' AND userId=:userId';
+        // $params[':userId'] = craft()->userSession->user->id;
+
+        $conditions .= ' AND userMapping=:userMapping';
+        $params[':userMapping'] = $userMapping;
+
+        $tokenRecord = Oauth_TokenRecord::model()->find($conditions, $params);
+
+        if($tokenRecord) {
+            return $tokenRecord;
+        }
+
+        return null;
+    }
+
+    // --------------------------------------------------------------------
+
+    private function currentUser()
+    {
+        if(craft()->userSession->user) {
+            return craft()->userSession->user;
+        }
+
+        return null;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function userTokenScope($providerClass)
+    {
+        // provider record
+
+        $providerRecord = $this->providerRecord($providerClass);
+
+        if($providerRecord) {
+
+            // user token record
+
+            $tokenRecord = $this->userTokenRecord($providerClass);
+
+            if($tokenRecord) {
+
+                $tokenScope = @unserialize(base64_decode($tokenRecord->scope));
+
+                return $tokenScope;
+            }
+        }
+
+        return null;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function systemTokenRecord($providerClass, $namespace)
+    {
+        $tokenRecord = Oauth_TokenRecord::model()->find(
+
+            // conditions
+
+            'provider=:provider AND namespace=:namespace',
+
+            
+            // params
+
+            array(
+                ':provider' => $providerClass,
+                ':namespace' => $namespace,
+            )
+        );
+
+        if($tokenRecord) {
+            return $tokenRecord;
+        }
+
+        return null;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function systemTokenScope($providerClass, $namespace)
+    {
+        // provider record
+
+        $providerRecord = $this->providerRecord($providerClass);
+
+        if($providerRecord) {
+
+            // user token record
+
+            $tokenRecord = craft()->oauth->systemTokenRecord($providerClass, $namespace);
+
+            if($tokenRecord) {
+
+                $tokenScope = @unserialize(base64_decode($tokenRecord->scope));
+
+                return $tokenScope;
+            }
+        }
+
+        return null;
+    }
+
+
+    // --------------------------------------------------------------------
+
+    public function providerRecord($providerClass)
+    {
+        $providerRecord = Oauth_ProviderRecord::model()->find(
+
+            // conditions
+
+            'providerClass=:provider',
+
+            
+            // params
+
+            array(
+                ':provider' => $providerClass
+            )
+        );
+
+        if($providerRecord) {
+            return $providerRecord;
+        }
+
+        return null;
     }
 
     // --------------------------------------------------------------------
@@ -289,8 +432,12 @@ class OauthService extends BaseApplicationComponent
         }
         
         if($userMode) {
-            $criteriaConditions .= ' AND userId=:userId';
-            $criteriaParams[':userId'] = craft()->userSession->user->id;
+            if(craft()->userSession->user) {
+                $criteriaConditions .= ' AND userId=:userId';
+                $criteriaParams[':userId'] = craft()->userSession->user->id;
+            } else {
+                return NULL;
+            }
         }
 
         $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
@@ -719,7 +866,9 @@ class OauthService extends BaseApplicationComponent
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
-        $userId = craft()->userSession->user->id;
+        if(!craft()->userSession->user) {
+            return null;
+        }
 
         $criteriaConditions = '
             provider=:provider AND userId=:userId
@@ -727,7 +876,7 @@ class OauthService extends BaseApplicationComponent
 
         $criteriaParams = array(
             ':provider' => $providerClass,
-            ':userId' => $userId
+            ':userId' => craft()->userSession->user->id
             );
 
         $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);

@@ -6,10 +6,10 @@
     <table class="data collapsible">
         <thead>
             <tr>
+                <th scope="col">{{ "ID"|t }}</th>
                 <th scope="col">{{ "Provider"|t }}</th>
                 <th scope="col">{{ "Namespace"|t }}</th>
-                <th scope="col">{{ "Created"|t }}</th>
-                <th scope="col">{{ "Updated"|t }}</th>
+                <th scope="col">{{ "Scope"|t }}</th>
                 <th></th>
             </tr>
         </thead>
@@ -18,11 +18,19 @@
             {% for token in tokens %}
                 {% if token.user.email is not defined %}
                     <tr>
-                        <td>{{token.provider}}</td>
+                        <td>{{token.id}}</td>
+                        <td class="nowrap">{{token.provider}}</td>
                         <td>{{token.namespace}}</td>
-                        <td>{{token.dateCreated}}</td>
-                        <td>{{token.dateUpdated}}</td>
-                        <td><a class="btn small" href="{{actionUrl('oauth/settings/deleteToken', {id:token.id})}}">Delete</a></td>
+                        <td>
+                            {% if token.scope is iterable %}
+                                <ul>
+                                    {% for scopeRow in token.scope %}
+                                        <li><em>{{scopeRow}}</em></li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </td>
+                        <td class="thin"><a class="btn small" href="{{actionUrl('oauth/settings/deleteToken', {id:token.id})}}">Delete</a></td>
                     </tr>
                 {% endif %}
 

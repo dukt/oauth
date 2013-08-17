@@ -10,5 +10,6 @@ class Account extends AbstractAccount
     public function instantiate($response)
     {
         $this->email = $response['email'];
+        $this->mapping = $response['email'];
     }
 }

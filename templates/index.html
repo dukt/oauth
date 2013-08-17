@@ -6,7 +6,8 @@
     <table id="fields" class="data collapsible">
         <thead>
             <tr>
-                <th scope="col">{{ "Name"|t }}</th>
+                <th scope="col">{{ "Provider"|t }}</th>
+                <th></th>
                 <th></th>
             </tr>
         </thead>
@@ -18,14 +19,12 @@
 
                 <tr>
                     <td><a href="{{ url('oauth/settings/'~provider) }}">{{provider}}</a></td>
-
+                    
                     <td class="nowrap">
-
-
 
                         {% if providerRecord.clientId is not null and providerRecord.clientSecret is not null %}
                             {% if providerRecord.enabled %}
-                                <span class="status on"></span> Enabled
+                                <span class="status on"></span> Configured
 
                                 {#
                                 &nbsp;
@@ -45,6 +44,8 @@
                             #}
                         {% endif %}
                     </td>
+
+                    <td><a class="btn small" href="{{ url('oauth/settings/'~provider) }}">API Settings</a></td>
 
                 </tr>
             {% endfor %}
