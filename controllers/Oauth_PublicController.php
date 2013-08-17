@@ -367,28 +367,4 @@ class Oauth_PublicController extends BaseController
     }
 
     // --------------------------------------------------------------------
-
-    private function _getSessionDuration($rememberMe)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        if ($rememberMe) {
-            $duration = craft()->config->get('rememberedUserSessionDuration');
-        } else {
-            $duration = craft()->config->get('userSessionDuration');
-        }
-
-        // Calculate how long the session should last.
-        if ($duration) {
-            $interval = new DateInterval($duration);
-            $expire = DateTimeHelper::currentUTCDateTime();
-            $currentTimeStamp = $expire->getTimestamp();
-            $futureTimeStamp = $expire->add($interval)->getTimestamp();
-            $seconds = $futureTimeStamp - $currentTimeStamp;
-        } else {
-            $seconds = 0;
-        }
-
-        return $seconds;
-    }
 }
