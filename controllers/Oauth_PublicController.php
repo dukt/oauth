@@ -92,38 +92,13 @@ class Oauth_PublicController extends BaseController
 
         // connect provider
 
-        try {
-            Craft::log(__METHOD__." : Provider processing", LogLevel::Info, true);
-
-            $provider = $provider->process(function($url, $token = null) {
-
-                if ($token) {
-                    $_SESSION['token'] = base64_encode(serialize($token));
-                }
-
-                header("Location: {$url}");
-
-                exit;
-
-            }, function() {
-                return unserialize(base64_decode($_SESSION['token']));
-            });
-
-        } catch(\Exception $e) {
-
-            Craft::log(__METHOD__." : Provider process failed : ".$e->getMessage(), LogLevel::Error);
-
-            $this->_redirect(craft()->httpSession->get('oauth.referer'));
-        }
+        $provider = craft()->oauth->connectProviderObject($provider);
 
 
         // post-connect
 
-        // var_dump(craft()->httpSession->get('oauth.social'), craft()->httpSession->get('oauth.socialCallback'));
-
-        // die('post connect');
-
         if($provider) {
+
             // token
 
             $token = $provider->token();
@@ -150,7 +125,6 @@ class Oauth_PublicController extends BaseController
             if(!craft()->userSession->user) {
                 return null;
             }
-
 
 
             // set default scope
@@ -238,10 +212,7 @@ class Oauth_PublicController extends BaseController
 
         $scope = craft()->httpSession->get('oauth.scope');
 
-
         if(!$scope) {
-
-            
 
             // scopeParam
 
@@ -268,13 +239,7 @@ class Oauth_PublicController extends BaseController
             }
         }
         
-        $this->_actionConnectSystem($providerClass);
-    }
 
-    // --------------------------------------------------------------------
-
-    private function _actionConnectSystem($providerClass)
-    {
         // get session vars
 
         $namespace = craft()->httpSession->get('oauth.namespace');
@@ -282,9 +247,19 @@ class Oauth_PublicController extends BaseController
         $referer = craft()->httpSession->get('oauth.referer');
 
 
-        // initProvider
+        // instantiate provider
 
-        $provider = $this->initProvider($providerClass, $scope);
+        $callbackUrl = UrlHelper::getSiteUrl(
+            craft()->config->get('actionTrigger').'/oauth/public/connect',
+            array('provider' => $providerClass)
+        );
+
+        $provider = craft()->oauth->instantiateProvider($providerClass, $callbackUrl, null, $scope);
+
+
+        // connect provider
+
+        $provider = craft()->oauth->connectProviderObject($provider);
 
 
         // clean httpSession
@@ -380,73 +355,6 @@ class Oauth_PublicController extends BaseController
         // redirect
 
         $this->_redirect($_SERVER['HTTP_REFERER']);
-    }
-
-    // --------------------------------------------------------------------
-
-    private function initProvider($providerClass, $scope = null)
-    {
-        // providerRecord
-
-        $providerRecord = craft()->oauth->providerRecord($providerClass);
-
-
-        // callbackUrl
-
-        $params = array('provider' => $providerClass);
-
-        $callbackUrl = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/connect', $params);
-
-
-        // define provider options (id, secret, redirect_url, scope)
-
-        $opts = array(
-            'id' => $providerRecord->clientId,
-            'secret' => $providerRecord->clientSecret,
-            'redirect_url' => $callbackUrl
-        );
-
-        if(is_array($scope)) {
-            if(count($scope) > 0) {
-                $opts['scope'] = $scope;
-            }
-        }
-
-        $class = "\\Dukt\\Connect\\$providerRecord->providerClass\\Provider";
-
-
-        // instantiate provider object
-
-        $provider = new $class($opts);
-
-
-        // connect provider
-
-        try {
-            Craft::log(__METHOD__." : Provider processing", LogLevel::Info, true);
-
-            $provider = $provider->process(function($url, $token = null) {
-
-                if ($token) {
-                    $_SESSION['token'] = base64_encode(serialize($token));
-                }
-
-                header("Location: {$url}");
-
-                exit;
-
-            }, function() {
-                return unserialize(base64_decode($_SESSION['token']));
-            });
-
-        } catch(\Exception $e) {
-
-            Craft::log(__METHOD__." : Provider process failed : ".$e->getMessage(), LogLevel::Error);
-
-            $this->_redirect(craft()->httpSession->get('oauthReferer'));
-        }
-
-        return $provider;
     }
 
     // --------------------------------------------------------------------
