@@ -12,8 +12,12 @@ class Oauth_PublicController extends BaseController
 
     public function actionConnect()
     {
+        // craft()->oauth->httpSessionClean();
+
         $userMode = (bool) craft()->request->getParam('userMode');
+        $providerClass = craft()->request->getParam('provider');
         
+        craft()->oauth->httpSessionAdd('oauth.providerClass', $providerClass);
         craft()->oauth->httpSessionAdd('oauth.userMode', $userMode);
         craft()->oauth->httpSessionAdd('oauth.referer', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null));
 
@@ -45,7 +49,6 @@ class Oauth_PublicController extends BaseController
 
 
         // get scope
-        // simplify scopes !
         
         $scope = craft()->httpSession->get('oauth.scope');
 
@@ -77,12 +80,48 @@ class Oauth_PublicController extends BaseController
         }
         
 
-        // initProvider
+        // instantiate provider
 
-        $provider = $this->initProvider($providerClass, $scope);
+        $callbackUrl = UrlHelper::getSiteUrl(
+            craft()->config->get('actionTrigger').'/oauth/public/connect',
+            array('provider' => $providerClass)
+        );
+
+        $provider = craft()->oauth->instantiateProvider($providerClass, $callbackUrl, null, $scope);
+
+
+        // connect provider
+
+        try {
+            Craft::log(__METHOD__." : Provider processing", LogLevel::Info, true);
+
+            $provider = $provider->process(function($url, $token = null) {
+
+                if ($token) {
+                    $_SESSION['token'] = base64_encode(serialize($token));
+                }
+
+                header("Location: {$url}");
+
+                exit;
+
+            }, function() {
+                return unserialize(base64_decode($_SESSION['token']));
+            });
+
+        } catch(\Exception $e) {
+
+            Craft::log(__METHOD__." : Provider process failed : ".$e->getMessage(), LogLevel::Error);
+
+            $this->_redirect(craft()->httpSession->get('oauth.referer'));
+        }
 
 
         // post-connect
+
+        // var_dump(craft()->httpSession->get('oauth.social'), craft()->httpSession->get('oauth.socialCallback'));
+
+        // die('post connect');
 
         if($provider) {
             // token
@@ -99,12 +138,20 @@ class Oauth_PublicController extends BaseController
                 craft()->httpSession->add('oauth.token', $token);
 
                 $this->redirect($socialCallback);
+
+                return;
             }
 
 
             // ----------------------
             // save userToken record
             // ----------------------
+
+            if(!craft()->userSession->user) {
+                return null;
+            }
+
+
 
             // set default scope
 
@@ -115,15 +162,28 @@ class Oauth_PublicController extends BaseController
 
             // get token record
 
-            $tokenRecord = craft()->oauth->getUserToken($providerClass);
+            $criteriaConditions = '
+                provider=:provider AND userId=:userId
+                ';
+
+            $criteriaParams = array(
+                ':provider' => $providerClass,
+                ':userId' => craft()->userSession->user->id
+                );
+
+            $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
+
+            // or create a new one
 
             if(!$tokenRecord) {
-
-                // or create a new one
 
                 $tokenRecord = new Oauth_TokenRecord();
                 $tokenRecord->userId = craft()->userSession->user->id;
                 $tokenRecord->provider = $providerClass;
+
+                $account = $provider->getAccount();
+
+                $tokenRecord->userMapping = $account->mapping;
             }
 
             $tokenRecord->token = $token;

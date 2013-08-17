@@ -25,6 +25,45 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
+    public function instantiateProvider($providerClass, $callbackUrl, $token = null, $scope = null)
+    {
+        // get provider record
+
+        $providerRecord = craft()->oauth->providerRecord($providerClass);
+
+        // var_dump($providerClass);
+        // die();
+
+        // provider options
+
+        $opts = array(
+            'id' => $providerRecord->clientId,
+            'secret' => $providerRecord->clientSecret,
+            'redirect_url' => $callbackUrl
+        );
+
+        if($scope) {
+            if(is_array($scope) && !empty($scope)) {
+                $opts['scope'] = $scope;
+            }
+        }
+
+        $class = "\\Dukt\\Connect\\$providerRecord->providerClass\\Provider";
+
+
+        // instantiate provider object
+
+        $provider = new $class($opts);
+
+        if($token) {
+            @$provider->setToken($token);
+        }
+
+        return $provider;
+    }
+
+    // --------------------------------------------------------------------
+
     public function httpSessionAdd($k, $v = null)
     {
         $returnValue = craft()->httpSession->get($k);
@@ -49,6 +88,8 @@ class OauthService extends BaseApplicationComponent
         craft()->httpSession->remove('oauth.provider');
         craft()->httpSession->remove('oauth.providerClass');
         craft()->httpSession->remove('oauth.token');
+        craft()->httpSession->remove('oauth.social');
+        craft()->httpSession->remove('oauth.socialCallback');
     }
 
     // --------------------------------------------------------------------

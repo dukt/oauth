@@ -26,7 +26,7 @@
 							{% if tokens|length > 0 %}
 								<div class="right"><a href="{{craft.oauth.disconnect('*', provider)}}" class="btn small">Disconnect</a></div>
 							{% else %}
-								<div class="right"><a href="{{ craft.oauth.connect(provider, null, true) }}" class="btn small">Connect</a></div>
+								<div class="right"><a href="{{ craft.oauth.connect(provider, null, null, true) }}" class="btn small">Connect</a></div>
 						    {% endif %}
 			        	</td>
 			        </tr>
