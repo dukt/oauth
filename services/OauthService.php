@@ -25,6 +25,39 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
+    public function connectProviderObject($provider)
+    {
+        $returnProvider = null;
+        
+        try {
+            Craft::log(__METHOD__." : Provider processing", LogLevel::Info, true);
+
+            $returnProvider = $provider->process(function($url, $token = null) {
+
+                if ($token) {
+                    $_SESSION['token'] = base64_encode(serialize($token));
+                }
+
+                header("Location: {$url}");
+
+                exit;
+
+            }, function() {
+                return unserialize(base64_decode($_SESSION['token']));
+            });
+
+        } catch(\Exception $e) {
+
+            Craft::log(__METHOD__." : Provider process failed : ".$e->getMessage(), LogLevel::Error);
+
+            $this->_redirect(craft()->httpSession->get('oauth.referer'));
+        }
+
+        return $returnProvider;
+    }
+
+    // --------------------------------------------------------------------
+
     public function instantiateProvider($providerClass, $callbackUrl, $token = null, $scope = null)
     {
         // get provider record
