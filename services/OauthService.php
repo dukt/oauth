@@ -35,7 +35,7 @@ class OauthService extends BaseApplicationComponent
     // - scopeMix
     // - tokenScopeByCurrentUser
     // - tokenScopeByNamespace
-    
+
 
     // --------------------------------------------------------------------
     // Private API
@@ -44,12 +44,12 @@ class OauthService extends BaseApplicationComponent
     // - providerRecord
     // - tokenRecordByCurrentUser
     // - tokenRecordByNamespace
-    
+
 
     // --------------------------------------------------------------------
     // Dependencies
     // --------------------------------------------------------------------
-    
+
 
     // Controller : oauth/public
 
@@ -61,14 +61,14 @@ class OauthService extends BaseApplicationComponent
     // - scopeMix
     // - tokenScopeByCurrentUser
     // - tokenScopeByNamespace
-    
+
 
     // Controller : social/public
 
     // - httpSessionAdd
     // - httpSessionClean
     // - providerInstantiate
-    
+
 
     // --------------------------------------------------------------------
     // Rock'n'roll
@@ -324,7 +324,7 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    private function tokenRecordByCurrentUser($providerClass)
+    public function tokenRecordByCurrentUser($providerClass)
     {
         if(!craft()->userSession->user) {
             return null;
@@ -347,7 +347,7 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    private function tokenRecordByNamespace($providerClass, $namespace)
+    public function tokenRecordByNamespace($providerClass, $namespace)
     {
         $conditions = 'provider=:provider AND namespace=:namespace';
         $params = array(

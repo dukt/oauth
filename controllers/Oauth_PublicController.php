@@ -48,9 +48,15 @@ class Oauth_PublicController extends BaseController
         // get request params
 
         $providerClass = craft()->request->getParam('provider');
-        $namespace = craft()->request->getParam('namespace');
-        $userMode = (bool) craft()->request->getParam('userMode');
 
+        $namespace = craft()->request->getParam('namespace');
+
+        if($namespace) {
+            $userMode = false;
+        } else {
+            $userMode = true;
+        }
+        
 
         // criteria conditions & params
 
@@ -108,7 +114,7 @@ class Oauth_PublicController extends BaseController
             // scope is not enough, connect user with new scope
 
             if(!$scopeEnough) {
-                $scope = craft()->oauth->scopeMix($_wantedScope, $tokenScope);
+                $scope = craft()->oauth->scopeMix($scope, $tokenScope);
 
                 craft()->httpSession->add('oauth.scope', $scope);
             }
