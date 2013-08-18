@@ -24,9 +24,9 @@ class OauthService extends BaseApplicationComponent
     }
 
     // --------------------------------------------------------------------
-
-    // required by oauth/public controller
-    //
+    // Public API
+    // --------------------------------------------------------------------
+    
     // - httpSessionAdd
     // - httpSessionClean
     // - providerInstantiate
@@ -35,13 +35,43 @@ class OauthService extends BaseApplicationComponent
     // - scopeMix
     // - tokenScopeByCurrentUser
     // - tokenScopeByNamespace
+    
 
-    // required by social/public controller
-    //
+    // --------------------------------------------------------------------
+    // Private API
+    // --------------------------------------------------------------------
+    
+    // - providerRecord
+    // - tokenRecordByCurrentUser
+    // - tokenRecordByNamespace
+    
+
+    // --------------------------------------------------------------------
+    // Dependencies
+    // --------------------------------------------------------------------
+    
+
+    // Controller : oauth/public
+
     // - httpSessionAdd
     // - httpSessionClean
     // - providerInstantiate
+    // - providerConnect
+    // - scopeIsEnough
+    // - scopeMix
+    // - tokenScopeByCurrentUser
+    // - tokenScopeByNamespace
+    
 
+    // Controller : social/public
+
+    // - httpSessionAdd
+    // - httpSessionClean
+    // - providerInstantiate
+    
+
+    // --------------------------------------------------------------------
+    // Rock'n'roll
     // --------------------------------------------------------------------
 
     public function httpSessionAdd($k, $v = null)
