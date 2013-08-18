@@ -26,7 +26,7 @@ class OauthService extends BaseApplicationComponent
     // --------------------------------------------------------------------
     // Public API
     // --------------------------------------------------------------------
-    
+
     // - httpSessionAdd
     // - httpSessionClean
     // - providerInstantiate
@@ -40,7 +40,7 @@ class OauthService extends BaseApplicationComponent
     // --------------------------------------------------------------------
     // Private API
     // --------------------------------------------------------------------
-    
+
     // - providerRecord
     // - tokenRecordByCurrentUser
     // - tokenRecordByNamespace
@@ -136,7 +136,7 @@ class OauthService extends BaseApplicationComponent
 
         return $returnProvider;
     }
-    
+
     // --------------------------------------------------------------------
 
     public function providerInstantiate($providerClass, $callbackUrl, $token = null, $scope = null)
@@ -183,7 +183,7 @@ class OauthService extends BaseApplicationComponent
         $scopeEnough = false;
 
         if(is_array($scope1) && is_array($scope2)) {
-            
+
             $scopeEnough = true;
 
             foreach($scope1 as $s1) {
@@ -243,7 +243,7 @@ class OauthService extends BaseApplicationComponent
         }
 
         return null;
-    }    
+    }
 
     // --------------------------------------------------------------------
 
@@ -299,7 +299,7 @@ class OauthService extends BaseApplicationComponent
     // Private APIs
     // --------------------------------------------------------------------
 
-    private function providerRecord($providerClass)
+    public function providerRecord($providerClass)
     {
         $providerRecord = Oauth_ProviderRecord::model()->find(
 
@@ -307,7 +307,7 @@ class OauthService extends BaseApplicationComponent
 
             'providerClass=:provider',
 
-            
+
             // params
 
             array(
@@ -476,7 +476,7 @@ class OauthService extends BaseApplicationComponent
 
         if($userMode) {
             $userId = craft()->userSession->user->id;
-            
+
             $criteriaConditions .= ' AND userId=:userId';
             $criteriaParams[':userId'] = $userId;
 
@@ -516,76 +516,6 @@ class OauthService extends BaseApplicationComponent
         Craft::log(__METHOD__." : Authenticate : ".$url, LogLevel::Info, true);
 
         return $url;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function getProviderLibrary($providerClass, $namespace = null, $userMode = false)
-    {
-
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        // if($namespace == null)
-        // {
-        //     Craft::log(__METHOD__." : Namespace null : Dummy provider", LogLevel::Info, true);
-        //     $class = "\\Dukt\\Connect\\$providerClass\\Provider";
-        //     $opts = array('id' => 'x', 'secret' => 'x', 'redirect_url' => 'x');
-        //     $provider = new $class($opts);
-        //     return $provider;
-        // }
-
-        $criteriaConditions = 'provider=:provider';
-        $criteriaParams = array(
-                ':provider' => $providerClass
-            );
-
-        if($namespace) {
-            if($namespace == '*') {
-                $criteriaConditions .= ' AND namespace is not null';
-            } else {
-                $criteriaConditions .= ' AND namespace=:namespace';
-                $criteriaParams[':namespace'] = $namespace;
-            }
-        }
-        
-        if($userMode) {
-            if(craft()->userSession->user) {
-                $criteriaConditions .= ' AND userId=:userId';
-                $criteriaParams[':userId'] = craft()->userSession->user->id;
-            } else {
-                return NULL;
-            }
-        }
-
-        $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
-
-        $token = @unserialize(base64_decode($tokenRecord->token));
-
-        if(!$token) {
-            Craft::log(__METHOD__." : Token null", LogLevel::Info, true);
-            return NULL;
-        }
-
-
-        // Create the OAuth provider
-
-        $providerClass = $tokenRecord->provider;
-
-        $providerRecord = Oauth_ProviderRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $providerClass));
-
-        $opts = array(
-            'id' => $providerRecord->clientId,
-            'secret' => $providerRecord->clientSecret,
-            'redirect_url' => \Craft\UrlHelper::getActionUrl('oauth/public/connect/', array('provider' => $providerClass))
-        );
-
-        $class = "\\Dukt\\Connect\\$providerClass\\Provider";
-        $provider = new $class($opts);
-        $provider->setToken($token);
-        // var_dump($provider);
-        // die();
-
-        return $provider;
     }
 
     // --------------------------------------------------------------------
@@ -952,7 +882,7 @@ class OauthService extends BaseApplicationComponent
             // $userId = craft()->userSession->user->id;
 
             $userId = $user;
-            
+
             $criteriaConditions = '
                 provider=:provider AND
                 userId=:userId
