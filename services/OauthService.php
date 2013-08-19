@@ -139,22 +139,28 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function providerInstantiate($providerClass, $callbackUrl, $token = null, $scope = null)
+    public function providerInstantiate($providerClass, $callbackUrl = null, $token = null, $scope = null)
     {
         // get provider record
 
         $providerRecord = $this->providerRecord($providerClass);
 
-        // var_dump($providerClass);
-        // die();
 
         // provider options
 
-        $opts = array(
-            'id' => $providerRecord->clientId,
-            'secret' => $providerRecord->clientSecret,
-            'redirect_url' => $callbackUrl
-        );
+        if($providerRecord) {
+            $opts = array(
+                'id' => $providerRecord->clientId,
+                'secret' => $providerRecord->clientSecret,
+                'redirect_url' => $callbackUrl
+            );
+        } else {
+            $opts = array(
+                'id' => 'x',
+                'secret' => 'x',
+                'redirect_url' => 'x'
+            );
+        }
 
         if($scope) {
             if(is_array($scope) && !empty($scope)) {
@@ -162,7 +168,7 @@ class OauthService extends BaseApplicationComponent
             }
         }
 
-        $class = "\\Dukt\\Connect\\$providerRecord->providerClass\\Provider";
+        $class = "\\Dukt\\Connect\\$providerClass\\Provider";
 
 
         // instantiate provider object

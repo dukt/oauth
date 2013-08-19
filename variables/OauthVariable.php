@@ -99,4 +99,10 @@ class OauthVariable
     }
 
     // --------------------------------------------------------------------
+
+    public function providerInstantiate($providerClass, $callbackUrl = null, $token = null, $scope = null)
+    {
+        return craft()->oauth->providerInstantiate($providerClass, $callbackUrl, $token, $scope);
+    }
+    // --------------------------------------------------------------------
 }
