@@ -29,7 +29,9 @@ class Oauth_ConnectController extends BaseController
 
         // clean session vars
 
-        craft()->oauth->httpSessionClean();
+        if(!craft()->httpSession->get('oauth.social')) {
+            craft()->oauth->httpSessionClean();
+        }
 
 
         // set session vars

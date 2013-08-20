@@ -424,32 +424,6 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function tokenRecordByCurrentUserFromMapping($providerClass, $userMapping)
-    {
-        if(!craft()->userSession->user) {
-            return null;
-        }
-
-        $conditions = 'provider=:provider';
-        $params = array(':provider' => $providerClass);
-
-        // $conditions .= ' AND userId=:userId';
-        // $params[':userId'] = craft()->userSession->user->id;
-
-        $conditions .= ' AND userMapping=:userMapping';
-        $params[':userMapping'] = $userMapping;
-
-        $tokenRecord = Oauth_TokenRecord::model()->find($conditions, $params);
-
-        if($tokenRecord) {
-            return $tokenRecord;
-        }
-
-        return null;
-    }
-
-    // --------------------------------------------------------------------
-
     private function currentUser()
     {
         if(craft()->userSession->user) {
@@ -535,6 +509,7 @@ class OauthService extends BaseApplicationComponent
     // --------------------------------------------------------------------
     public function getAccount($providerClass, $namespace = null)
     {
+
         // get token
 
         if($namespace) {
@@ -548,6 +523,9 @@ class OauthService extends BaseApplicationComponent
         }
 
         $token = unserialize(base64_decode($tokenRecord->token));
+
+
+
 
         // provider
 
@@ -781,19 +759,6 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function newService($attributes = array())
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $model = new Oauth_ServiceModel();
-
-        $model->setAttributes($attributes);
-
-        return $model;
-    }
-
-    // --------------------------------------------------------------------
-
     public function connectService($record = false)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
@@ -897,54 +862,6 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function serviceSend($serviceId, $method, $params = array())
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $service = $this->serviceRecord->findByPk($serviceId);
-
-
-        $providerParams = array();
-        $providerParams['id'] = $service->clientId;
-        $providerParams['secret'] = $service->clientSecret;
-        $providerParams['redirect_url'] = "http://google.fr";
-
-        try {
-            Craft::log(__METHOD__." : Creating oauth provider", LogLevel::Info, true);
-
-            $provider = \OAuth\OAuth::provider($service->className, $providerParams);
-
-            $token = unserialize(base64_decode($service->token));
-
-            // refresh token if needed ?
-
-            if(!$token)
-            {
-                Craft::log(__METHOD__." : Invalid token", LogLevel::Info, true);
-
-                throw new \Exception('Invalid Token');
-            }
-
-            $provider->setToken($token);
-
-        } catch(\Exception $e)
-        {
-            Craft::log(__METHOD__." : ".'Provider couln\'t instantiate : '.$e->getMessage(), LogLevel::Info, true);
-
-            throw new Exception('Provider couln\'t instantiate');
-        }
-
-        $serviceClassName = 'Dukt\\Campaigns\\Services\\'.$service->className;
-
-        $request = new $serviceClassName($provider);
-
-        return $request->send($method, $params);
-
-        //return $request;
-    }
-
-    // --------------------------------------------------------------------
-
     public function getTokens($namespace = null)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
@@ -1000,30 +917,6 @@ class OauthService extends BaseApplicationComponent
         $tokens = Oauth_TokenRecord::model()->findAll($criteriaConditions, $criteriaParams);
 
         return $tokens;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function getUserToken($providerClass)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        if(!craft()->userSession->user) {
-            return null;
-        }
-
-        $criteriaConditions = '
-            provider=:provider AND userId=:userId
-            ';
-
-        $criteriaParams = array(
-            ':provider' => $providerClass,
-            ':userId' => craft()->userSession->user->id
-            );
-
-        $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
-
-        return $tokenRecord;
     }
 
     // --------------------------------------------------------------------
@@ -1101,17 +994,6 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function getAllServices()
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $records = $this->serviceRecord->findAll(array('order'=>'t.title'));
-
-        return Campaigns_ServiceModel::populateModels($records, 'id');
-    }
-
-    // --------------------------------------------------------------------
-
     public function deleteServiceById($id)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
@@ -1154,6 +1036,4 @@ class OauthService extends BaseApplicationComponent
     }
 
     // --------------------------------------------------------------------
-
 }
-

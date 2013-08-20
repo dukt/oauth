@@ -12,6 +12,7 @@ class Oauth_PublicController extends BaseController
 
     public function actionConnect()
     {
+
         $namespace = craft()->oauth->httpSessionAdd('oauth.namespace', craft()->request->getParam('namespace'));
 
 
@@ -173,7 +174,7 @@ class Oauth_PublicController extends BaseController
             // set default scope if none set
 
             if(!$scope) {
-                $scope = $provider->scope;
+                $scope = $provider->getScope();
             }
 
 
