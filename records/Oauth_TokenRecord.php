@@ -30,9 +30,6 @@ class Oauth_TokenRecord extends BaseRecord
 
     // --------------------------------------------------------------------
 
-    /**
-     * @return array
-     */
     public function defineRelations()
     {
         return array(
@@ -41,18 +38,4 @@ class Oauth_TokenRecord extends BaseRecord
     }
 
     // --------------------------------------------------------------------
-
-    // public function create()
-    // {
-    //     $class = get_class($this);
-
-    //     $record = new $class();
-
-    //     return $record;
-    // }
 }
-
-
-// videos, Google:scope:youtube, Vimeo:scope:read/write
-// videos, system, token
-// videos, user, {userId}, {provider}, token

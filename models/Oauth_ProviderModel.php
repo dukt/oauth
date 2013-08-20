@@ -2,7 +2,7 @@
 
 namespace Craft;
 
-class Oauth_ServiceModel extends BaseModel
+class Oauth_ProviderModel extends BaseModel
 {
     // --------------------------------------------------------------------
 

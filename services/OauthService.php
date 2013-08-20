@@ -293,7 +293,7 @@ class OauthService extends BaseApplicationComponent
     // analytics settings
     // oauth edit provider
 
-    public function providerSave(Oauth_ServiceModel &$model)
+    public function providerSave(Oauth_ProviderModel &$model)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
@@ -640,10 +640,10 @@ class OauthService extends BaseApplicationComponent
 
         if ($record) {
 
-            return Oauth_ServiceModel::populateModel($record);
+            return Oauth_ProviderModel::populateModel($record);
         }
 
-        return new Oauth_ServiceModel();
+        return new Oauth_ProviderModel();
     }
 
     // --------------------------------------------------------------------

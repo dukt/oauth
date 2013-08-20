@@ -25,6 +25,7 @@ class Oauth_DisconnectController extends BaseController
 
         craft()->oauth->httpSessionAdd('oauth.referer', $_SERVER['HTTP_REFERER']);
 
+
         // redirect
 
         $url = UrlHelper::getActionUrl('oauth/public/disconnect/', $params);

@@ -14,7 +14,7 @@ class Oauth_SettingsController extends BaseController
 
         $class = craft()->request->getParam('serviceProviderClass');
 
-        $model = new Oauth_ServiceModel();
+        $model = new Oauth_ProviderModel();
 
 
 
