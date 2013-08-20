@@ -183,6 +183,8 @@ class OauthService extends BaseApplicationComponent
 
         if($token) {
             $provider->setToken($token);
+
+            $this->refreshToken($provider);
         }
 
         return $provider;
@@ -559,6 +561,46 @@ class OauthService extends BaseApplicationComponent
         return $provider->getUserInfo();
     }
     // --------------------------------------------------------------------
+    // kept because there is token refresh
+
+
+    public function refreshToken($provider)
+    {
+        $difference = ($provider->token->expires - time());
+
+        // token expired : we need to refresh it
+
+        if($difference < 1) {
+
+            Craft::log(__METHOD__." : Refresh token ", LogLevel::Info, true);
+
+            $encodedToken = base64_encode(serialize($provider->token));
+
+            $tokenRecord = craft()->oauth->getToken($encodedToken);
+
+
+            if(method_exists($provider, 'access') && $provider->token->refresh_token) {
+
+                $accessToken = $provider->access($provider->token->refresh_token, array('grant_type' => 'refresh_token'));
+
+                if(!$accessToken) {
+                    Craft::log(__METHOD__." : Could not refresh token", LogLevel::Info, true);
+                }
+                // save token
+
+                $provider->token->access_token = $accessToken->access_token;
+                $provider->token->expires = $accessToken->expires;
+
+                $tokenRecord->token = base64_encode(serialize($provider->token));
+
+                if($tokenRecord->save()) {
+                    Craft::log(__METHOD__." : Token saved", LogLevel::Info, true);
+                }
+            } else {
+                Craft::log(__METHOD__." : Access method (for refresh) doesn't exists for ".$providerClass, LogLevel::Info, true);
+            }
+        }
+    }
 
     public function getAccountDeprecated($providerClass, $namespace = null, $userMode = false)
     {
