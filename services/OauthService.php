@@ -100,6 +100,7 @@ class OauthService extends BaseApplicationComponent
         craft()->httpSession->remove('oauth.token');
         craft()->httpSession->remove('oauth.social');
         craft()->httpSession->remove('oauth.socialCallback');
+        craft()->httpSession->remove('oauth.socialReferer');
     }
 
 
@@ -108,6 +109,7 @@ class OauthService extends BaseApplicationComponent
 
     public function providerConnect($provider)
     {
+
         $returnProvider = null;
 
         try {
@@ -131,8 +133,10 @@ class OauthService extends BaseApplicationComponent
 
             Craft::log(__METHOD__." : Provider process failed : ".$e->getMessage(), LogLevel::Error);
 
-            $this->_redirect(craft()->httpSession->get('oauth.referer'));
+            return false;
         }
+
+        // die();
 
         return $returnProvider;
     }
@@ -145,6 +149,10 @@ class OauthService extends BaseApplicationComponent
 
         $providerRecord = $this->providerRecord($providerClass);
 
+
+        if(!$callbackUrl) {
+            $callbackUrl = 'default';
+        }
 
         // provider options
 
@@ -168,15 +176,13 @@ class OauthService extends BaseApplicationComponent
             }
         }
 
-        $class = "\\Dukt\\Connect\\$providerClass\\Provider";
 
-
-        // instantiate provider object
+        $class = "\\OAuth\\Provider\\{$providerClass}";
 
         $provider = new $class($opts);
 
         if($token) {
-            @$provider->setToken($token);
+            $provider->setToken($token);
         }
 
         return $provider;
@@ -371,7 +377,7 @@ class OauthService extends BaseApplicationComponent
     // --------------------------------------------------------------------
     // --------------------------------------------------------------------
 
-    public function connect($providerClass, $scope = null, $namespace = null, $userMode = false)
+    public function connectUrl($providerClass, $scope = null, $namespace = null)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
@@ -385,11 +391,7 @@ class OauthService extends BaseApplicationComponent
             $params['namespace'] = $namespace;
         }
 
-        if($userMode === true) {
-            $params['userMode'] = $userMode;
-        }
-
-        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/connect', $params);
+        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/connect', $params);
 
         Craft::log(__METHOD__." : Authenticate : ".$url, LogLevel::Info, true);
 
@@ -398,16 +400,20 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function disconnect($namespace, $providerClass)
+    public function disconnectUrl($providerClass, $namespace = null)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
         $params = array(
-                    'provider' => $providerClass
-                    );
+            'provider' => $providerClass
+            );
+
+        if($namespace) {
+            $params['namespace'] = $namespace;
+        }
 
 
-        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/disconnect', $params);
+        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/disconnect', $params);
 
         Craft::log(__METHOD__." : Deauthenticate : ".$url, LogLevel::Info, true);
 
@@ -525,12 +531,53 @@ class OauthService extends BaseApplicationComponent
     }
 
     // --------------------------------------------------------------------
+    public function getAccount($providerClass, $namespace = null)
+    {
+        // get token
 
-    public function getAccount($providerClass, $namespace = null, $userMode = false)
+        if($namespace) {
+            $tokenRecord = craft()->oauth->tokenRecordByNamespace($providerClass, $namespace);
+        } else {
+            $tokenRecord = craft()->oauth->tokenRecordByCurrentUser($providerClass);
+        }
+
+        if(!$tokenRecord) {
+            return null;
+        }
+
+        $token = unserialize(base64_decode($tokenRecord->token));
+
+        // provider
+
+        $callbackUrl = UrlHelper::getSiteUrl(
+            craft()->config->get('actionTrigger').'/oauth/public/connect',
+            array('provider' => $providerClass)
+        );
+
+        $provider = craft()->oauth->providerInstantiate($providerClass, $callbackUrl, $token);
+
+        return $provider->getUserInfo();
+    }
+    // --------------------------------------------------------------------
+
+    public function getAccountDeprecated($providerClass, $namespace = null, $userMode = false)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
         $provider = $this->getProviderLibrary($providerClass, $namespace, $userMode);
+
+        $callbackUrl = UrlHelper::getSiteUrl(
+            craft()->config->get('actionTrigger').'/oauth/public/connect',
+            array('provider' => $providerClass)
+        );
+
+        $provider = craft()->oauth->providerInstantiate($providerClass, $callbackUrl, null, $scope);
+
+
+        // connect provider
+
+        $provider = craft()->oauth->providerConnect($provider);
+
 
         // var_dump($providerClass, $namespace, $userMode);
         // die();
@@ -961,37 +1008,53 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function getProviders()
+    public function getProviders($configuredOnly = true)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
-        $directory = CRAFT_PLUGINS_PATH.'oauth/libraries/Dukt/Connect/';
 
-        $result = array();
 
-        $finder = new Finder();
+        // retrieve provider class files
 
-        $files = $finder->directories()->depth(0)->in($directory);
+        $result = array(
+                'Facebook' => array('class' => 'Facebook', 'isConfigured' => false),
+                'Google' => array('class' => 'Google', 'isConfigured' => false),
+                'Github' => array('class' => 'Github', 'isConfigured' => false),
+                'Twitter' => array('class' => 'Twitter', 'isConfigured' => false),
+            );
 
-        foreach($files as $file)
-        {
-            $class = $file->getRelativePathName();
+        ksort($result);
 
-            //$class = substr($class, 0, -4);
+        // get provider records and mix with result
 
-            switch($class)
+        $conditions = '';
+        $params = array();
+
+        $providerRecords = Oauth_ProviderRecord::model()->findAll($conditions, $params);
+
+        if($providerRecords) {
+            foreach($providerRecords as $providerRecord) {
+
+                if(isset($result[$providerRecord->providerClass])) {
+                    $result[$providerRecord->providerClass]['isConfigured'] = true;
+                    $result[$providerRecord->providerClass]['record'] = $providerRecord;
+                }
+            }
+        }
+
+
+        // filter configured providers
+
+        if($configuredOnly) {
+            foreach($result as $k => $v)
             {
-                case "Common":
-
-                break;
-
-                default:
-                $result[$class] = $class;
+                if(!$v['isConfigured']) {
+                    unset($result[$k]);
+                }
             }
         }
 
         return $result;
-
     }
 
     // --------------------------------------------------------------------

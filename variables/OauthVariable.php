@@ -16,16 +16,16 @@ class OauthVariable
     // {
     //     return craft()->oauth->connect($namespace, $providerClass, $scope, $userToken);
     // }
-    public function connect($providerClass, $scope = null, $namespace = null, $userMode = false)
+    public function connect($providerClass, $scope = null, $namespace = null)
     {
-        return craft()->oauth->connect($providerClass, $scope, $namespace, $userMode);
+        return craft()->oauth->connectUrl($providerClass, $scope, $namespace);
     }
 
     // --------------------------------------------------------------------
 
-    public function disconnect($namespace, $providerClass)
+    public function disconnect($providerClass, $namespace = null)
     {
-        return craft()->oauth->disconnect($namespace, $providerClass);
+        return craft()->oauth->disconnectUrl($providerClass, $namespace);
     }
 
     // --------------------------------------------------------------------
@@ -51,9 +51,9 @@ class OauthVariable
 
     // --------------------------------------------------------------------
 
-    public function getProviders()
+    public function getProviders($configuredOnly = true)
     {
-        return craft()->oauth->getProviders();
+        return craft()->oauth->getProviders($configuredOnly);
     }
 
     // --------------------------------------------------------------------

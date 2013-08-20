@@ -12,30 +12,16 @@ class Oauth_PublicController extends BaseController
 
     public function actionConnect()
     {
-        // craft()->oauth->httpSessionClean();
-
-        $userMode = (bool) craft()->request->getParam('userMode');
-        $providerClass = craft()->request->getParam('provider');
-        
-        craft()->oauth->httpSessionAdd('oauth.providerClass', $providerClass);
-        craft()->oauth->httpSessionAdd('oauth.userMode', $userMode);
-        craft()->oauth->httpSessionAdd('oauth.referer', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null));
-
-
-        // session var : scope
-
-        $_wantedScope = craft()->request->getParam('scope');
-        $_wantedScope = unserialize(base64_decode($_wantedScope));
-
-        $scope = craft()->oauth->httpSessionAdd('oauth.scope', $_wantedScope);
+        $namespace = craft()->oauth->httpSessionAdd('oauth.namespace', craft()->request->getParam('namespace'));
 
 
         // connect user or system
 
-        if(craft()->httpSession->get('oauth.userMode')) {
-            $this->_connectUser();
-        } else {
+        if($namespace) {
+
             $this->_connectSystem();
+        } else {
+            $this->_connectUser();
         }
     }
 
@@ -45,18 +31,32 @@ class Oauth_PublicController extends BaseController
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
+        // redirect url
+
+        $redirect = craft()->httpSession->get('oauth.referer');
+
+        if(!$redirect) {
+            $redirect = $_SERVER['HTTP_REFERER'];
+        }
+
+
         // get request params
 
         $providerClass = craft()->request->getParam('provider');
-
         $namespace = craft()->request->getParam('namespace');
+
+
 
         if($namespace) {
             $userMode = false;
         } else {
-            $userMode = true;
+            if(craft()->userSession->user) {
+                $userMode = true;
+            } else {
+                $this->_redirect($redirect);
+            }
         }
-        
+
 
         // criteria conditions & params
 
@@ -81,7 +81,7 @@ class Oauth_PublicController extends BaseController
 
         // redirect
 
-        $this->_redirect($_SERVER['HTTP_REFERER']);
+        $this->_redirect($redirect);
     }
 
     // --------------------------------------------------------------------
@@ -106,7 +106,7 @@ class Oauth_PublicController extends BaseController
             $tokenScope = craft()->oauth->tokenScopeByCurrentUser($providerClass);
 
 
-            // is scope enough ? 
+            // is scope enough ?
 
             $scopeEnough = craft()->oauth->scopeIsEnough($scope, $tokenScope);
 
@@ -119,7 +119,7 @@ class Oauth_PublicController extends BaseController
                 craft()->httpSession->add('oauth.scope', $scope);
             }
         }
-        
+
 
         // instantiate provider
 
@@ -190,9 +190,9 @@ class Oauth_PublicController extends BaseController
                 $tokenRecord->userId = craft()->userSession->user->id;
                 $tokenRecord->provider = $providerClass;
 
-                $account = $provider->getAccount();
+                $account = $provider->getUserInfo();
 
-                $tokenRecord->userMapping = $account->mapping;
+                $tokenRecord->userMapping = $account['uid'];
             }
 
             $tokenRecord->token = $token;
@@ -206,12 +206,12 @@ class Oauth_PublicController extends BaseController
             die('fail');
         }
 
-        
+
         // remove httpSession variables
 
         craft()->oauth->httpSessionClean();
-        
-        
+
+
         // redirect
 
         $this->_redirect($referer);
@@ -237,18 +237,20 @@ class Oauth_PublicController extends BaseController
 
         $callbackUrl = UrlHelper::getSiteUrl(
             craft()->config->get('actionTrigger').'/oauth/public/connect',
-            array('provider' => $providerClass)
+            array(
+                'provider' => $providerClass
+            )
         );
 
+
+
         $provider = craft()->oauth->providerInstantiate($providerClass, $callbackUrl, null, $scope);
+
         $provider = craft()->oauth->providerConnect($provider);
 
 
-        // clean httpSession
-        
-        craft()->oauth->httpSessionClean();
-
-
+        // var_dump($provider);
+        // die();
         // save token
 
         if($provider) {
@@ -274,7 +276,7 @@ class Oauth_PublicController extends BaseController
                 $scope = $provider->scope;
             }
 
-            
+
             // save token record
 
             $tokenRecord = new Oauth_TokenRecord();
@@ -285,11 +287,12 @@ class Oauth_PublicController extends BaseController
 
             $tokenRecord->save();
 
+
         } else {
             die('fail');
         }
 
-        
+
         // redirect
 
         $this->_redirect($referer);
