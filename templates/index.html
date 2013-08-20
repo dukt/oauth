@@ -12,42 +12,24 @@
             </tr>
         </thead>
         <tbody>
-            {% for provider in craft.oauth.getProviders() %}
-
-
-                {% set providerRecord = craft.oauth.getProvider(provider) %}
+            {% for provider in craft.oauth.getProviders(false) %}
 
                 <tr>
-                    <td><a href="{{ url('oauth/settings/'~provider) }}">{{provider}}</a></td>
-                    
+                    <td><a href="{{ url('oauth/settings/'~provider.class) }}">{{provider.class}}</a></td>
+
                     <td class="nowrap">
 
-                        {% if providerRecord.clientId is not null and providerRecord.clientSecret is not null %}
-                            {% if providerRecord.enabled %}
+                        {% if provider.isConfigured %}
                                 <span class="status on"></span> Configured
-
-                                {#
-                                &nbsp;
-                                <a class="btn small" href="{{ actionUrl('oauth/settings/disable', {providerId:providerRecord.id}) }}">Disable</a>
-                                #}
-                            {% else %}
-                                <span class="status off"></span> Disabled
-                                {#
-                                &nbsp;
-                                <a class="btn small" href="{{ actionUrl('oauth/settings/enable', {providerId:providerRecord.id}) }}">Enable</a>
-                                #}
-                            {% endif %}
                         {% else %}
                             <span class="status"></span><span class="light">Not configured</span>
-                            {#
-                            <a class="btn small disabled" href="{{ actionUrl('oauth/settings/enable', {provider:provider}) }}">Enable</a>
-                            #}
                         {% endif %}
                     </td>
 
-                    <td><a class="btn small" href="{{ url('oauth/settings/'~provider) }}">API Settings</a></td>
+                    <td><a class="btn small" href="{{ url('oauth/settings/'~provider.class) }}">API Settings</a></td>
 
                 </tr>
+
             {% endfor %}
         </tbody>
     </table>

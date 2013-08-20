@@ -31,6 +31,8 @@
 
         {% set providerLibrary = craft.oauth.providerInstantiate(serviceProviderClass) %}
 
+
+
         <p>Create an OAuth 2.0 application and enable associated services in the <a target="_blank" href="{{providerLibrary.consoleUrl}}">{{serviceProviderClass}} API management Console</a>.</p>
 
         <p>Once created, configure the application with the following settings. You might not need to use all of them.</p>
@@ -66,8 +68,6 @@
             {% endif %}
         </div>
 
-        {#{inspect(service.token)}#}
-        {#{inspect(craft.campaigns.serviceSend(service.id, 'campaigns'))}#}
     </form>
 
 {% endset %}

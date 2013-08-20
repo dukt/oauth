@@ -1,5 +1,5 @@
 {% if elementType == 'User' %}
-		
+
 	    <table class="data collapsible">
 	        <thead>
 	            <tr>
@@ -11,27 +11,22 @@
 	        <tbody>
 
 			    {% for provider in craft.oauth.getProviders() %}
-			        {#% set account = craft.oauth.getAccount('connect.user', provider) %#}
-
-			        {#% if account %}
-						<p>{{account.email}}</p>
-			        {% endif %#}
 
 			        <tr>
-			        	<td>{{provider}}</td>
+			        	<td>{{provider.class}}</td>
 			        	<td>-</td>
 			        	<td>
-							{% set tokens = craft.oauth.getTokensByProvider(provider, element.id) %}
+							{% set tokens = craft.oauth.getTokensByProvider(provider.class, element.id) %}
 
 							{% if tokens|length > 0 %}
-								<div class="right"><a href="{{craft.oauth.disconnect('*', provider)}}" class="btn small">Disconnect</a></div>
+								<div class="right"><a href="{{craft.oauth.disconnect(provider.class)}}" class="btn small">Disconnect</a></div>
 							{% else %}
-								<div class="right"><a href="{{ craft.oauth.connect(provider, null, null, true) }}" class="btn small">Connect</a></div>
+								<div class="right"><a href="{{ craft.oauth.connect(provider.class) }}" class="btn small">Connect</a></div>
 						    {% endif %}
 			        	</td>
 			        </tr>
 
-					
+
 
 			    {% endfor %}
 

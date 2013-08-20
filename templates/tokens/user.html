@@ -9,6 +9,7 @@
                 <th scope="col">{{ "ID"|t }}</th>
                 <th scope="col">{{ "Provider"|t }}</th>
                 <th scope="col">{{ "Scope"|t }}</th>
+                <th scope="col">{{ "Mapping"|t }}</th>
                 <th scope="col">{{ "Name"|t }}</th>
                 <th scope="col">{{ "Email"|t }}</th>
                 <th></th>
@@ -16,7 +17,7 @@
         </thead>
         <tbody>
             {% set tokens = craft.oauth.getTokens() %}
-            
+
             {% for token in tokens %}
                 {% if token.user.email is defined %}
                     <tr>
@@ -31,6 +32,7 @@
                                 </ul>
                             {% endif %}
                         </td>
+                        <td>{{token.userMapping}}</td>
                         <td><a href="{{url('users/'~token.user.id)}}">{{token.user.username}}</a></td>
                         <td><a href="{{url('users/'~token.user.id)}}">{{token.user.email}}</a></td>
                         <td class="thin"><a class="btn small" href="{{actionUrl('oauth/settings/deleteToken', {id:token.id})}}">Delete</a></td>

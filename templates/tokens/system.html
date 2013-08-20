@@ -8,8 +8,8 @@
             <tr>
                 <th scope="col">{{ "ID"|t }}</th>
                 <th scope="col">{{ "Provider"|t }}</th>
-                <th scope="col">{{ "Namespace"|t }}</th>
                 <th scope="col">{{ "Scope"|t }}</th>
+                <th scope="col">{{ "Namespace"|t }}</th>
                 <th></th>
             </tr>
         </thead>
@@ -20,7 +20,6 @@
                     <tr>
                         <td>{{token.id}}</td>
                         <td class="nowrap">{{token.provider}}</td>
-                        <td>{{token.namespace}}</td>
                         <td>
                             {% if token.scope is iterable %}
                                 <ul>
@@ -30,6 +29,7 @@
                                 </ul>
                             {% endif %}
                         </td>
+                        <td>{{(token['namespace'] is defined ? token.namespace : '')}}</td>
                         <td class="thin"><a class="btn small" href="{{actionUrl('oauth/settings/deleteToken', {id:token.id})}}">Delete</a></td>
                     </tr>
                 {% endif %}
