@@ -8,7 +8,7 @@ class Oauth_SettingsController extends BaseController
 {
     // --------------------------------------------------------------------
 
-    public function actionSaveService()
+    public function actionProviderSave()
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
@@ -25,7 +25,7 @@ class Oauth_SettingsController extends BaseController
         $model->setAttributes($attributes);
 
 
-        if (craft()->oauth->saveService($model)) {
+        if (craft()->oauth->providerSave($model)) {
             Craft::log(__METHOD__." : Service Saved", LogLevel::Info, true);
             craft()->userSession->setNotice(Craft::t('Service saved.'));
 
@@ -49,7 +49,7 @@ class Oauth_SettingsController extends BaseController
 
         $id = craft()->request->getRequiredParam('id');
 
-        craft()->oauth->deleteTokenById($id);
+        craft()->oauth->tokenDeleteById($id);
 
         craft()->userSession->setNotice(Craft::t('Token deleted.'));
 

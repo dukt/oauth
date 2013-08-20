@@ -2,20 +2,11 @@
 
 namespace Craft;
 
-// require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
-
-// use ReflectionClass;
-// use Symfony\Component\Finder\Finder;
-
 class OauthVariable
 {
 
     // --------------------------------------------------------------------
 
-    // public function connect($namespace, $providerClass, $scope = null, $userToken = false)
-    // {
-    //     return craft()->oauth->connect($namespace, $providerClass, $scope, $userToken);
-    // }
     public function connect($providerClass, $scope = null, $namespace = null)
     {
         return craft()->oauth->connectUrl($providerClass, $scope, $namespace);
@@ -26,6 +17,20 @@ class OauthVariable
     public function disconnect($providerClass, $namespace = null)
     {
         return craft()->oauth->disconnectUrl($providerClass, $namespace);
+    }
+
+    // --------------------------------------------------------------------
+
+    public function providerCallbackUrl($providerClass)
+    {
+        return craft()->oauth->providerCallbackUrl($providerClass);
+    }
+
+    // --------------------------------------------------------------------
+
+    public function providerInstantiate($providerClass, $callbackUrl = null, $token = null, $scope = null)
+    {
+        return craft()->oauth->providerInstantiate($providerClass, $callbackUrl, $token, $scope);
     }
 
     // --------------------------------------------------------------------
@@ -44,16 +49,9 @@ class OauthVariable
 
     // --------------------------------------------------------------------
 
-    public function providerCallbackUrl($providerClass)
+    public function getAccount($providerClass, $namespace = null, $userMode = false)
     {
-        return craft()->oauth->providerCallbackUrl($providerClass);
-    }
-
-    // --------------------------------------------------------------------
-
-    public function getProviders($configuredOnly = true)
-    {
-        return craft()->oauth->getProviders($configuredOnly);
+        return craft()->oauth->getAccount($providerClass, $namespace, $userMode);
     }
 
     // --------------------------------------------------------------------
@@ -65,9 +63,9 @@ class OauthVariable
 
     // --------------------------------------------------------------------
 
-    public function getProviderLibrary($providerClass, $namespace = null , $userToken = false)
+    public function getProviders($configuredOnly = true)
     {
-        return craft()->oauth->getProviderLibrary($providerClass, $namespace, $userToken);
+        return craft()->oauth->getProviders($configuredOnly);
     }
 
     // --------------------------------------------------------------------
@@ -79,30 +77,10 @@ class OauthVariable
 
     // --------------------------------------------------------------------
 
-    public function getTokensByProvider($provider, $user = false)
+    public function tokensByProvider($provider, $user = false)
     {
-        return craft()->oauth->getTokensByProvider($provider, $user);
+        return craft()->oauth->tokensByProvider($provider, $user);
     }
 
-    // --------------------------------------------------------------------
-
-    public function getToken($encodedToken)
-    {
-        return craft()->oauth->getToken($encodedToken);
-    }
-
-    // --------------------------------------------------------------------
-
-    public function getAccount($providerClass, $namespace = null, $userMode = false)
-    {
-        return craft()->oauth->getAccount($providerClass, $namespace, $userMode);
-    }
-
-    // --------------------------------------------------------------------
-
-    public function providerInstantiate($providerClass, $callbackUrl = null, $token = null, $scope = null)
-    {
-        return craft()->oauth->providerInstantiate($providerClass, $callbackUrl, $token, $scope);
-    }
     // --------------------------------------------------------------------
 }

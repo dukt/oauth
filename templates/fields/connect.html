@@ -16,7 +16,7 @@
 			        	<td>{{provider.class}}</td>
 			        	<td>-</td>
 			        	<td>
-							{% set tokens = craft.oauth.getTokensByProvider(provider.class, element.id) %}
+							{% set tokens = craft.oauth.tokensByProvider(provider.class, element.id) %}
 
 							{% if tokens|length > 0 %}
 								<div class="right"><a href="{{craft.oauth.disconnect(provider.class)}}" class="btn small">Disconnect</a></div>

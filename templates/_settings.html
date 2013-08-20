@@ -25,7 +25,7 @@
     <h2>Client ID &amp; Secret</h2>
 
     <form method="post" action="" accept-charset="UTF-8">
-        <input type="hidden" name="action" value="oauth/settings/saveService">
+        <input type="hidden" name="action" value="oauth/settings/providerSave">
         <input type="hidden" name="redirect" value="oauth" />
         <input type="hidden" name="serviceProviderClass" value="{{ serviceProviderClass }}" />
 
@@ -64,7 +64,7 @@
             {% if (service.token is defined and service.token|length == 0) or service.token is not defined %}
             <input class="btn submit" type="submit" value="{{ 'Save'|t }}">
             {% elseif service.id is defined %}
-                <a class="btn" href="{{actionUrl('connect/settings/resetServiceToken', {providerClass:serviceProviderClass})}}">Reset Token</a>
+                <a class="btn" href="{{actionUrl('connect/settings/tokenReset', {providerClass:serviceProviderClass})}}">Reset Token</a>
             {% endif %}
         </div>
 
