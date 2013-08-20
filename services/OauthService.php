@@ -74,6 +74,53 @@ class OauthService extends BaseApplicationComponent
     // Rock'n'roll
     // --------------------------------------------------------------------
 
+    // --------------------------------------------------------------------
+
+    public function connectUrl($providerClass, $scope = null, $namespace = null)
+    {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
+        $params = array('provider' => $providerClass);
+
+        if($scope) {
+            $params['scope'] = base64_encode(serialize($scope));
+        }
+
+        if($namespace) {
+            $params['namespace'] = $namespace;
+        }
+
+        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/connect', $params);
+
+        Craft::log(__METHOD__." : Authenticate : ".$url, LogLevel::Info, true);
+
+        return $url;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function disconnectUrl($providerClass, $namespace = null)
+    {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
+        $params = array(
+            'provider' => $providerClass
+            );
+
+        if($namespace) {
+            $params['namespace'] = $namespace;
+        }
+
+
+        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/disconnect', $params);
+
+        Craft::log(__METHOD__." : Deauthenticate : ".$url, LogLevel::Info, true);
+
+        return $url;
+    }
+
+    // --------------------------------------------------------------------
+
     public function httpSessionAdd($k, $v = null)
     {
         $returnValue = craft()->httpSession->get($k);
@@ -102,8 +149,6 @@ class OauthService extends BaseApplicationComponent
         craft()->httpSession->remove('oauth.socialCallback');
         craft()->httpSession->remove('oauth.socialReferer');
     }
-
-
 
     // --------------------------------------------------------------------
 
@@ -184,10 +229,35 @@ class OauthService extends BaseApplicationComponent
         if($token) {
             $provider->setToken($token);
 
-            $this->refreshToken($provider);
+            $this->tokenRefresh($provider);
         }
 
         return $provider;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function providerRecord($providerClass)
+    {
+        $providerRecord = Oauth_ProviderRecord::model()->find(
+
+            // conditions
+
+            'providerClass=:provider',
+
+
+            // params
+
+            array(
+                ':provider' => $providerClass
+            )
+        );
+
+        if($providerRecord) {
+            return $providerRecord;
+        }
+
+        return null;
     }
 
     // --------------------------------------------------------------------
@@ -310,33 +380,6 @@ class OauthService extends BaseApplicationComponent
     }
 
     // --------------------------------------------------------------------
-    // Private APIs
-    // --------------------------------------------------------------------
-
-    public function providerRecord($providerClass)
-    {
-        $providerRecord = Oauth_ProviderRecord::model()->find(
-
-            // conditions
-
-            'providerClass=:provider',
-
-
-            // params
-
-            array(
-                ':provider' => $providerClass
-            )
-        );
-
-        if($providerRecord) {
-            return $providerRecord;
-        }
-
-        return null;
-    }
-
-    // --------------------------------------------------------------------
 
     public function tokenRecordByCurrentUser($providerClass)
     {
@@ -375,51 +418,43 @@ class OauthService extends BaseApplicationComponent
     }
 
     // --------------------------------------------------------------------
-    // --------------------------------------------------------------------
-    // --------------------------------------------------------------------
-    // --------------------------------------------------------------------
 
-    public function connectUrl($providerClass, $scope = null, $namespace = null)
+    public function tokenRefresh($provider)
     {
-        Craft::log(__METHOD__, LogLevel::Info, true);
+        $difference = ($provider->token->expires - time());
 
-        $params = array('provider' => $providerClass);
+        // token expired : we need to refresh it
 
-        if($scope) {
-            $params['scope'] = base64_encode(serialize($scope));
+        if($difference < 1) {
+
+            Craft::log(__METHOD__." : Refresh token ", LogLevel::Info, true);
+
+            $encodedToken = base64_encode(serialize($provider->token));
+
+            $tokenRecord = craft()->oauth->getToken($encodedToken);
+
+
+            if(method_exists($provider, 'access') && $provider->token->refresh_token) {
+
+                $accessToken = $provider->access($provider->token->refresh_token, array('grant_type' => 'refresh_token'));
+
+                if(!$accessToken) {
+                    Craft::log(__METHOD__." : Could not refresh token", LogLevel::Info, true);
+                }
+                // save token
+
+                $provider->token->access_token = $accessToken->access_token;
+                $provider->token->expires = $accessToken->expires;
+
+                $tokenRecord->token = base64_encode(serialize($provider->token));
+
+                if($tokenRecord->save()) {
+                    Craft::log(__METHOD__." : Token saved", LogLevel::Info, true);
+                }
+            } else {
+                Craft::log(__METHOD__." : Access method (for refresh) doesn't exists for ".$providerClass, LogLevel::Info, true);
+            }
         }
-
-        if($namespace) {
-            $params['namespace'] = $namespace;
-        }
-
-        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/connect', $params);
-
-        Craft::log(__METHOD__." : Authenticate : ".$url, LogLevel::Info, true);
-
-        return $url;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function disconnectUrl($providerClass, $namespace = null)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $params = array(
-            'provider' => $providerClass
-            );
-
-        if($namespace) {
-            $params['namespace'] = $namespace;
-        }
-
-
-        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/disconnect', $params);
-
-        Craft::log(__METHOD__." : Deauthenticate : ".$url, LogLevel::Info, true);
-
-        return $url;
     }
 
     // --------------------------------------------------------------------
@@ -507,6 +542,7 @@ class OauthService extends BaseApplicationComponent
     }
 
     // --------------------------------------------------------------------
+
     public function getAccount($providerClass, $namespace = null)
     {
 
@@ -525,8 +561,6 @@ class OauthService extends BaseApplicationComponent
         $token = unserialize(base64_decode($tokenRecord->token));
 
 
-
-
         // provider
 
         $callbackUrl = UrlHelper::getSiteUrl(
@@ -537,158 +571,6 @@ class OauthService extends BaseApplicationComponent
         $provider = craft()->oauth->providerInstantiate($providerClass, $callbackUrl, $token);
 
         return $provider->getUserInfo();
-    }
-    // --------------------------------------------------------------------
-    // kept because there is token refresh
-
-
-    public function refreshToken($provider)
-    {
-        $difference = ($provider->token->expires - time());
-
-        // token expired : we need to refresh it
-
-        if($difference < 1) {
-
-            Craft::log(__METHOD__." : Refresh token ", LogLevel::Info, true);
-
-            $encodedToken = base64_encode(serialize($provider->token));
-
-            $tokenRecord = craft()->oauth->getToken($encodedToken);
-
-
-            if(method_exists($provider, 'access') && $provider->token->refresh_token) {
-
-                $accessToken = $provider->access($provider->token->refresh_token, array('grant_type' => 'refresh_token'));
-
-                if(!$accessToken) {
-                    Craft::log(__METHOD__." : Could not refresh token", LogLevel::Info, true);
-                }
-                // save token
-
-                $provider->token->access_token = $accessToken->access_token;
-                $provider->token->expires = $accessToken->expires;
-
-                $tokenRecord->token = base64_encode(serialize($provider->token));
-
-                if($tokenRecord->save()) {
-                    Craft::log(__METHOD__." : Token saved", LogLevel::Info, true);
-                }
-            } else {
-                Craft::log(__METHOD__." : Access method (for refresh) doesn't exists for ".$providerClass, LogLevel::Info, true);
-            }
-        }
-    }
-
-    public function getAccountDeprecated($providerClass, $namespace = null, $userMode = false)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $provider = $this->getProviderLibrary($providerClass, $namespace, $userMode);
-
-        $callbackUrl = UrlHelper::getSiteUrl(
-            craft()->config->get('actionTrigger').'/oauth/public/connect',
-            array('provider' => $providerClass)
-        );
-
-        $provider = craft()->oauth->providerInstantiate($providerClass, $callbackUrl, null, $scope);
-
-
-        // connect provider
-
-        $provider = craft()->oauth->providerConnect($provider);
-
-
-        // var_dump($providerClass, $namespace, $userMode);
-        // die();
-
-        if(!$provider) {
-            Craft::log(__METHOD__." : Provider null ", LogLevel::Info, true);
-            return NULL;
-        }
-
-
-        // token expired : we need to refresh it
-        $difference = ($provider->token->expires - time());
-
-        // var_dump($provider->token);
-        // var_dump($difference);
-
-        // die();
-        if($difference < 1)
-        {
-            // echo $providerClass;
-            // var_dump($provider->token);
-            // var_dump($difference);
-            // echo '<hr />';
-            // return;
-            Craft::log(__METHOD__." : Refresh token ", LogLevel::Info, true);
-
-            $encodedToken = base64_encode(serialize($provider->token));
-
-            $tokenRecord = craft()->oauth->getToken($encodedToken);
-
-
-            if(method_exists($provider, 'access') && $provider->token->refresh_token) {
-                $accessToken = $provider->access($provider->token->refresh_token, array('grant_type' => 'refresh_token'));
-
-                if(!$accessToken) {
-                    Craft::log(__METHOD__." : Could not refresh token", LogLevel::Info, true);
-                }
-                // save token
-
-                $provider->token->access_token = $accessToken->access_token;
-                $provider->token->expires = $accessToken->expires;
-
-                $tokenRecord->token = base64_encode(serialize($provider->token));
-
-                if($tokenRecord->save()) {
-                    Craft::log(__METHOD__." : Token saved", LogLevel::Info, true);
-                }
-            } else {
-                Craft::log(__METHOD__." : Access method (for refresh) doesn't exists for ".$providerClass, LogLevel::Info, true);
-            }
-        } else {
-            // echo $providerClass;
-            // var_dump($provider->token);
-            // var_dump($difference);
-            // echo '<hr />';
-        }
-
-        $account = $provider->getAccount();
-
-        if(!$account) {
-            Craft::log(__METHOD__." : Account null", LogLevel::Info, true);
-            return NULL;
-        }
-
-        return $account;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function enable($id)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $record = $this->getServiceById($id);
-        $record->enabled = true;
-        $record->save();
-
-        return true;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function disable($id)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $record = $this->getServiceById($id);
-        $record->enabled = false;
-        $record->save();
-
-        return true;
     }
 
     // --------------------------------------------------------------------
@@ -711,21 +593,70 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function getServiceById($id)
+    public function getProviders($configuredOnly = true)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
-        $record = $this->serviceRecord->findByPk($id);
 
-        if ($record) {
 
-            return $record;
+        // retrieve provider class files
+
+        $result = array(
+                'Facebook' => array('class' => 'Facebook', 'isConfigured' => false),
+                'Google' => array('class' => 'Google', 'isConfigured' => false),
+                'Github' => array('class' => 'Github', 'isConfigured' => false),
+                'Twitter' => array('class' => 'Twitter', 'isConfigured' => false),
+            );
+
+        ksort($result);
+
+        // get provider records and mix with result
+
+        $conditions = '';
+        $params = array();
+
+        $providerRecords = Oauth_ProviderRecord::model()->findAll($conditions, $params);
+
+        if($providerRecords) {
+            foreach($providerRecords as $providerRecord) {
+
+                if(isset($result[$providerRecord->providerClass])) {
+                    $result[$providerRecord->providerClass]['isConfigured'] = true;
+                    $result[$providerRecord->providerClass]['record'] = $providerRecord;
+                }
+            }
         }
 
-        return new Oauth_ServiceModel();
+
+        // filter configured providers
+
+        if($configuredOnly) {
+            foreach($result as $k => $v)
+            {
+                if(!$v['isConfigured']) {
+                    unset($result[$k]);
+                }
+            }
+        }
+
+        return $result;
     }
 
     // --------------------------------------------------------------------
+    // --------------------------------------------------------------------
+    // --------------------------------------------------------------------
+    // --------------------------------------------------------------------
+    // --------------------------------------------------------------------
+    // --------------------------------------------------------------------
+    // --------------------------------------------------------------------
+    // --------------------------------------------------------------------
+    // --------------------------------------------------------------------
+    // --------------------------------------------------------------------
+
+    // --------------------------------------------------------------------
+    // used by :
+    // analytics settings
+    // oauth edit provider
 
     public function saveService(Oauth_ServiceModel &$model)
     {
@@ -755,109 +686,6 @@ class OauthService extends BaseApplicationComponent
 
             return false;
         }
-    }
-
-    // --------------------------------------------------------------------
-
-    public function connectService($record = false)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        if(!$record)
-        {
-            Craft::log(__METHOD__." : Record false", LogLevel::Info, true);
-
-            $serviceId = craft()->request->getParam('id');
-
-            $record = $this->serviceRecord->findByPk($serviceId);
-        }
-
-
-        $className = $record->className;
-
-        $redirectUrl = \Craft\UrlHelper::getActionUrl('campaigns/settings/serviceCallback/', array('id' => $record->id));
-
-        $provider = \OAuth\OAuth::provider($className, array(
-            'id' => $record->clientId,
-            'secret' => $record->clientSecret,
-            'redirect_url' => $redirectUrl
-        ));
-
-        Craft::log(__METHOD__." : Provider process redirect_url :".$redirectUrl, LogLevel::Info, true);
-
-        $provider = $provider->process(function($url, $token = null) {
-
-            if ($token) {
-                $_SESSION['token'] = base64_encode(serialize($token));
-            }
-
-            Craft::log(__METHOD__." : Provider processing header location : {$url}", LogLevel::Info, true);
-
-            header("Location: {$url}");
-
-            exit;
-
-        }, function() {
-            return unserialize(base64_decode($_SESSION['token']));
-        });
-
-
-        $token = $provider->token();
-
-        $record->token = base64_encode(serialize($token));
-
-        $record->save();
-    }
-
-    // --------------------------------------------------------------------
-
-    public function service($id)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $service = $this->serviceRecord->findByPk($id);
-
-
-        $providerParams = array();
-        $providerParams['id'] = $service->clientId;
-        $providerParams['secret'] = $service->clientSecret;
-        $providerParams['redirect_url'] = "http://google.fr";
-
-        try {
-            Craft::log(__METHOD__." : Creating oauth provider", LogLevel::Info, true);
-
-            $provider = \OAuth\OAuth::provider($service->providerClass, $providerParams);
-
-            if(!$provider) {
-                Craft::log(__METHOD__." : Provider null", LogLevel::Info, true);
-            }
-
-            $token = unserialize(base64_decode($service->token));
-
-            // refresh token if needed ?
-
-            if(!$token)
-            {
-                Craft::log(__METHOD__." : Invalid token", LogLevel::Info, true);
-
-                throw new \Exception('Invalid Token');
-            }
-
-            $provider->setToken($token);
-
-        } catch(\Exception $e)
-        {
-            Craft::log(__METHOD__." : ".'Provider couln\'t instantiate : '.$e->getMessage(), LogLevel::Info, true);
-            throw new Exception('Provider couln\'t instantiate : '.$e->getMessage());
-        }
-
-        // $serviceClassName = 'Dukt\\Connect\\'.$service->providerClass.'\\Service';
-
-        // $serviceObject = new $serviceClassName($provider);
-
-        $serviceObject = $provider;
-
-        return $serviceObject;
     }
 
     // --------------------------------------------------------------------
@@ -921,88 +749,6 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function getToken($encodedToken)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $criteriaConditions = '';
-        $criteriaParams = array();
-
-        $criteriaConditions = '
-            token=:token
-            ';
-
-        $criteriaParams = array(
-            ':token' => $encodedToken
-            );
-
-        $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
-
-        return $tokenRecord;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function getProviders($configuredOnly = true)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-
-
-        // retrieve provider class files
-
-        $result = array(
-                'Facebook' => array('class' => 'Facebook', 'isConfigured' => false),
-                'Google' => array('class' => 'Google', 'isConfigured' => false),
-                'Github' => array('class' => 'Github', 'isConfigured' => false),
-                'Twitter' => array('class' => 'Twitter', 'isConfigured' => false),
-            );
-
-        ksort($result);
-
-        // get provider records and mix with result
-
-        $conditions = '';
-        $params = array();
-
-        $providerRecords = Oauth_ProviderRecord::model()->findAll($conditions, $params);
-
-        if($providerRecords) {
-            foreach($providerRecords as $providerRecord) {
-
-                if(isset($result[$providerRecord->providerClass])) {
-                    $result[$providerRecord->providerClass]['isConfigured'] = true;
-                    $result[$providerRecord->providerClass]['record'] = $providerRecord;
-                }
-            }
-        }
-
-
-        // filter configured providers
-
-        if($configuredOnly) {
-            foreach($result as $k => $v)
-            {
-                if(!$v['isConfigured']) {
-                    unset($result[$k]);
-                }
-            }
-        }
-
-        return $result;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function deleteServiceById($id)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        return $this->serviceRecord->deleteByPk($id);
-    }
-
-    // --------------------------------------------------------------------
-
     public function deleteTokenById($id)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
@@ -1017,6 +763,9 @@ class OauthService extends BaseApplicationComponent
     }
 
     // --------------------------------------------------------------------
+    // used by :
+    // analytics
+    // oauth
 
     public function resetServiceToken($providerClass)
     {
