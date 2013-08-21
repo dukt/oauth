@@ -537,7 +537,7 @@ class OauthService extends BaseApplicationComponent
                     Craft::log(__METHOD__." : Token saved", LogLevel::Info, true);
                 }
             } else {
-                Craft::log(__METHOD__." : Access method (for refresh) doesn't exists for ".$providerClass, LogLevel::Info, true);
+                Craft::log(__METHOD__." : Access method (for refresh) doesn't exists for this provider", LogLevel::Info, true);
             }
         }
     }
