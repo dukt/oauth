@@ -659,6 +659,7 @@ class OauthService extends BaseApplicationComponent
                 'Google' => array('class' => 'Google', 'isConfigured' => false),
                 'Github' => array('class' => 'Github', 'isConfigured' => false),
                 'Twitter' => array('class' => 'Twitter', 'isConfigured' => false),
+                'Flickr' => array('class' => 'Flickr', 'isConfigured' => false)
             );
 
         ksort($result);
