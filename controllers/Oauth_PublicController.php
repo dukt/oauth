@@ -124,12 +124,7 @@ class Oauth_PublicController extends BaseController
 
         // instantiate provider
 
-        $callbackUrl = UrlHelper::getSiteUrl(
-            craft()->config->get('actionTrigger').'/oauth/public/connect',
-            array('provider' => $providerClass)
-        );
-
-        $provider = craft()->oauth->providerInstantiate($providerClass, $callbackUrl, null, $scope);
+        $provider = craft()->oauth->providerInstantiate($providerClass, null, $scope);
 
 
         // connect provider
@@ -174,7 +169,7 @@ class Oauth_PublicController extends BaseController
             // set default scope if none set
 
             if(!$scope) {
-                $scope = $provider->getScope();
+                $scope = $provider->__get('scope');
             }
 
 
@@ -236,16 +231,7 @@ class Oauth_PublicController extends BaseController
 
         // connect provider
 
-        $callbackUrl = UrlHelper::getSiteUrl(
-            craft()->config->get('actionTrigger').'/oauth/public/connect',
-            array(
-                'provider' => $providerClass
-            )
-        );
-
-
-
-        $provider = craft()->oauth->providerInstantiate($providerClass, $callbackUrl, null, $scope);
+        $provider = craft()->oauth->providerInstantiate($providerClass, null, $scope);
 
         $provider = craft()->oauth->providerConnect($provider);
 

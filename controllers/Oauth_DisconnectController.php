@@ -32,4 +32,6 @@ class Oauth_DisconnectController extends BaseController
 
         $this->redirect($url);
     }
+
+    // --------------------------------------------------------------------
 }

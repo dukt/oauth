@@ -252,25 +252,22 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function providerIsConnected($providerClass, $scope = null, $namespace = null, $userMode = false)
+    public function providerIsConnected($providerClass, $scope = null, $namespace = null)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
         $criteriaConditions = 'provider=:provider';
         $criteriaParams = array(':provider' => $providerClass);
 
-        if($userMode) {
+        if(!$namespace) {
             $userId = craft()->userSession->user->id;
 
             $criteriaConditions .= ' AND userId=:userId';
             $criteriaParams[':userId'] = $userId;
 
         } else {
-
-            if($namespace) {
-                $criteriaConditions .= ' AND namespace=:namespace';
-                $criteriaParams[':namespace'] = $namespace;
-            }
+            $criteriaConditions .= ' AND namespace=:namespace';
+            $criteriaParams[':namespace'] = $namespace;
         }
 
         $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);

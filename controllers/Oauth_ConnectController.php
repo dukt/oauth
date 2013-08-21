@@ -18,6 +18,7 @@ class Oauth_ConnectController extends BaseController
         $namespace     = craft()->request->getParam('namespace');
         $scope         = unserialize(base64_decode(craft()->request->getParam('scope')));
 
+
         // userMode
 
         $userMode = false;
@@ -51,4 +52,6 @@ class Oauth_ConnectController extends BaseController
 
         $this->redirect($url);
     }
+
+    // --------------------------------------------------------------------
 }
