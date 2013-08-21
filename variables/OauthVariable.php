@@ -42,9 +42,9 @@ class OauthVariable
 
     // --------------------------------------------------------------------
 
-    public function providerIsConnected($providerClass, $scope = null, $namespace = null, $userMode = false)
+    public function providerIsConnected($providerClass, $scope = null, $namespace = null)
     {
-        return craft()->oauth->providerIsConnected($providerClass, $scope, $namespace, $userMode);
+        return craft()->oauth->providerIsConnected($providerClass, $scope, $namespace);
     }
 
     // --------------------------------------------------------------------
