@@ -697,6 +697,28 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
+    public function getToken($encodedToken)
+    {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
+        $criteriaConditions = '';
+        $criteriaParams = array();
+
+        $criteriaConditions = '
+            token=:token
+            ';
+
+        $criteriaParams = array(
+            ':token' => $encodedToken
+            );
+
+        $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
+
+        return $tokenRecord;
+    }
+
+    // --------------------------------------------------------------------
+
     public function getTokens($namespace = null)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
