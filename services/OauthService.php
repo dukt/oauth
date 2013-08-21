@@ -169,7 +169,10 @@ class OauthService extends BaseApplicationComponent
 
 
         if(!$callbackUrl) {
-            $callbackUrl = 'default';
+            $callbackUrl = UrlHelper::getSiteUrl(
+                craft()->config->get('actionTrigger').'/oauth/public/connect',
+                array('provider' => $providerClass)
+            );
         }
 
         // provider options
