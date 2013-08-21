@@ -49,6 +49,21 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
+    public function connectCallback($providerClass)
+    {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
+        $params = array('provider' => $providerClass);
+
+        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/connect', $params);
+
+        Craft::log(__METHOD__." : Authenticate : ".$url, LogLevel::Info, true);
+
+        return $url;
+    }
+
+    // --------------------------------------------------------------------
+
     public function disconnect($providerClass, $namespace = null)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
@@ -107,18 +122,6 @@ class OauthService extends BaseApplicationComponent
     // Provider
     // --------------------------------------------------------------------
 
-    public function providerCallbackUrl($providerClass)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $params = array('provider' => $providerClass);
-
-        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/connect', $params);
-
-        Craft::log(__METHOD__." : Authenticate : ".$url, LogLevel::Info, true);
-
-        return $url;
-    }
 
     // --------------------------------------------------------------------
 

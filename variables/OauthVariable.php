@@ -21,9 +21,9 @@ class OauthVariable
 
     // --------------------------------------------------------------------
 
-    public function providerCallbackUrl($providerClass)
+    public function connectCallback($providerClass)
     {
-        return craft()->oauth->providerCallbackUrl($providerClass);
+        return craft()->oauth->connectCallback($providerClass);
     }
 
     // --------------------------------------------------------------------
