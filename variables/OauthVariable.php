@@ -9,7 +9,7 @@ class OauthVariable
 
     public function connect($providerClass, $scope = null, $namespace = null)
     {
-        return craft()->oauth->connectUrl($providerClass, $scope, $namespace);
+        return craft()->oauth->connect($providerClass, $scope, $namespace);
     }
 
     // --------------------------------------------------------------------

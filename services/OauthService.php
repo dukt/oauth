@@ -26,7 +26,7 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function connectUrl($providerClass, $scope = null, $namespace = null)
+    public function connect($providerClass, $scope = null, $namespace = null)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
