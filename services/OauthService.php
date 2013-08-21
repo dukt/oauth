@@ -161,7 +161,7 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function providerInstantiate($providerClass, $callbackUrl = null, $token = null, $scope = null)
+    public function providerInstantiate($providerClass, $token = null, $scope = null, $callbackUrl = null)
     {
         // get provider record
 
@@ -618,12 +618,7 @@ class OauthService extends BaseApplicationComponent
 
         // provider
 
-        $callbackUrl = UrlHelper::getSiteUrl(
-            craft()->config->get('actionTrigger').'/oauth/public/connect',
-            array('provider' => $providerClass)
-        );
-
-        $provider = craft()->oauth->providerInstantiate($providerClass, $callbackUrl, $token);
+        $provider = craft()->oauth->providerInstantiate($providerClass, $token);
 
         return $provider->getUserInfo();
     }
