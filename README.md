@@ -1,12 +1,18 @@
-# OAuth  <small>_for Craft CMS_</small>
+# OAuth  <small>_for Craft Plugin Developers_</small>
 
-OAuth has ben designed to help plugin developers get quickly started with OAuth. Discover how to auto-install it, and use it from your your plugin.
+The OAuth plugin handles OAuth providers settings & authentication so you can focus on the things that make your plugin different.
 
 - [Installation](#install)
-- [Supported providers](#providers)
-- [Set up a system token](#system-token)
-- [Set up a user token](#user-token)
-- [Developer API Reference](#api)
+- [Using OAuth in your Craft plugins](#develop)
+    - Getting authenticated with a provider
+    - Perform authenticated requests to an API
+    - Auto-install & update the OAuth plugin
+- [Providers](#providers)
+- [Authentication](#tokens)
+    - [System authentication](#system-authentication)
+    - [User authentication](#user-token)
+- [Template API](#template-api)
+- [OAuth Service API](#template-api)
 - [Licensing](#license)
 - [Feedback](#feedback)
 
@@ -15,16 +21,49 @@ OAuth has ben designed to help plugin developers get quickly started with OAuth.
 
 Unzip and drop the OAuth plugin in your `craft/plugin` directory.
 
+<a id="develop"></a>
+## Using OAuth in your plugins
+
+The OAuth plugin handles OAuth providers settings & authentication so you can focus on the things that make your plugin different.
+
+Popular providers are supported such as Facebook, Google, Twitter and <a href="#providers">more...</a>
+
+There <a href="#tokens">are two ways</a> to get connected :
+
+- **System :** Authentication between your _Craft system_ and a provider.
+- **User :** Authentication between a _Craft user_ and provider.
+
+Once connected, it's easy to make <a href="#">authenticated requests to any API</a> you choose to use.
+
+Finally, you can <a href="#">add OAuth plugin auto-install and update</a> in order to make OAuth authentication even more integrated in your plugin.
+
 <a id="providers"></a>
-## Supported providers
+## Providers
 
 - Facebook
 - GitHub
+
 - Google
 - Twitter
+- Flickr
+
+The following providers are **not supported** but will be added soon :
+
+- Appnet
+- Dropbox
+- Foursquare
+- Instagram
+- LinkedIn
+- Mailchimp
+- PayPal
+- Tumblr
+- Vimeo
+
+<a id="tokens"></a>
+## Tokens
 
 <a id="system-token"></a>
-## Set up up a system token
+### System token
 
 Set up a system wide token.
 
@@ -34,13 +73,13 @@ Set up a system wide token.
         'https://www.googleapis.com/auth/analytics'
         ] %}
 
-    {{craft.oauth.connect('analytics.sytem', 'Google', scope)}}
+    {{craft.oauth.connect('Google', scope, 'analytics.system')}}
 
 
 <a id="user-token"></a>
-## Set up up a user token
+### User token
 
-Set up a user-specific token.
+Set up a user specific token.
 
     {% set scope = [
         'https://www.googleapis.com/auth/userinfo.profile',
@@ -48,55 +87,23 @@ Set up a user-specific token.
         'https://www.googleapis.com/auth/analytics'
         ] %}
 
-    {{craft.oauth.connect('analytics.sytem', 'Google', scope, userId)}}
+    {{craft.oauth.connect('Google', scope)}}
 
 
-<a id="api"></a>
-## Developer API Reference
+<a id="template-api"></a>
+## Template API
 
-### craft.oauth.connect(namespace, providerClass, userToken = false, scope = null)
-
-Returns a link for connecting to the provider with given parameters.
-
-### craft.oauth.disconnect(namespace, providerClass)
-
-Returns a link for disconnecting from the given provider.
-
+### craft.oauth.connect(providerClass, scope = null, namespace = null)
+### craft.oauth.disconnect(providerClass, namespace = null)
+### craft.oauth.connectCallback(providerClass)
+### craft.oauth.providerInstantiate(providerClass, token = null, scope = null, callbackUrl = null)
 ### craft.oauth.providerIsConfigured(provider)
+### craft.oauth.providerIsConnected(providerClass, scope = null, namespace = null)
 
-Returns true or false.
 
-### craft.oauth.providerIsConnected(namespace, providerClass, user = NULL)
+<a id="oauth-api"></a>
+## OAuth Service API
 
-Returns true or false.
-
-### craft.oauth.providerCallbackUrl(providerClass)
-
-Return the callback URL of the provider.
-
-### craft.oauth.getProviders()
-
-Returns an array of all providers found.
-
-### craft.oauth.getProvider(providerClass)
-
-Returns an Oauth_ProviderRecord from given provider class.
-
-### craft.oauth.getProviderLibrary(providerClass)
-
-Return a provider library object.
-
-### craft.oauth.getTokens(namespace = null, providerClass = null, userToken = null)
-
-Returns an array of Oauth_TokenRecord.
-
-### craft.oauth.getToken(encodedToken)
-
-Return an Oauth_TokenRecord from its encoded (serialize + base64encode) token.
-
-### craft.oauth.getAccount(namespace, providerClass)
-
-Return an account object.
 
 <a id="license"></a>
 ## Licensing
