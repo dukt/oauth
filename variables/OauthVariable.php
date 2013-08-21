@@ -16,7 +16,7 @@ class OauthVariable
 
     public function disconnect($providerClass, $namespace = null)
     {
-        return craft()->oauth->disconnectUrl($providerClass, $namespace);
+        return craft()->oauth->disconnect($providerClass, $namespace);
     }
 
     // --------------------------------------------------------------------

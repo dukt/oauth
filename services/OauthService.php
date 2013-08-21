@@ -49,7 +49,7 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function disconnectUrl($providerClass, $namespace = null)
+    public function disconnect($providerClass, $namespace = null)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
