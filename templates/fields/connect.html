@@ -10,18 +10,18 @@
 	        </thead>
 	        <tbody>
 
-			    {% for provider in craft.oauth.getProviders() %}
+			    {% for provider in craft.oauth.getProviders(false) %}
 
 			        <tr>
-			        	<td>{{provider.class}}</td>
+			        	<td>{{provider.classHandle}}</td>
 			        	<td>-</td>
 			        	<td>
-							{% set tokens = craft.oauth.tokensByProvider(provider.class, element.id) %}
+							{% set token = craft.oauth.getUserToken(provider.classHandle, element.id) %}
 
-							{% if tokens|length > 0 %}
-								<div class="right"><a href="{{craft.oauth.disconnect(provider.class)}}" class="btn small">Disconnect</a></div>
+							{% if token %}
+								<div class="right"><a href="{{craft.oauth.disconnect(provider.classHandle)}}" class="btn small">Disconnect</a></div>
 							{% else %}
-								<div class="right"><a href="{{ craft.oauth.connect(provider.class) }}" class="btn small">Connect</a></div>
+								<div class="right"><a href="{{ craft.oauth.connect(provider.classHandle) }}" class="btn small">Connect</a></div>
 						    {% endif %}
 			        	</td>
 			        </tr>

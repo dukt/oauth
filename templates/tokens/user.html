@@ -16,7 +16,7 @@
             </tr>
         </thead>
         <tbody>
-            {% set tokens = craft.oauth.getTokens() %}
+            {% set tokens = craft.oauth.getUserTokens() %}
 
             {% for token in tokens %}
                 {% if token.user.email is defined %}

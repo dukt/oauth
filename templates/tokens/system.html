@@ -14,25 +14,25 @@
             </tr>
         </thead>
         <tbody>
-            {% set tokens = craft.oauth.getTokens() %}
+            {% set tokens = craft.oauth.getSystemTokens() %}
+
             {% for token in tokens %}
-                {% if token.user.email is not defined %}
-                    <tr>
-                        <td>{{token.id}}</td>
-                        <td class="nowrap">{{token.provider}}</td>
-                        <td>
-                            {% if token.scope is iterable %}
-                                <ul>
-                                    {% for scopeRow in token.scope %}
-                                        <li><em>{{scopeRow}}</em></li>
-                                    {% endfor %}
-                                </ul>
-                            {% endif %}
-                        </td>
-                        <td>{{(token['namespace'] is defined ? token.namespace : '')}}</td>
-                        <td class="thin"><a class="btn small" href="{{actionUrl('oauth/settings/deleteToken', {id:token.id})}}">Delete</a></td>
-                    </tr>
-                {% endif %}
+
+                <tr>
+                    <td>{{token.id}}</td>
+                    <td class="nowrap">{{token.provider}}</td>
+                    <td>
+                        {% if token.scope is iterable %}
+                            <ul>
+                                {% for scopeRow in token.scope %}
+                                    <li><em>{{scopeRow}}</em></li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </td>
+                    <td>{{(token['namespace'] is defined ? token.namespace : '')}}</td>
+                    <td class="thin"><a class="btn small" href="{{actionUrl('oauth/settings/deleteToken', {id:token.id})}}">Delete</a></td>
+                </tr>
 
             {% endfor %}
         </tbody>
