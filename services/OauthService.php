@@ -13,6 +13,9 @@ class OauthService extends BaseApplicationComponent
 
     protected $providerRecord;
 
+    private $_enableProviders = array();
+    private $_allProviders = array();
+
     // --------------------------------------------------------------------
 
     public function __construct($providerRecord = null)
@@ -49,7 +52,7 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function connectCallback($providerClass)
+    public function callbackUrl($providerClass)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
@@ -84,6 +87,294 @@ class OauthService extends BaseApplicationComponent
         return $url;
     }
 
+    // --------------------------------------------------------------------
+
+    public function getAccount($providerClass, $namespace = null)
+    {
+
+        // get token
+
+        if($namespace) {
+            $tokenRecord = craft()->oauth_tokens->tokenRecordByNamespace($providerClass, $namespace);
+        } else {
+            $tokenRecord = craft()->oauth_tokens->tokenRecordByCurrentUser($providerClass);
+        }
+
+        if(!$tokenRecord) {
+            return null;
+        }
+
+        $token = unserialize(base64_decode($tokenRecord->token));
+
+
+        // provider
+
+        $provider = craft()->oauth->getProvider($providerClass);
+
+        $provider->connect($token);
+
+        return $provider->getAccount();
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getProvider($handle, $configuredOnly = true)
+    {
+        if($configuredOnly) {
+
+            $this->_loadProviders();
+
+            if(isset($this->_enableProviders[$handle])) {
+                return $this->_enableProviders[$handle];
+            } else {
+                return null;
+            }
+
+        } else {
+            // get provider class
+
+
+            $provider = $this->_getProvider($handle);
+
+            if($provider) {
+
+                // load record data into the provider
+
+                $record = craft()->oauth_providers->providerRecord($handle);
+
+                $provider->isConfigured = true;
+                $provider->record = $record;
+            } else {
+                echo $handle;
+            }
+
+            return $provider;
+        }
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getProviders($configuredOnly = true)
+    {
+
+        if($configuredOnly) {
+            $this->_loadProviders();
+
+            return $this->_enableProviders;
+        } else {
+
+            $providersPath = CRAFT_PLUGINS_PATH.'oauth/providers/OAuthProviders';
+            $providersFolderContents = IOHelper::getFolderContents($providersPath, false);
+
+            if($providersFolderContents) {
+
+                foreach($providersFolderContents as $path) {
+                    $path = IOHelper::normalizePathSeparators($path);
+                    $fileName = IOHelper::getFileName($path, false);
+
+                    if($fileName == 'BaseOAuthProvider') continue;
+
+                    // Chop off the "OAuthProvider" suffix
+                    $handle = substr($fileName, 0, strlen($fileName) - 13);
+
+                    $provider = $this->getProvider($handle, false);
+
+                    $this->_allProviders[$handle] = $provider;
+                }
+            }
+
+            return $this->_allProviders;
+        }
+    }
+
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Loads the configured (enabled) plugins.
+     */
+    private function _loadProviders()
+    {
+        // get configured provider records
+
+        $conditions = 'clientId is not null AND clientSecret is not null';
+        $params = array();
+
+        $providerRecords = Oauth_ProviderRecord::model()->findAll($conditions, $params);
+
+        foreach($providerRecords as $row) {
+
+            $class = $row['providerClass'];
+            $handle = $row['providerClass'];
+
+            $provider = $this->_getProvider($class);
+
+            if($provider) {
+                $this->_enableProviders[$handle] = $provider;
+            }
+        }
+    }
+
+    // --------------------------------------------------------------------
+
+    private function _getProvider($handle)
+    {
+        // Get the full class name
+
+        $class = $handle.'OAuthProvider';
+
+        $nsClass = 'OAuthProviders\\'.$class;
+
+
+        // Skip the autoloader
+
+        if (!class_exists($nsClass, false))
+        {
+            $path = CRAFT_PLUGINS_PATH.'oauth/providers/OAuthProviders/'.$class.'.php';
+
+            if (($path = IOHelper::fileExists($path, false)) !== false)
+            {
+                require_once $path;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        if (!class_exists($nsClass, false))
+        {
+            return null;
+        }
+
+
+        $provider = new $nsClass;
+
+        if (!$provider instanceof \OAuthProviders\BaseOAuthProvider)
+        {
+            die("this provider doesn't implement BaseOAuthProvider abstract class");
+        }
+
+        if($provider) {
+
+            // load record data into the provider
+
+            $record = craft()->oauth_providers->providerRecord($handle);
+
+            $provider->isConfigured = true;
+            $provider->record = $record;
+        }
+
+        return $provider;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getToken($providerClass, $namespace = null, $userId = null)
+    {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
+        // get token
+
+        $tokenRecord = $this->getTokenRecord($providerClass, $namespace, $userId);
+
+        if(!$tokenRecord) {
+            return null;
+        }
+
+        $token = unserialize(base64_decode($tokenRecord->token));
+
+        return $token;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getTokenEncoded($encodedToken)
+    {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
+        $criteriaConditions = '';
+        $criteriaParams = array();
+
+        $criteriaConditions = '
+            token=:token
+            ';
+
+        $criteriaParams = array(
+            ':token' => $encodedToken
+            );
+
+        $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
+
+        return $tokenRecord;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getTokenRecord($providerClass, $namespace = null, $userId = null)
+    {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
+        // get token
+
+        if($namespace) {
+            $tokenRecord = craft()->oauth_tokens->tokenRecordByNamespace($providerClass, $namespace);
+        } elseif($userId) {
+            $tokenRecord = craft()->oauth_tokens->tokenRecordByUser($providerClass, $userId);
+        } else {
+            $tokenRecord = craft()->oauth_tokens->tokenRecordByCurrentUser($providerClass);
+        }
+
+        if(!$tokenRecord) {
+            return null;
+        }
+
+        return $tokenRecord;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getSystemToken($providerClass, $namespace)
+    {
+        return $this->getToken($providerClass, $namespace);
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getSystemTokens()
+    {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
+        $criteriaConditions = 'namespace is not null';
+        $criteriaParams = array();
+
+        return Oauth_TokenRecord::model()->findAll($criteriaConditions, $criteriaParams);
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getUserToken($providerClass, $userId = null)
+    {
+        return $this->getToken($providerClass, null, $userId);
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getUserTokens($userId = null)
+    {
+        if(!$userId) {
+            $userId = craft()->userSession->user->id;
+        }
+
+        if(!$userId) {
+            return null;
+        }
+
+        $criteriaConditions = 'userId=:userId';
+        $criteriaParams = array(':userId' => $userId);
+
+        return Oauth_TokenRecord::model()->findAll($criteriaConditions, $criteriaParams);;
+    }
 
     // --------------------------------------------------------------------
     // httpSession
@@ -116,214 +407,6 @@ class OauthService extends BaseApplicationComponent
         craft()->httpSession->remove('oauth.social');
         craft()->httpSession->remove('oauth.socialCallback');
         craft()->httpSession->remove('oauth.socialReferer');
-    }
-
-    // --------------------------------------------------------------------
-    // Provider
-    // --------------------------------------------------------------------
-
-
-    // --------------------------------------------------------------------
-
-    public function providerConnect($provider)
-    {
-
-        $returnProvider = null;
-
-        try {
-            Craft::log(__METHOD__." : Provider processing", LogLevel::Info, true);
-
-            $returnProvider = $provider->process(function($url, $token = null) {
-
-                if ($token) {
-                    $_SESSION['token'] = base64_encode(serialize($token));
-                }
-
-                header("Location: {$url}");
-
-                exit;
-
-            }, function() {
-                return unserialize(base64_decode($_SESSION['token']));
-            });
-
-        } catch(\Exception $e) {
-
-            Craft::log(__METHOD__." : Provider process failed : ".$e->getMessage(), LogLevel::Error);
-
-            return false;
-        }
-
-        // die();
-
-        return $returnProvider;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function providerInstantiate($providerClass, $token = null, $scope = null, $callbackUrl = null)
-    {
-        // get provider record
-
-        $providerRecord = $this->providerRecord($providerClass);
-
-
-        if(!$callbackUrl) {
-            $callbackUrl = UrlHelper::getSiteUrl(
-                craft()->config->get('actionTrigger').'/oauth/public/connect',
-                array('provider' => $providerClass)
-            );
-        }
-
-        // provider options
-
-        if($providerRecord) {
-            $opts = array(
-                'id' => $providerRecord->clientId,
-                'secret' => $providerRecord->clientSecret,
-                'redirect_url' => $callbackUrl
-            );
-        } else {
-            $opts = array(
-                'id' => 'x',
-                'secret' => 'x',
-                'redirect_url' => 'x'
-            );
-        }
-
-        if($scope) {
-            if(is_array($scope) && !empty($scope)) {
-                $opts['scope'] = $scope;
-            }
-        }
-
-
-        $class = "\\OAuth\\Provider\\{$providerClass}";
-
-        $provider = new $class($opts);
-
-        if($token) {
-            $provider->setToken($token);
-
-            $this->tokenRefresh($provider);
-        }
-
-        return $provider;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function providerRecord($providerClass)
-    {
-        $providerRecord = Oauth_ProviderRecord::model()->find(
-
-            // conditions
-
-            'providerClass=:provider',
-
-
-            // params
-
-            array(
-                ':provider' => $providerClass
-            )
-        );
-
-        if($providerRecord) {
-            return $providerRecord;
-        }
-
-        return null;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function providerIsConfigured($providerClass)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $record = Oauth_ProviderRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $providerClass));
-
-        if ($record) {
-            Craft::log(__METHOD__." : Yes", LogLevel::Info, true);
-            if(!empty($record->clientId) && !empty($record->clientSecret)) {
-                return true;
-            }
-        }
-
-        Craft::log(__METHOD__." : No", LogLevel::Info, true);
-
-        return false;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function providerIsConnected($providerClass, $scope = null, $namespace = null)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $criteriaConditions = 'provider=:provider';
-        $criteriaParams = array(':provider' => $providerClass);
-
-        if(!$namespace) {
-            $userId = craft()->userSession->user->id;
-
-            $criteriaConditions .= ' AND userId=:userId';
-            $criteriaParams[':userId'] = $userId;
-
-        } else {
-            $criteriaConditions .= ' AND namespace=:namespace';
-            $criteriaParams[':namespace'] = $namespace;
-        }
-
-        $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
-
-        if($tokenRecord) {
-            Craft::log(__METHOD__." : Token Record found", LogLevel::Info, true);
-
-            // check scope (scopeIsEnough)
-
-            return $this->scopeIsEnough($scope, $tokenRecord->scope);
-        }
-
-        Craft::log(__METHOD__." : Token Record not found", LogLevel::Info, true);
-
-        return false;
-    }
-
-    // --------------------------------------------------------------------
-    // used by :
-    // analytics settings
-    // oauth edit provider
-
-    public function providerSave(Oauth_ProviderModel &$model)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $class = $model->getAttribute('providerClass');
-
-        if (null === ($record = Oauth_ProviderRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $class)))) {
-            $record = $this->providerRecord->create();
-        }
-
-        $record->setAttributes($model->getAttributes());
-
-        if ($record->save()) {
-            // update id on model (for new records)
-
-            $model->setAttribute('id', $record->getAttribute('id'));
-
-            // Connect Service
-
-           // $this->connectService($record);
-
-            return true;
-        } else {
-
-            $model->addErrors($record->getErrors());
-
-            return false;
-        }
     }
 
     // --------------------------------------------------------------------
@@ -398,349 +481,5 @@ class OauthService extends BaseApplicationComponent
     }
 
     // --------------------------------------------------------------------
-    // token(s)
-    // --------------------------------------------------------------------
 
-    public function tokenDeleteById($id)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $record = Oauth_TokenRecord::model()->findByPk($id);
-
-        if($record) {
-            return $record->delete();
-        }
-
-        return false;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function tokenScopeByCurrentUser($providerClass)
-    {
-        // provider record
-
-        $providerRecord = $this->providerRecord($providerClass);
-
-        if($providerRecord) {
-
-            // user token record
-
-            $tokenRecord = $this->tokenRecordByCurrentUser($providerClass);
-
-            if($tokenRecord) {
-
-                $tokenScope = @unserialize(base64_decode($tokenRecord->scope));
-
-                return $tokenScope;
-            }
-        }
-
-        return null;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function tokenScopeByNamespace($providerClass, $namespace)
-    {
-        // provider record
-
-        $providerRecord = $this->providerRecord($providerClass);
-
-        if($providerRecord) {
-
-            // user token record
-
-            $tokenRecord = $this->tokenRecordByNamespace($providerClass, $namespace);
-
-            if($tokenRecord) {
-
-                $tokenScope = @unserialize(base64_decode($tokenRecord->scope));
-
-                return $tokenScope;
-            }
-        }
-
-        return null;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function tokenRecordByCurrentUser($providerClass)
-    {
-        if(!craft()->userSession->user) {
-            return null;
-        }
-
-        $conditions = 'provider=:provider';
-        $params = array(':provider' => $providerClass);
-
-        $conditions .= ' AND userId=:userId';
-        $params[':userId'] = craft()->userSession->user->id;
-
-        $tokenRecord = Oauth_TokenRecord::model()->find($conditions, $params);
-
-        if($tokenRecord) {
-            return $tokenRecord;
-        }
-
-        return null;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function tokenRecordByNamespace($providerClass, $namespace)
-    {
-        $conditions = 'provider=:provider AND namespace=:namespace';
-        $params = array(
-                ':provider' => $providerClass,
-                ':namespace' => $namespace,
-            );
-
-        $tokenRecord = Oauth_TokenRecord::model()->find($conditions, $params);
-
-        return $tokenRecord;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function tokenRefresh($provider)
-    {
-        $difference = ($provider->token->expires - time());
-
-        // token expired : we need to refresh it
-
-        if($difference < 1) {
-
-            Craft::log(__METHOD__." : Refresh token ", LogLevel::Info, true);
-
-            $encodedToken = base64_encode(serialize($provider->token));
-
-            $tokenRecord = craft()->oauth->getToken($encodedToken);
-
-
-            if(method_exists($provider, 'access') && $provider->token->refresh_token) {
-
-                $accessToken = $provider->access($provider->token->refresh_token, array('grant_type' => 'refresh_token'));
-
-                if(!$accessToken) {
-                    Craft::log(__METHOD__." : Could not refresh token", LogLevel::Info, true);
-                }
-                // save token
-
-                $provider->token->access_token = $accessToken->access_token;
-                $provider->token->expires = $accessToken->expires;
-
-                $tokenRecord->token = base64_encode(serialize($provider->token));
-
-                if($tokenRecord->save()) {
-                    Craft::log(__METHOD__." : Token saved", LogLevel::Info, true);
-                }
-            } else {
-                Craft::log(__METHOD__." : Access method (for refresh) doesn't exists for this provider", LogLevel::Info, true);
-            }
-        }
-    }
-
-    // --------------------------------------------------------------------
-    // used by :
-    // analytics
-    // oauth
-
-    public function tokenReset($providerClass)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $providerClass = craft()->request->getParam('providerClass');
-
-        $record = Oauth_ProviderRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $providerClass));
-
-        if($record)
-        {
-            $record->token = NULL;
-            return $record->save();
-        }
-
-        return false;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function tokensByProvider($provider, $user = false)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        if($user) {
-            // $userId = craft()->userSession->user->id;
-
-            $userId = $user;
-
-            $criteriaConditions = '
-                provider=:provider AND
-                userId=:userId
-                ';
-
-            $criteriaParams = array(
-                ':userId' => $userId,
-                ':provider' => $provider,
-                );
-        } else {
-            $criteriaConditions = '
-                provider=:provider
-                ';
-
-            $criteriaParams = array(
-                ':provider' => $provider
-                );
-        }
-
-        $tokens = Oauth_TokenRecord::model()->findAll($criteriaConditions, $criteriaParams);
-
-        return $tokens;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function getAccount($providerClass, $namespace = null)
-    {
-
-        // get token
-
-        if($namespace) {
-            $tokenRecord = craft()->oauth->tokenRecordByNamespace($providerClass, $namespace);
-        } else {
-            $tokenRecord = craft()->oauth->tokenRecordByCurrentUser($providerClass);
-        }
-
-        if(!$tokenRecord) {
-            return null;
-        }
-
-        $token = unserialize(base64_decode($tokenRecord->token));
-
-
-        // provider
-
-        $provider = craft()->oauth->providerInstantiate($providerClass, $token);
-
-        return $provider->getUserInfo();
-    }
-
-    // --------------------------------------------------------------------
-
-    public function getProvider($providerClass)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        // get the option
-
-        $record = Oauth_ProviderRecord::model()->find('providerClass=:providerClass', array(':providerClass' => $providerClass));
-
-        if ($record) {
-
-            return Oauth_ProviderModel::populateModel($record);
-        }
-
-        return new Oauth_ProviderModel();
-    }
-
-    // --------------------------------------------------------------------
-
-    public function getProviders($configuredOnly = true)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-
-
-        // retrieve provider class files
-
-        $result = array(
-                'Facebook' => array('class' => 'Facebook', 'isConfigured' => false),
-                'Google' => array('class' => 'Google', 'isConfigured' => false),
-                'Github' => array('class' => 'Github', 'isConfigured' => false),
-                'Twitter' => array('class' => 'Twitter', 'isConfigured' => false),
-                'Flickr' => array('class' => 'Flickr', 'isConfigured' => false)
-            );
-
-        ksort($result);
-
-        // get provider records and mix with result
-
-        $conditions = '';
-        $params = array();
-
-        $providerRecords = Oauth_ProviderRecord::model()->findAll($conditions, $params);
-
-        if($providerRecords) {
-            foreach($providerRecords as $providerRecord) {
-
-                if(isset($result[$providerRecord->providerClass])) {
-                    $result[$providerRecord->providerClass]['isConfigured'] = true;
-                    $result[$providerRecord->providerClass]['record'] = $providerRecord;
-                }
-            }
-        }
-
-
-        // filter configured providers
-
-        if($configuredOnly) {
-            foreach($result as $k => $v)
-            {
-                if(!$v['isConfigured']) {
-                    unset($result[$k]);
-                }
-            }
-        }
-
-        return $result;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function getToken($encodedToken)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $criteriaConditions = '';
-        $criteriaParams = array();
-
-        $criteriaConditions = '
-            token=:token
-            ';
-
-        $criteriaParams = array(
-            ':token' => $encodedToken
-            );
-
-        $tokenRecord = Oauth_TokenRecord::model()->find($criteriaConditions, $criteriaParams);
-
-        return $tokenRecord;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function getTokens($namespace = null)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $criteriaConditions = '';
-        $criteriaParams = array();
-
-        if($namespace) {
-            $criteriaConditions = '
-                namespace=:namespace
-                ';
-
-            $criteriaParams = array(
-                ':namespace' => $namespace
-                );
-        }
-
-        $tokens = Oauth_TokenRecord::model()->findAll($criteriaConditions, $criteriaParams);
-
-        return $tokens;
-    }
-
-    // --------------------------------------------------------------------
 }
