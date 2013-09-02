@@ -15,7 +15,7 @@
             {% for provider in craft.oauth.getProviders(false) %}
 
                 <tr>
-                    <td><a href="{{ url('oauth/settings/'~provider.class) }}">{{provider.class}}</a></td>
+                    <td><a href="{{ url('oauth/settings/'~provider.classHandle) }}">{{provider.name}}</a></td>
 
                     <td class="nowrap">
 
@@ -26,7 +26,7 @@
                         {% endif %}
                     </td>
 
-                    <td><a class="btn small" href="{{ url('oauth/settings/'~provider.class) }}">API Settings</a></td>
+                    <td><a class="btn small" href="{{ url('oauth/settings/'~provider.classHandle) }}">API Settings</a></td>
 
                 </tr>
 

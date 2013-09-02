@@ -1,20 +1,20 @@
 {% extends "_layouts/cp" %}
 {% import "_includes/forms" as forms %}
 
-{% if serviceProviderClass is not defined %}{% set serviceProviderClass = null %}{% endif %}
+{% if providerClass is not defined %}{% set providerClass = null %}{% endif %}
 
-{% if service is not defined %}
-    {% if serviceProviderClass %}
-        {% set service = craft.oauth.getProvider(serviceProviderClass) %}
+{% if provider is not defined %}
+    {% if providerClass %}
+        {% set provider = craft.oauth.getProvider(providerClass, false) %}
 
-        {% if not service %}{% exit 404 %}{% endif %}
+        {% if not provider %}{% exit 404 %}{% endif %}
     {% else %}
-        {% set service = null %}
+        {% set provider = null %}
     {% endif %}
 {% endif %}
 
 
-{% set title = serviceProviderClass~" Settings"|t %}
+{% set title = providerClass~" Settings"|t %}
 
 {% set crumbs = [
     { label: "OAuth"|t, url: url('oauth') }
@@ -27,15 +27,11 @@
     <form method="post" action="" accept-charset="UTF-8">
         <input type="hidden" name="action" value="oauth/settings/providerSave">
         <input type="hidden" name="redirect" value="oauth" />
-        <input type="hidden" name="serviceProviderClass" value="{{ serviceProviderClass }}" />
+        <input type="hidden" name="providerClass" value="{{ providerClass }}" />
 
-        {% set providerLibrary = craft.oauth.providerInstantiate(serviceProviderClass) %}
-
-
-
-        <p>Create an OAuth 2.0 application and enable associated services in the
-            {% if providerLibrary['consoleUrl'] is defined %}
-                <a target="_blank" href="{{providerLibrary.consoleUrl}}">{{serviceProviderClass}} API management Console</a>.
+        <p>Create an OAuth 2.0 application and enable associated providers in the
+            {% if provider.providerSource.consoleUrl is defined %}
+                <a target="_blank" href="{{provider.providerSource.consoleUrl}}">{{providerClass}} API management Console</a>.
             {% else %}
                  API management Console.
             {% endif %}
@@ -44,34 +40,29 @@
         <p>Once created, configure the application with the following settings. You might not need to use all of them.</p>
 
         <ul>
-            <li>Authorized Redirect URI : {{craft.oauth.connectCallback(serviceProviderClass)}}</li>
+            <li>Authorized Redirect URI : {{craft.oauth.callbackUrl(providerClass)}}</li>
             <li>Authorized JavaScript Origins : {{siteUrl}}</li>
         </ul>
+
 
         {{ forms.textField({
             label: 'Client Id'|t,
             required: true,
-            name: 'service[clientId]',
-            value: service ? service.clientId : null,
-            errors: service ? service.errors('clientId') : null,
-            disabled: ((service.token is defined and service.token|length) > 0 ? true : false)
+            name: 'provider[clientId]',
+            value: provider ? provider.record.clientId : null,
+            errors: provider ? provider.record.errors('clientId') : null
         }) }}
 
         {{ forms.textField({
             label: 'Client Secret'|t,
             required: true,
-            name: 'service[clientSecret]',
-            value: service ? service.clientSecret : null,
-            errors: service ? service.errors('clientSecret') : null,
-            disabled: (service.token is defined and service.token|length > 0 ? true : false)
+            name: 'provider[clientSecret]',
+            value: provider ? provider.record.clientSecret : null,
+            errors: provider ? provider.record.errors('clientSecret') : null
         }) }}
 
         <div class="buttons">
-            {% if (service.token is defined and service.token|length == 0) or service.token is not defined %}
             <input class="btn submit" type="submit" value="{{ 'Save'|t }}">
-            {% elseif service.id is defined %}
-                <a class="btn" href="{{actionUrl('connect/settings/tokenReset', {providerClass:serviceProviderClass})}}">Reset Token</a>
-            {% endif %}
         </div>
 
     </form>
