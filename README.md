@@ -8,11 +8,13 @@ The OAuth plugin handles OAuth providers settings & authentication so you can fo
     - Perform authenticated requests to an API
     - Auto-install & update the OAuth plugin
 - [Providers](#providers)
-- [Authentication](#tokens)
-    - [System authentication](#system-authentication)
-    - [User authentication](#user-token)
-- [Template API](#template-api)
-- [OAuth Service API](#template-api)
+- [Authentication](#authentication)
+    - [Authentication for the the system](#system-authentication)
+    - [Authentication for users](#user-authentication)
+- [Templating Reference](#template-api)
+- [OAuthService API](#template-api)
+- [OAuthProvider Object API](#provider-api)
+- [Understanding the OAuth authentication process](#api)
 - [Licensing](#license)
 - [Feedback](#feedback)
 
@@ -59,11 +61,11 @@ The following providers are **not supported** but will be added soon :
 - Tumblr
 - Vimeo
 
-<a id="tokens"></a>
-## Tokens
+<a id="authentication"></a>
+## Authentication
 
-<a id="system-token"></a>
-### System token
+<a id="system-authentication"></a>
+### Authentication for the the system
 
 Set up a system wide token.
 
@@ -76,8 +78,8 @@ Set up a system wide token.
     {{craft.oauth.connect('Google', scope, 'analytics.system')}}
 
 
-<a id="user-token"></a>
-### User token
+<a id="user-authentication"></a>
+### Authentication for users
 
 Set up a user specific token.
 
@@ -91,19 +93,67 @@ Set up a user specific token.
 
 
 <a id="template-api"></a>
-## Template API
+## Templating API
 
-### craft.oauth.connect(providerClass, scope = null, namespace = null)
-### craft.oauth.disconnect(providerClass, namespace = null)
-### craft.oauth.connectCallback(providerClass)
-### craft.oauth.providerInstantiate(providerClass, token = null, scope = null, callbackUrl = null)
-### craft.oauth.providerIsConfigured(provider)
-### craft.oauth.providerIsConnected(providerClass, scope = null, namespace = null)
-
+<dl>
+    <dt><tt>craft.oauth.connect(providerClass, scope = null, namespace = null)</tt></dt>
+    <dt><tt>craft.oauth.disconnect(providerClass, namespace = null)</tt></dt>
+    <dt><tt>craft.oauth.callbackUrl(providerClass)</tt></dt>
+    <dt><tt>craft.oauth.getAccount(providerClass, namespace = null)</tt></dt>
+    <dt><tt>craft.oauth.getProvider(providerClass, configuredOnly = true)</tt></dt>
+    <dt><tt>craft.oauth.getProviders(configuredOnly = true)</tt></dt>
+    <dt><tt>craft.oauth.getSystemToken(providerClass, namespace)</tt></dt>
+    <dt><tt>craft.oauth.getSystemTokens()</tt></dt>
+    <dt><tt>craft.oauth.getUserToken(providerClass, userId = null)</tt></dt>
+    <dt><tt>craft.oauth.getUserTokens(userId = null)</tt></dt>
+</dl>
 
 <a id="oauth-api"></a>
-## OAuth Service API
+## OauthService API
 
+<dl>
+    <dt><tt>craft()->oauth->callbackUrl($providerClass)</tt></dt>
+    <dt><tt>craft()->oauth->connect($providerClass, $scope = null, $namespace = null)</tt></dt>
+    <dt><tt>craft()->oauth->disconnect($providerClass, $namespace = null)</tt></dt>
+    <dt><tt>craft()->oauth->getAccount($providerClass, $namespace = null)</tt></dt>
+    <dt><tt>craft()->oauth->getProvider($handle, $configuredOnly = true)</tt></dt>
+    <dt><tt>craft()->oauth->getProviders($configuredOnly = true)</tt></dt>
+    <dt><tt>craft()->oauth->getSystemToken($providerClass, $namespace)</tt></dt>
+    <dt><tt>craft()->oauth->getSystemTokens()</tt></dt>
+    <dt><tt>craft()->oauth->getToken($providerClass, $namespace = null, $userId = null)</tt></dt>
+    <dt><tt>craft()->oauth->getTokenEncoded($encodedToken)</tt></dt>
+    <dt><tt>craft()->oauth->getTokenRecord($providerClass, $namespace = null, $userId = null)</tt></dt>
+    <dt><tt>craft()->oauth->getUserToken($providerClass, $userId = null)</tt></dt>
+    <dt><tt>craft()->oauth->getUserTokens($userId = null)</tt></dt>
+    <dt><tt>craft()->oauth->httpSessionAdd($k, $v = null)</tt></dt>
+    <dt><tt>craft()->oauth->httpSessionClean()</tt></dt>
+    <dt><tt>craft()->oauth->scopeIsEnough($scope1, $scope2)</tt></dt>
+    <dt><tt>craft()->oauth->scopeMix($scope1, $scope2)</tt></dt>
+</dl>
+
+
+<a id="provider-api"></a>
+## OAuthProvider Object API
+
+### Properties
+
+<dl>
+    <dt><tt>isConfigured</tt></dt>
+    <dt><tt>record</tt></dt>
+    <dt><tt>providerSource</tt></dt>
+</dl>
+
+## Methods
+
+<dl>
+    <dt><tt>connect($token = null, $scope = null)</tt></dt>
+    <dt><tt>getScope()</tt></dt>
+    <dt><tt>getAccount()</tt></dt>
+    <dt><tt>token()</tt></dt>
+    <dt><tt>getName()</tt></dt>
+    <dt><tt>getClassHandle()</tt></dt>
+    <dt><tt>hasScope($scope, $namespace = null)</tt></dt>
+</dl>
 
 <a id="license"></a>
 ## Licensing
