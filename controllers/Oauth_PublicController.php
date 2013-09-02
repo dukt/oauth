@@ -12,7 +12,6 @@ class Oauth_PublicController extends BaseController
 
     public function actionConnect()
     {
-
         $namespace = craft()->oauth->httpSessionAdd('oauth.namespace', craft()->request->getParam('namespace'));
 
 
@@ -104,7 +103,7 @@ class Oauth_PublicController extends BaseController
 
             // tokenScope
 
-            $tokenScope = craft()->oauth->tokenScopeByCurrentUser($providerClass);
+            $tokenScope = craft()->oauth_tokens->tokenScopeByCurrentUser($providerClass);
 
 
             // is scope enough ?
@@ -124,12 +123,9 @@ class Oauth_PublicController extends BaseController
 
         // instantiate provider
 
-        $provider = craft()->oauth->providerInstantiate($providerClass, null, $scope);
+        $provider = craft()->oauth->getProvider($providerClass);
 
-
-        // connect provider
-
-        $provider = craft()->oauth->providerConnect($provider);
+        $provider->connect(null, $scope);
 
 
         // post-connect
@@ -169,13 +165,13 @@ class Oauth_PublicController extends BaseController
             // set default scope if none set
 
             if(!$scope) {
-                $scope = $provider->__get('scope');
+                $scope = $provider->getScope('scope');
             }
 
 
             // get existing token record
 
-            $tokenRecord = craft()->oauth->tokenRecordByCurrentUser($providerClass);
+            $tokenRecord = craft()->oauth_tokens->tokenRecordByCurrentUser($providerClass);
 
 
             // or create a new one
@@ -186,7 +182,7 @@ class Oauth_PublicController extends BaseController
                 $tokenRecord->userId = craft()->userSession->user->id;
                 $tokenRecord->provider = $providerClass;
 
-                $account = $provider->getUserInfo();
+                $account = $provider->getAccount();
 
                 $tokenRecord->userMapping = $account['uid'];
             }
@@ -198,6 +194,7 @@ class Oauth_PublicController extends BaseController
             // save token
 
             $tokenRecord->save();
+
         } else {
             die('fail');
         }
@@ -231,20 +228,18 @@ class Oauth_PublicController extends BaseController
 
         // connect provider
 
-        $provider = craft()->oauth->providerInstantiate($providerClass, null, $scope);
+        $provider = craft()->oauth->getProvider($providerClass);
 
-        $provider = craft()->oauth->providerConnect($provider);
+        $provider->connect(null, $scope);
 
 
-        // var_dump($provider);
-        // die();
         // save token
 
         if($provider) {
 
             // remove any existing token with this namespace
 
-            $tokenRecord = craft()->oauth->tokenRecordByNamespace($providerClass, $namespace);
+            $tokenRecord = craft()->oauth_tokens->tokenRecordByNamespace($providerClass, $namespace);
 
             if($tokenRecord) {
                 $tokenRecord->delete();
