@@ -1,4 +1,7 @@
 {
+    "autoload": {
+        "psr-0": {"OAuthProviders\\": "providers/"}
+    },
     "repositories": [
         {
             "type": "vcs",
