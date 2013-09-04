@@ -192,7 +192,46 @@ class Oauth_ProvidersService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function providerSave(Oauth_ProviderModel &$model)
+    public function providerSave(Oauth_ProviderModel $provider)
+    {
+        // save record
+
+        $record = $this->_getProviderRecordById($provider->id);
+
+        $record->providerClass = $provider->providerClass;
+        $record->enabled = $provider->enabled;
+        $record->clientId = $provider->clientId;
+        $record->clientSecret = $provider->clientSecret;
+
+        return $record->save(false);
+    }
+
+    // --------------------------------------------------------------------
+
+
+    private function _getProviderRecordById($providerId = null)
+    {
+        if ($providerId)
+        {
+            $providerRecord = Oauth_ProviderRecord::model()->findById($providerId);
+
+            if (!$providerRecord)
+            {
+                throw new Exception(Craft::t('No section exists with the ID “{id}”', array('id' => $providerId)));
+            }
+        }
+        else
+        {
+            $providerRecord = new Oauth_ProviderRecord();
+        }
+
+        return $providerRecord;
+    }
+
+
+    // --------------------------------------------------------------------
+
+    public function providerSaveOld(Oauth_ProviderModel &$model)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 

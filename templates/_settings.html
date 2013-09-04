@@ -5,7 +5,7 @@
 
 {% if provider is not defined %}
     {% if providerClass %}
-        {% set provider = craft.oauth.getProvider(providerClass, false) %}
+        {% set provider = craft.oauth.getProviderNew(providerClass, false) %}
 
         {% if not provider %}{% exit 404 %}{% endif %}
     {% else %}
@@ -27,8 +27,10 @@
     <form method="post" action="" accept-charset="UTF-8">
         <input type="hidden" name="action" value="oauth/settings/providerSave">
         <input type="hidden" name="redirect" value="oauth" />
+        {% if provider %}<input type="hidden" name="providerId" value="{{ provider.id }}" />{% endif %}
         <input type="hidden" name="providerClass" value="{{ providerClass }}" />
 
+        {#
         <p>Create an OAuth 2.0 application and enable associated providers in the
             {% if provider.providerSource.consoleUrl is defined %}
                 <a target="_blank" href="{{provider.providerSource.consoleUrl}}">{{providerClass}} API management Console</a>.
@@ -36,6 +38,7 @@
                  API management Console.
             {% endif %}
         </p>
+        #}
 
         <p>Once created, configure the application with the following settings. You might not need to use all of them.</p>
 
@@ -49,16 +52,16 @@
             label: 'Client Id'|t,
             required: true,
             name: 'provider[clientId]',
-            value: provider ? provider.record.clientId : null,
-            errors: provider ? provider.record.errors('clientId') : null
+            value: provider ? provider.clientId : null,
+            errors: provider ? provider.errors('clientId') : null
         }) }}
 
         {{ forms.textField({
             label: 'Client Secret'|t,
             required: true,
             name: 'provider[clientSecret]',
-            value: provider ? provider.record.clientSecret : null,
-            errors: provider ? provider.record.errors('clientSecret') : null
+            value: provider ? provider.clientSecret : null,
+            errors: provider ? provider.errors('clientSecret') : null
         }) }}
 
         <div class="buttons">

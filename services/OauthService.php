@@ -29,6 +29,13 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
+    public function providerSave(Oauth_ProviderModel $model)
+    {
+        return craft()->oauth_providers->providerSave($model);
+    }
+
+    // --------------------------------------------------------------------
+
     public function connect($providerClass, $scope = null, $namespace = null)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
@@ -118,6 +125,24 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
+    public function getProviderRecord($providerClass)
+    {
+        return craft()->oauth_providers->providerRecord($providerClass);
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getProviderNew($handle, $configuredOnly = true)
+    {
+        $record = craft()->oauth_providers->providerRecord($handle);
+
+        $model = Oauth_ProviderModel::populateModel($record);
+
+        return $model;
+    }
+
+    // --------------------------------------------------------------------
+
     public function getProvider($handle, $configuredOnly = true)
     {
         if($configuredOnly) {
@@ -142,8 +167,9 @@ class OauthService extends BaseApplicationComponent
 
                 $record = craft()->oauth_providers->providerRecord($handle);
 
-                $provider->isConfigured = true;
-                $provider->record = $record;
+                if($record) {
+                    $provider->isConfigured = true;
+                }
             } else {
                 echo $handle;
             }
@@ -261,8 +287,10 @@ class OauthService extends BaseApplicationComponent
 
             $record = craft()->oauth_providers->providerRecord($handle);
 
-            $provider->isConfigured = true;
-            $provider->record = $record;
+            if($record) {
+                $provider->isConfigured = true;
+
+            }
         }
 
         return $provider;

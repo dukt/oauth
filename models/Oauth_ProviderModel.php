@@ -17,7 +17,7 @@ class Oauth_ProviderModel extends BaseModel
                 'enabled' => array(AttributeType::Bool, 'required' => true, 'default' => true),
                 'clientId' => array(AttributeType::String, 'required' => true),
                 'clientSecret' => array(AttributeType::String, 'required' => true),
-                'token' => array(AttributeType::Mixed, 'required' => false),
+                // 'token' => array(AttributeType::Mixed, 'required' => false),
             );
 
         return $attributes;
