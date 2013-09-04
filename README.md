@@ -3,18 +3,15 @@
 The OAuth plugin handles OAuth providers settings & authentication so you can focus on the things that make your plugin different.
 
 - [Installation](#install)
+- [Supported providers](#providers)
 - [Using OAuth in your Craft plugins](#develop)
-    - Getting authenticated with a provider
-    - Perform authenticated requests to an API
-    - Auto-install & update the OAuth plugin
-- [Providers](#providers)
-- [Authentication](#authentication)
-    - [Authentication for the the system](#system-authentication)
-    - [Authentication for users](#user-authentication)
-- [Templating Reference](#template-api)
-- [OAuthService API](#template-api)
+    - [System authentication](#system)
+    - [User authentication](#user)
+    - [Perform authenticated requests to an API](#develop-api)
+    - [Auto-install & update the OAuth plugin](#develop-auto)
+- [Templating Reference](#templating)
+- [OauthService API](#service-api)
 - [OAuthProvider Object API](#provider-api)
-- [Understanding the OAuth authentication process](#api)
 - [Licensing](#license)
 - [Feedback](#feedback)
 
@@ -23,28 +20,11 @@ The OAuth plugin handles OAuth providers settings & authentication so you can fo
 
 Unzip and drop the OAuth plugin in your `craft/plugin` directory.
 
-<a id="develop"></a>
-## Using OAuth in your plugins
-
-The OAuth plugin handles OAuth providers settings & authentication so you can focus on the things that make your plugin different.
-
-Popular providers are supported such as Facebook, Google, Twitter and <a href="#providers">more...</a>
-
-There <a href="#tokens">are two ways</a> to get connected :
-
-- **System :** Authentication between your _Craft system_ and a provider.
-- **User :** Authentication between a _Craft user_ and provider.
-
-Once connected, it's easy to make <a href="#">authenticated requests to any API</a> you choose to use.
-
-Finally, you can <a href="#">add OAuth plugin auto-install and update</a> in order to make OAuth authentication even more integrated in your plugin.
-
 <a id="providers"></a>
-## Providers
+## Supported providers
 
 - Facebook
 - GitHub
-
 - Google
 - Twitter
 - Flickr
@@ -61,13 +41,16 @@ The following providers are **not supported** but will be added soon :
 - Tumblr
 - Vimeo
 
-<a id="authentication"></a>
-## Authentication
 
-<a id="system-authentication"></a>
-### Authentication for the the system
+<a id="develop"></a>
+## Using OAuth in your plugins
 
-Set up a system wide token.
+<a id="system"></a>
+### System authentication
+
+**Connect**
+
+Make the connection between your _Craft system_ and a provider.
 
     {% set scope = [
         'https://www.googleapis.com/auth/userinfo.profile',
@@ -77,11 +60,16 @@ Set up a system wide token.
 
     {{craft.oauth.connect('Google', scope, 'analytics.system')}}
 
+**Disconnect**
 
-<a id="user-authentication"></a>
-### Authentication for users
+    {{craft.oauth.disconnect('Google', 'analytics.system')}}
 
-Set up a user specific token.
+<a id="user"></a>
+### User authentication
+
+**Connect**
+
+Make the connection between _Craft's current user_ and a provider.
 
     {% set scope = [
         'https://www.googleapis.com/auth/userinfo.profile',
@@ -91,9 +79,50 @@ Set up a user specific token.
 
     {{craft.oauth.connect('Google', scope)}}
 
+**Disconnect**
 
-<a id="template-api"></a>
-## Templating API
+    {{craft.oauth.disconnect('Google')}}
+
+**Managing connections with providers**
+
+The easiest way to let users manage connections with providers is to set up an OAuth Connect FieldType. It will display a table with all configured providers and their connect/disconnect buttons.
+
+You can also allow provider connection management from your templates :
+
+    <table>
+        {% for provider in craft.oauth.getProviders() %}
+            <tr>
+                <th>{{provider.classHandle}}</th>
+                <td>
+
+                    {% set token = craft.oauth.getUserToken(provider.classHandle) %}
+
+                    {% if token %}
+                        <p><a href="{{craft.oauth.disconnect(provider.classHandle)}}">Disconnect</a></p>
+                    {% else %}
+                        <p><a href="{{ craft.oauth.connect(provider.classHandle) }}">Connect</a></p>
+                    {% endif %}
+
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+
+<a id="develop-api"></a>
+### Perform authenticated requests to an API
+
+_This chapter is not ready yet._
+
+
+<a id="develop-auto"></a>
+### Auto-install & update the OAuth plugin
+
+_This chapter is not ready yet._
+
+
+<a id="templating"></a>
+## Templating Reference
 
 <dl>
     <dt><tt>craft.oauth.connect(providerClass, scope = null, namespace = null)</tt></dt>
@@ -108,7 +137,7 @@ Set up a user specific token.
     <dt><tt>craft.oauth.getUserTokens(userId = null)</tt></dt>
 </dl>
 
-<a id="oauth-api"></a>
+<a id="service-api"></a>
 ## OauthService API
 
 <dl>
@@ -133,6 +162,18 @@ Set up a user specific token.
 
 
 <a id="provider-api"></a>
+## OAuthProviderSource Object API
+
+**Properties**
+
+- isConfigured
+- isConnected
+- _source (chrisnharvey/OAuth instance)
+
+
+
+
+<a id="provider-api"></a>
 ## OAuthProvider Object API
 
 ### Properties
@@ -143,7 +184,7 @@ Set up a user specific token.
     <dt><tt>providerSource</tt></dt>
 </dl>
 
-## Methods
+### Methods
 
 <dl>
     <dt><tt>connect($token = null, $scope = null)</tt></dt>
