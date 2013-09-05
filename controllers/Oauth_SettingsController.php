@@ -49,7 +49,7 @@ class Oauth_SettingsController extends BaseController
 
         $id = craft()->request->getRequiredParam('id');
 
-        craft()->oauth_tokens->tokenDeleteById($id);
+        craft()->oauth->tokenDeleteById($id);
 
         craft()->userSession->setNotice(Craft::t('Token deleted.'));
 

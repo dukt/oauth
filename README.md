@@ -145,8 +145,9 @@ _This chapter is not ready yet._
     <dt><tt>craft()->oauth->connect($providerClass, $scope = null, $namespace = null)</tt></dt>
     <dt><tt>craft()->oauth->disconnect($providerClass, $namespace = null)</tt></dt>
     <dt><tt>craft()->oauth->getAccount($providerClass, $namespace = null)</tt></dt>
-    <dt><tt>craft()->oauth->getProvider($handle, $configuredOnly = true)</tt></dt>
-    <dt><tt>craft()->oauth->getProviders($configuredOnly = true)</tt></dt>
+    <dt><tt>craft()->oauth->getProvider($providerClass)</tt></dt>
+    <dt><tt>craft()->oauth->getProviderSource($handle, $configuredOnly = true)</tt></dt>
+    <dt><tt>craft()->oauth->getProviderSources($configuredOnly = true)</tt></dt>
     <dt><tt>craft()->oauth->getSystemToken($providerClass, $namespace)</tt></dt>
     <dt><tt>craft()->oauth->getSystemTokens()</tt></dt>
     <dt><tt>craft()->oauth->getToken($providerClass, $namespace = null, $userId = null)</tt></dt>
@@ -170,6 +171,17 @@ _This chapter is not ready yet._
 - isConnected
 - _source (chrisnharvey/OAuth instance)
 
+**Methods**
+
+- init()
+- connect($token = null, $scope = null)
+- getAccount()
+- getClassHandle()
+- getName()
+- getScope()
+- getSource()
+- getToken() _(formerly token())_
+- hasScope($scope, $namespace = null)
 
 
 

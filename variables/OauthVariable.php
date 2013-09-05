@@ -34,22 +34,23 @@ class OauthVariable
 
     // --------------------------------------------------------------------
 
-    public function getProvider($providerClass, $configuredOnly = true)
+    public function getProvider($handle)
     {
-        return craft()->oauth->getProvider($providerClass, $configuredOnly);
-    }
-
-
-    public function getProviderNew($providerClass, $configuredOnly = true)
-    {
-        return craft()->oauth->getProviderNew($providerClass, $configuredOnly);
+        return craft()->oauth->getProvider($handle);
     }
 
     // --------------------------------------------------------------------
 
-    public function getProviders($configuredOnly = true)
+    public function getProviderSource($handle, $configuredOnly = true)
     {
-        return craft()->oauth->getProviders($configuredOnly);
+        return craft()->oauth->getProviderSource($handle, $configuredOnly);
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getProviderSources($configuredOnly = true)
+    {
+        return craft()->oauth->getProviderSources($configuredOnly);
     }
 
     // --------------------------------------------------------------------

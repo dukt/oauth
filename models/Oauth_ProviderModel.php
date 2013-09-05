@@ -23,5 +23,14 @@ class Oauth_ProviderModel extends BaseModel
         return $attributes;
     }
 
+    public function isConfigured()
+    {
+        if(!empty($this->clientId) && !empty($this->clientSecret)) {
+            return true;
+        }
+
+        return false;
+    }
+
     // --------------------------------------------------------------------
 }
