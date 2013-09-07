@@ -1,8 +1,8 @@
 <?php
 
-namespace OAuthProviders;
+namespace OAuthProviderSources;
 
-class TwitterOAuthProvider extends BaseOAuthProvider {
+class TwitterOAuthProviderSource extends BaseOAuthProviderSource {
 
 	public $consoleUrl = 'https://dev.twitter.com/apps';
 	

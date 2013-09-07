@@ -1,8 +1,8 @@
 <?php
 
-namespace OAuthProviders;
+namespace OAuthProviderSources;
 
-class GithubOAuthProvider extends BaseOAuthProvider {
+class GithubOAuthProviderSource extends BaseOAuthProviderSource {
 
 	public $consoleUrl = 'https://github.com/settings/applications/';
 

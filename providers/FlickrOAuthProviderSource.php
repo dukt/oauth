@@ -1,8 +1,8 @@
 <?php
 
-namespace OAuthProviders;
+namespace OAuthProviderSources;
 
-class FlickrOAuthProvider extends BaseOAuthProvider {
+class FlickrOAuthProviderSource extends BaseOAuthProviderSource {
 
 	public $consoleUrl = 'http://www.flickr.com/services/apps/';
 	

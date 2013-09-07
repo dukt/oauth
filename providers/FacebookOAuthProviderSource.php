@@ -1,8 +1,8 @@
 <?php
 
-namespace OAuthProviders;
+namespace OAuthProviderSources;
 
-class FacebookOAuthProvider extends BaseOAuthProvider {
+class FacebookOAuthProviderSource extends BaseOAuthProviderSource {
 
 	public $consoleUrl = 'https://code.facebook.com/apis/console/';
 	
