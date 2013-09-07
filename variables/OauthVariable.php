@@ -76,4 +76,11 @@ class OauthVariable
     }
 
     // --------------------------------------------------------------------
+
+    public function pluginCheckUpdates($pluginHandle)
+    {
+        return craft()->oauth_plugin->checkUpdates($pluginHandle);
+    }
+
+    // --------------------------------------------------------------------
 }
