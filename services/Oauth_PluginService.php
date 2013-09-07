@@ -65,7 +65,7 @@ class Oauth_PluginService extends BaseApplicationComponent
 
         // compare versions
 
-        if($this->sortableTag($remoteVersion) > $this->sortableTag($currentVersion)) {
+        if($this->_sortableTag($remoteVersion) > $this->_sortableTag($currentVersion)) {
 
             Craft::log(__METHOD__.' : Update available ', LogLevel::Info, true);
 
@@ -187,46 +187,29 @@ class Oauth_PluginService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    private function _getRemotePlugin($pluginHandle)
+    public function enable($pluginHandle)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
-        $url = 'http://dukt.net/craft/'.$pluginHandle.'/releases.xml';
+        $pluginComponent = craft()->plugins->getPlugin($pluginHandle, false);
 
+        try {
 
-
-        // devMode
-
-        $pluginHashes = craft()->config->get('pluginHashes');
-
-        if(isset($pluginHashes[$pluginHandle])) {
-
-            $url = 'http://dukt.net/actions/tracks/updates/'.$pluginHashes[$pluginHandle].'/develop/xml';
-        }
-
-
-        // or refresh cache and get new updates if cache expired or forced update
-
-        $xml = simplexml_load_file($url);
-
-
-        // XML from here on
-
-        $namespaces = $xml->getNameSpaces(true);
-
-        $versions = array();
-        $zips = array();
-        $xml_version = array();
-
-        if (!empty($xml->channel->item)) {
-            foreach ($xml->channel->item as $version) {
-                $ee_addon       = $version->children($namespaces['ee_addon']);
-                $version_number = (string) $ee_addon->version;
-                $versions[$version_number] = array('xml' => $version, 'addon' => $ee_addon);
-                return $versions[$version_number];
+            if(!$pluginComponent->isEnabled) {
+                if (craft()->plugins->enablePlugin($pluginHandle)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
             }
-        } else {
-            Craft::log(__METHOD__.' : Could not get channel items', LogLevel::Info, true);
+
+        } catch(\Exception $e) {
+
+            Craft::log(__METHOD__.' : Crashed : '.$e->getMessage(), LogLevel::Info, true);
+
+            return false;
         }
     }
 
@@ -268,35 +251,7 @@ class Oauth_PluginService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
-    public function enable($pluginHandle)
-    {
-        Craft::log(__METHOD__, LogLevel::Info, true);
-
-        $pluginComponent = craft()->plugins->getPlugin($pluginHandle, false);
-
-        try {
-
-            if(!$pluginComponent->isEnabled) {
-                if (craft()->plugins->enablePlugin($pluginHandle)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return true;
-            }
-
-        } catch(\Exception $e) {
-
-            Craft::log(__METHOD__.' : Crashed : '.$e->getMessage(), LogLevel::Info, true);
-
-            return false;
-        }
-    }
-
-    // --------------------------------------------------------------------
-
-    private function sortableTag($tag)
+    private function _sortableTag($tag)
     {
         $tagExploded = explode(".", $tag);
 
@@ -317,6 +272,51 @@ class Oauth_PluginService extends BaseApplicationComponent
         $sortableTag = implode(".", $tagExploded);
 
         return $sortableTag;
+    }
+
+    // --------------------------------------------------------------------
+
+    private function _getRemotePlugin($pluginHandle)
+    {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
+        $url = 'http://dukt.net/craft/'.$pluginHandle.'/releases.xml';
+
+
+
+        // devMode
+
+        $pluginHashes = craft()->config->get('pluginHashes');
+
+        if(isset($pluginHashes[$pluginHandle])) {
+
+            $url = 'http://dukt.net/actions/tracks/updates/'.$pluginHashes[$pluginHandle].'/develop/xml';
+        }
+
+
+        // or refresh cache and get new updates if cache expired or forced update
+
+        $xml = simplexml_load_file($url);
+
+
+        // XML from here on
+
+        $namespaces = $xml->getNameSpaces(true);
+
+        $versions = array();
+        $zips = array();
+        $xml_version = array();
+
+        if (!empty($xml->channel->item)) {
+            foreach ($xml->channel->item as $version) {
+                $ee_addon       = $version->children($namespaces['ee_addon']);
+                $version_number = (string) $ee_addon->version;
+                $versions[$version_number] = array('xml' => $version, 'addon' => $ee_addon);
+                return $versions[$version_number];
+            }
+        } else {
+            Craft::log(__METHOD__.' : Could not get channel items', LogLevel::Info, true);
+        }
     }
 
     // --------------------------------------------------------------------
