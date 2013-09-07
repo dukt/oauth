@@ -1,0 +1,21 @@
+{% set oauthUpdates = craft.oauth.pluginCheckUpdates('oauth') %}
+
+{% if oauthUpdates %}
+
+	<h2 class="first">Updates</h2>
+
+	<p>There are updates available for the following plugins :</p>
+
+	<ul>
+		{% if oauthUpdates %}
+			<li>OAuth</li>
+		{% endif %}
+	</ul>
+
+	<div class="buttons">
+		<a href="{{actionUrl('facebook/plugin/updatePlugins', {plugins:'oauth'})}}" class="btn">Update Plugins</a>
+	</div>
+
+	<hr />
+
+{% endif %}

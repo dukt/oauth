@@ -13,7 +13,7 @@
         </thead>
         <tbody>
             {% for provider in craft.oauth.getProviders(false) %}
-            
+
                 <tr>
                     <td><a href="{{ url('oauth/settings/'~provider.handle) }}">{{provider.name}}</a></td>
 
