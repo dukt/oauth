@@ -26,6 +26,18 @@ class Oauth_PluginService extends BaseApplicationComponent
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
+        if(is_array($pluginHandle)) {
+
+            $updates = array();
+
+            foreach($pluginHandle as $p) {
+                if($this->checkUpdates($p)) {
+                    array_push($updates, $p);
+                }
+            }
+
+            return $updates;
+        }
 
         // get remote plugin (xml)
 
