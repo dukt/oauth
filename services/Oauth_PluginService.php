@@ -22,6 +22,17 @@ class Oauth_PluginService extends BaseApplicationComponent
 {
     // --------------------------------------------------------------------
 
+    public function pluginUpdatePluginsUrl($plugins)
+    {
+        if(is_array($plugins)) {
+            $plugins = implode($plugins);
+        }
+
+        return UrlHelper::getActionUrl('oauth/plugin/updatePlugins', array('plugins' => $plugins));
+    }
+
+    // --------------------------------------------------------------------
+
     public function checkUpdates($pluginHandle)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
