@@ -39,30 +39,9 @@ class Oauth_ProviderModel extends BaseModel
 
     // --------------------------------------------------------------------
 
-    public function connect($token = null, $scope = null)
-    {
-        $this->providerSource->connect($token, $scope);
-    }
-
-    // --------------------------------------------------------------------
-
     public function getAccount()
     {
         return $this->providerSource->getAccount();
-    }
-
-    // --------------------------------------------------------------------
-
-    public function getClientId()
-    {
-        return $this->clientId;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function getClientSecret()
-    {
-        return $this->clientSecret;
     }
 
     // --------------------------------------------------------------------
@@ -123,6 +102,20 @@ class Oauth_ProviderModel extends BaseModel
         }
 
         return false;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function setToken($token)
+    {
+        $this->providerSource->connect($token);
+    }
+
+    // --------------------------------------------------------------------
+
+    public function setScope($scope)
+    {
+        $this->providerSource->connect(null, $scope);
     }
 
     // --------------------------------------------------------------------

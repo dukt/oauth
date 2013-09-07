@@ -6,30 +6,30 @@ class OauthVariable
 {
     // --------------------------------------------------------------------
 
-    public function callbackUrl($providerHandle)
+    public function callbackUrl($handle)
     {
-        return craft()->oauth->callbackUrl($providerHandle);
+        return craft()->oauth->callbackUrl($handle);
     }
 
     // --------------------------------------------------------------------
 
-    public function connect($providerHandle, $scope = null, $namespace = null)
+    public function connect($handle, $scope = null, $namespace = null)
     {
-        return craft()->oauth->connect($providerHandle, $scope, $namespace);
+        return craft()->oauth->connect($handle, $scope, $namespace);
     }
 
     // --------------------------------------------------------------------
 
-    public function disconnect($providerHandle, $namespace = null)
+    public function disconnect($handle, $namespace = null)
     {
-        return craft()->oauth->disconnect($providerHandle, $namespace);
+        return craft()->oauth->disconnect($handle, $namespace);
     }
 
     // --------------------------------------------------------------------
 
-    public function getAccount($providerHandle, $namespace = null)
+    public function getAccount($handle, $namespace = null)
     {
-        return craft()->oauth->getAccount($providerHandle, $namespace);
+        return craft()->oauth->getAccount($handle, $namespace);
     }
 
     // --------------------------------------------------------------------
@@ -49,9 +49,9 @@ class OauthVariable
 
     // --------------------------------------------------------------------
 
-    public function getSystemToken($providerHandle, $namespace)
+    public function getSystemToken($handle, $namespace)
     {
-        return craft()->oauth->getSystemToken($providerHandle, $namespace);
+        return craft()->oauth->getSystemToken($handle, $namespace);
     }
 
     // --------------------------------------------------------------------
@@ -63,9 +63,9 @@ class OauthVariable
 
     // --------------------------------------------------------------------
 
-    public function getUserToken($providerHandle, $userId = null)
+    public function getUserToken($handle, $userId = null)
     {
-        return craft()->oauth->getUserToken($providerHandle, $userId);
+        return craft()->oauth->getUserToken($handle, $userId);
     }
 
     // --------------------------------------------------------------------

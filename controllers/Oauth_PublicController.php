@@ -132,7 +132,7 @@ class Oauth_PublicController extends BaseController
             return;
         }
 
-        $provider->connect(null, $scope);
+        $provider->setScope($scope);
 
 
         // post-connect
@@ -145,7 +145,7 @@ class Oauth_PublicController extends BaseController
             // ----------------------
 
             if($social) {
-                craft()->httpSession->add('oauth.token', $token->getEncodedToken());
+                craft()->httpSession->add('oauth.token', base64_encode(serialize($provider->getToken())));
 
                 $this->redirect($socialCallback);
 
@@ -180,7 +180,7 @@ class Oauth_PublicController extends BaseController
             $token->userId = craft()->userSession->user->id;
             $token->provider = $providerHandle;
             $token->userMapping = $account['uid'];
-            $token->token = $token->getEncodedToken();
+            $token->token = base64_encode(serialize($provider->getToken()));
             $token->scope = $scope;
 
             craft()->oauth->tokenSave($token);
@@ -220,7 +220,7 @@ class Oauth_PublicController extends BaseController
 
         $provider = craft()->oauth->getProvider($providerHandle);
 
-        $provider->connect(null, $scope);
+        $provider->setScope($scope);
 
 
         // save token

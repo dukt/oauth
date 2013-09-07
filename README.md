@@ -11,7 +11,8 @@ The OAuth plugin handles OAuth providers settings & authentication so you can fo
     - [Auto-install & update the OAuth plugin](#develop-auto)
 - [Templating Reference](#templating)
 - [OauthService API](#service-api)
-- [OAuthProvider Object API](#provider-api)
+- [Oauth_ProviderModel](#Oauth_ProviderModel)
+- [Oauth_TokenModel](#Oauth_TokenModel)
 - [Licensing](#license)
 - [Feedback](#feedback)
 
@@ -102,24 +103,19 @@ You can also allow provider connection management from your templates :
 <a id="develop-api"></a>
 ### Perform authenticated requests to an API
 
-Most APIs will ask you several informations (provider infos, token) in order to perform authenticated requests.
-
-Here is how you can get them :
-
-**Provider**
-
-    $provider = craft()->oauth->getProvider('facebook');
-
-    $provider->getClientId();
-    $provider->getClientSecret();
-    $provider->getRedirectUri();
-
-
-**Token**
+APIs will usually ask a **token** in order to let you perform authenticated requests. Here is how to get it:
 
     $token = craft()->oauth->getToken('facebook');
 
-    $token->getDecodedToken();
+    $token->getRealToken();
+
+Sometimes, they might also ask for **provider** infos :
+
+    $provider = craft()->oauth->getProvider('facebook');
+
+    $provider->clientId;
+    $provider->clientSecret;
+    $provider->getRedirectUri();
 
 You can then reuse these informations in order to make authenticated calls.
 
@@ -127,6 +123,10 @@ You can then reuse these informations in order to make authenticated calls.
 ### Auto-install & update the OAuth plugin
 
 _This chapter is not ready yet._
+
+_You can take a look at Facebook or Analytics plugins to see how we've integrated OAuth auto-install & update feature but we're still working on making this easier to setup for you and it's not ready yet._
+
+_(And secretely crossing our fingers to see Craft Plugin Store with dependencies ready before we get time to work on this. ;))_
 
 
 <a id="templating"></a>
@@ -153,48 +153,86 @@ _This chapter is not ready yet._
     <dt><tt>craft()->oauth->connect($handle, $scope = null, $namespace = null)</tt></dt>
     <dt><tt>craft()->oauth->disconnect($handle, $namespace = null)</tt></dt>
     <dt><tt>craft()->oauth->getAccount($handle, $namespace = null)</tt></dt>
-    <dt><tt>craft()->oauth->getProvider($handle)</tt></dt>
-    <dt><tt>craft()->oauth->getSystemToken($handle, $namespace)</tt></dt>
-    <dt><tt>craft()->oauth->getSystemTokens()</tt></dt>
+    <dt><tt>craft()->oauth->getProvider($handle, $configuredOnly = true)</tt></dt>
+    <dt><tt>craft()->oauth->getProviders($configuredOnly = true)</tt></dt>
     <dt><tt>craft()->oauth->getToken($handle, $namespace = null, $userId = null)</tt></dt>
     <dt><tt>craft()->oauth->getTokenEncoded($encodedToken)</tt></dt>
+    <dt><tt>craft()->oauth->getSystemToken($handle, $namespace)</tt></dt>
+    <dt><tt>craft()->oauth->getSystemTokens()</tt></dt>
     <dt><tt>craft()->oauth->getUserToken($handle, $userId = null)</tt></dt>
     <dt><tt>craft()->oauth->getUserTokens($userId = null)</tt></dt>
+    <dt><tt>craft()->oauth->providerSave(Oauth_ProviderModel $model)</tt></dt>
+    <dt><tt>craft()->oauth->tokenDeleteById($id)</tt></dt>
+    <dt><tt>craft()->oauth->tokenDeleteByNamespace($handle, $namespace)</tt></dt>
+    <dt><tt>craft()->oauth->tokenSave(Oauth_TokenModel $model)</tt></dt>
     <dt><tt>craft()->oauth->sessionAdd($k, $v = null)</tt></dt>
     <dt><tt>craft()->oauth->sessionClean()</tt></dt>
     <dt><tt>craft()->oauth->scopeIsEnough($scope1, $scope2)</tt></dt>
     <dt><tt>craft()->oauth->scopeMix($scope1, $scope2)</tt></dt>
+    <dt><tt>craft()->oauth->getProviderSource($providerClass)</tt></dt>
 </dl>
 
 
-<a id="provider-api"></a>
-## OAuthProviderSource Object API
+<a id="#Oauth_ProviderModel"></a>
+## Oauth_ProviderModel
 
 **Properties**
 
-- isConfigured
-- isConnected
-- _source (chrisnharvey/OAuth instance)
+<dl>
+    <dt><tt>id</tt></dt>
+    <dt><tt>class</tt></dt>
+    <dt><tt>clientId</tt></dt>
+    <dt><tt>clientSecret</tt></dt>
+</dl>
 
 **Methods**
 
-- init()
-- connect($token = null, $scope = null)
-- getAccount()
-- getHandle()
-- getName()
-- getScope()
-- getSource()
-- getToken()
-- hasScope($scope, $namespace = null)
+<dl>
+    <dt><tt>getAccount()</tt></dt>
+    <dt><tt>getConsoleUrl()</tt></dt>
+    <dt><tt>getHandle()</tt></dt>
+    <dt><tt>getName()</tt></dt>
+    <dt><tt>getRedirectUri()</tt></dt>
+    <dt><tt>getSource()</tt></dt>
+    <dt><tt>getToken()</tt></dt>
+    <dt><tt>getScope()</tt></dt>
+    <dt><tt>isConfigured()</tt></dt>
+    <dt><tt>setToken($token)</tt></dt>
+    <dt><tt>setScope($scope)</tt></dt>
+</dl>
+
+<a id="#Oauth_TokenModel"></a>
+## Oauth_TokenModel
+
+**Properties**
+
+<dl>
+    <dt><tt>id</tt></dt>
+    <dt><tt>userMapping</tt></dt>
+    <dt><tt>namespace</tt></dt>
+    <dt><tt>provider</tt></dt>
+    <dt><tt>scope</tt></dt>
+    <dt><tt>token</tt></dt>
+    <dt><tt>userId</tt></dt>
+</dl>
+
+
+
+**Methods**
+
+<dl>
+    <dt><tt>getDecodedToken()</tt></dt>
+    <dt><tt>getEncodedToken()</tt></dt>
+    <dt><tt>hasScope($scope)</tt></dt>
+</dl>
 
 
 <a id="license"></a>
 ## Licensing
 
-OAuth plugin for Craft CMS is free to use for end users.
+OAuth plugin for Craft CMS is planned to be free to use for end-users, with a commercial developer license for people willing to use it in their plugins.
 
-If you are a developer and want to make use of the OAuth plugin in your plugins, please contact us at hello@dukt.net.
+Licensing details are still being worked and licensing might be subject to change between beta and final release. If you have any questions, reach us at : [hello@dukt.net](mailto:hello@dukt.net)
 
 <a id="feedback"></a>
 ## Feedback

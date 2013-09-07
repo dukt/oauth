@@ -40,6 +40,13 @@ class Oauth_TokenModel extends BaseModel
 
     // --------------------------------------------------------------------
 
+    public function getRealToken()
+    {
+        return $this->getDecodedToken();
+    }
+
+    // --------------------------------------------------------------------
+
     public function hasScope($scope)
     {
         return \Craft\craft()->oauth->scopeIsEnough($scope, $this->scope);
