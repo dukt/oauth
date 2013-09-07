@@ -1,11 +1,11 @@
 {% extends "_layouts/cp" %}
 {% import "_includes/forms" as forms %}
 
-{% if providerClass is not defined %}{% set providerClass = null %}{% endif %}
+{% if providerHandle is not defined %}{% set providerHandle = null %}{% endif %}
 
 {% if provider is not defined %}
-    {% if providerClass %}
-        {% set provider = craft.oauth.getProvider(providerClass) %}
+    {% if providerHandle %}
+        {% set provider = craft.oauth.getProvider(providerHandle, false) %}
 
         {% if not provider %}{% exit 404 %}{% endif %}
     {% else %}
@@ -14,7 +14,7 @@
 {% endif %}
 
 
-{% set title = providerClass~" Settings"|t %}
+{% set title = provider.name~" Settings"|t %}
 
 {% set crumbs = [
     { label: "OAuth"|t, url: url('oauth') }
@@ -28,22 +28,22 @@
         <input type="hidden" name="action" value="oauth/settings/providerSave">
         <input type="hidden" name="redirect" value="oauth" />
         {% if provider %}<input type="hidden" name="providerId" value="{{ provider.id }}" />{% endif %}
-        <input type="hidden" name="providerClass" value="{{ providerClass }}" />
+        <input type="hidden" name="providerHandle" value="{{ provider.handle }}" />
 
-        {#
+
         <p>Create an OAuth 2.0 application and enable associated providers in the
-            {% if provider.providerSource.consoleUrl is defined %}
-                <a target="_blank" href="{{provider.providerSource.consoleUrl}}">{{providerClass}} API management Console</a>.
+            {% if provider.consoleUrl %}
+                <a target="_blank" href="{{provider.consoleUrl}}">{{provider.name}} API management Console</a>.
             {% else %}
                  API management Console.
             {% endif %}
         </p>
-        #}
+
 
         <p>Once created, configure the application with the following settings. You might not need to use all of them.</p>
 
         <ul>
-            <li>Authorized Redirect URI : {{craft.oauth.callbackUrl(providerClass)}}</li>
+            <li>Authorized Redirect URI : {{craft.oauth.callbackUrl(provider.handle)}}</li>
             <li>Authorized JavaScript Origins : {{siteUrl}}</li>
         </ul>
 

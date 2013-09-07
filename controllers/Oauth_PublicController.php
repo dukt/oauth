@@ -12,7 +12,7 @@ class Oauth_PublicController extends BaseController
 
     public function actionConnect()
     {
-        $namespace = craft()->oauth->httpSessionAdd('oauth.namespace', craft()->request->getParam('namespace'));
+        $namespace = craft()->oauth->sessionAdd('oauth.namespace', craft()->request->getParam('namespace'));
 
 
         // connect user or system
@@ -42,7 +42,7 @@ class Oauth_PublicController extends BaseController
 
         // get request params
 
-        $providerClass = craft()->request->getParam('provider');
+        $providerHandle = craft()->request->getParam('provider');
         $namespace = craft()->request->getParam('namespace');
 
 
@@ -60,23 +60,23 @@ class Oauth_PublicController extends BaseController
 
         // criteria conditions & params
 
-        $criteriaConditions = 'provider=:provider';
-        $criteriaParams = array(':provider' => $providerClass);
+        $conditions = 'provider=:provider';
+        $params = array(':provider' => $providerHandle);
 
         if($namespace) {
-            $criteriaConditions .= ' AND namespace=:namespace';
-            $criteriaParams[':namespace']  = $namespace;
+            $conditions .= ' AND namespace=:namespace';
+            $params[':namespace']  = $namespace;
         }
 
         if($userMode) {
-            $criteriaConditions .= ' AND userId=:userId';
-            $criteriaParams[':userId']  = craft()->userSession->user->id;
+            $conditions .= ' AND userId=:userId';
+            $params[':userId']  = craft()->userSession->user->id;
         }
 
 
         // delete all matching records
 
-        Oauth_TokenRecord::model()->deleteAll($criteriaConditions, $criteriaParams);
+        Oauth_TokenRecord::model()->deleteAll($conditions, $params);
 
 
         // redirect
@@ -90,20 +90,19 @@ class Oauth_PublicController extends BaseController
     {
         // session variables
 
-        $providerClass  = craft()->httpSession->get('oauth.providerClass');
+        $providerHandle  = craft()->httpSession->get('oauth.providerClass');
         $social         = craft()->httpSession->get('oauth.social');
         $socialCallback = craft()->httpSession->get('oauth.socialCallback');
         $referer        = craft()->httpSession->get('oauth.referer');
         $scope          = craft()->httpSession->get('oauth.scope');
 
+        $token = craft()->oauth->getToken($providerHandle);
 
         // scope
 
         if(!$scope) {
 
             // tokenScope
-
-            $token = craft()->oauth->getToken($providerClass);
 
             $tokenScope = @unserialize(base64_decode($token->scope));
 
@@ -125,19 +124,20 @@ class Oauth_PublicController extends BaseController
 
         // instantiate provider
 
-        $providerSource = craft()->oauth->getProviderSource($providerClass);
+        $provider = craft()->oauth->getProvider($providerHandle);
 
-        $providerSource->connect(null, $scope);
+        if(!$provider) {
+            craft()->userSession->setError(Craft::t("Provider not configured."));
+            $this->redirect($referer);
+            return;
+        }
+
+        $provider->connect(null, $scope);
 
 
         // post-connect
 
-        if($providerSource) {
-
-            // real token
-
-            $realToken = $providerSource->getToken();
-            $realToken = base64_encode(serialize($realToken));
+        if($provider) {
 
 
             // ----------------------
@@ -145,7 +145,7 @@ class Oauth_PublicController extends BaseController
             // ----------------------
 
             if($social) {
-                craft()->httpSession->add('oauth.token', $realToken);
+                craft()->httpSession->add('oauth.token', $token->getEncodedToken());
 
                 $this->redirect($socialCallback);
 
@@ -167,20 +167,20 @@ class Oauth_PublicController extends BaseController
             // set default scope if none set
 
             if(!$scope) {
-                $scope = $providerSource->getScope('scope');
+                $scope = $provider->getScope();
             }
 
-            $account = $providerSource->getAccount();
+            $account = $provider->getAccount();
 
 
             // save token
 
-            $token = craft()->oauth->getToken($providerClass);
+            $token = craft()->oauth->getToken($providerHandle);
 
             $token->userId = craft()->userSession->user->id;
-            $token->provider = $providerClass;
+            $token->provider = $providerHandle;
             $token->userMapping = $account['uid'];
-            $token->token = $realToken;
+            $token->token = $token->getEncodedToken();
             $token->scope = $scope;
 
             craft()->oauth->tokenSave($token);
@@ -192,7 +192,7 @@ class Oauth_PublicController extends BaseController
 
         // remove httpSession variables
 
-        craft()->oauth->httpSessionClean();
+        craft()->oauth->sessionClean();
 
 
         // redirect
@@ -206,49 +206,49 @@ class Oauth_PublicController extends BaseController
     {
         // namespace
 
-        $namespace = craft()->oauth->httpSessionAdd('oauth.namespace', craft()->request->getParam('namespace'));
+        $namespace = craft()->oauth->sessionAdd('oauth.namespace', craft()->request->getParam('namespace'));
 
 
         // session vars
 
-        $providerClass = craft()->httpSession->get('oauth.providerClass');
+        $providerHandle = craft()->httpSession->get('oauth.providerClass');
         $scope         = craft()->httpSession->get('oauth.scope');
         $referer       = craft()->httpSession->get('oauth.referer');
 
 
         // connect provider
 
-        $providerSource = craft()->oauth->getProviderSource($providerClass);
+        $provider = craft()->oauth->getProvider($providerHandle);
 
-        $providerSource->connect(null, $scope);
+        $provider->connect(null, $scope);
 
 
         // save token
 
-        if($providerSource) {
+        if($provider) {
 
             // remove any existing token with this namespace
 
-            craft()->oauth->tokenDeleteByNamespace($providerClass, $namespace);
+            craft()->oauth->tokenDeleteByNamespace($providerHandle, $namespace);
 
 
             // token
 
-            $token = $providerSource->getToken();
+            $token = $provider->getToken();
             $token = base64_encode(serialize($token));
 
 
             // scope
 
             if(!$scope) {
-                $scope = $providerSource->scope;
+                $scope = $provider->getScope();
             }
 
 
             // save token record
 
             $tokenRecord = new Oauth_TokenRecord();
-            $tokenRecord->provider = $providerClass;
+            $tokenRecord->provider = $providerHandle;
             $tokenRecord->namespace = $namespace;
             $tokenRecord->token = $token;
             $tokenRecord->scope = $scope;

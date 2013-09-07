@@ -26,9 +26,23 @@ class Oauth_TokenModel extends BaseModel
 
     // --------------------------------------------------------------------
 
-    public function getRealToken()
+    public function getDecodedToken()
     {
         return @unserialize(base64_decode($this->token));
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getEncodedToken()
+    {
+        return @unserialize(base64_decode($this->token));
+    }
+
+    // --------------------------------------------------------------------
+
+    public function hasScope($scope)
+    {
+        return \Craft\craft()->oauth->scopeIsEnough($scope, $this->scope);
     }
 
     // --------------------------------------------------------------------

@@ -29,17 +29,7 @@ Unzip and drop the OAuth plugin in your `craft/plugin` directory.
 - Twitter
 - Flickr
 
-The following providers are **not supported** but will be added soon :
-
-- Appnet
-- Dropbox
-- Foursquare
-- Instagram
-- LinkedIn
-- Mailchimp
-- PayPal
-- Tumblr
-- Vimeo
+The provider you need is not listed here ? [Ask for its addition](mailto:hello@dukt.net) !
 
 
 <a id="develop"></a>
@@ -58,11 +48,11 @@ Make the connection between your _Craft system_ and a provider.
         'https://www.googleapis.com/auth/analytics'
         ] %}
 
-    {{craft.oauth.connect('Google', scope, 'analytics.system')}}
+    {{craft.oauth.connect('google', scope, 'analytics.system')}}
 
 **Disconnect**
 
-    {{craft.oauth.disconnect('Google', 'analytics.system')}}
+    {{craft.oauth.disconnect('google', 'analytics.system')}}
 
 <a id="user"></a>
 ### User authentication
@@ -77,11 +67,11 @@ Make the connection between _Craft's current user_ and a provider.
         'https://www.googleapis.com/auth/analytics'
         ] %}
 
-    {{craft.oauth.connect('Google', scope)}}
+    {{craft.oauth.connect('google', scope)}}
 
 **Disconnect**
 
-    {{craft.oauth.disconnect('Google')}}
+    {{craft.oauth.disconnect('google')}}
 
 **Managing connections with providers**
 
@@ -92,15 +82,15 @@ You can also allow provider connection management from your templates :
     <table>
         {% for provider in craft.oauth.getProviders() %}
             <tr>
-                <th>{{provider.classHandle}}</th>
+                <th>{{provider.name}}</th>
                 <td>
 
-                    {% set token = craft.oauth.getUserToken(provider.classHandle) %}
+                    {% set token = craft.oauth.getUserToken(provider.handle) %}
 
                     {% if token %}
-                        <p><a href="{{craft.oauth.disconnect(provider.classHandle)}}">Disconnect</a></p>
+                        <p><a href="{{craft.oauth.disconnect(provider.handle)}}">Disconnect</a></p>
                     {% else %}
-                        <p><a href="{{ craft.oauth.connect(provider.classHandle) }}">Connect</a></p>
+                        <p><a href="{{ craft.oauth.connect(provider.handle) }}">Connect</a></p>
                     {% endif %}
 
                 </td>
@@ -112,8 +102,26 @@ You can also allow provider connection management from your templates :
 <a id="develop-api"></a>
 ### Perform authenticated requests to an API
 
-_This chapter is not ready yet._
+Most APIs will ask you several informations (provider infos, token) in order to perform authenticated requests.
 
+Here is how you can get them :
+
+**Provider**
+
+    $provider = craft()->oauth->getProvider('facebook');
+
+    $provider->getClientId();
+    $provider->getClientSecret();
+    $provider->getRedirectUri();
+
+
+**Token**
+
+    $token = craft()->oauth->getToken('facebook');
+
+    $token->getDecodedToken();
+
+You can then reuse these informations in order to make authenticated calls.
 
 <a id="develop-auto"></a>
 ### Auto-install & update the OAuth plugin
@@ -125,15 +133,15 @@ _This chapter is not ready yet._
 ## Templating Reference
 
 <dl>
-    <dt><tt>craft.oauth.connect(providerClass, scope = null, namespace = null)</tt></dt>
-    <dt><tt>craft.oauth.disconnect(providerClass, namespace = null)</tt></dt>
-    <dt><tt>craft.oauth.callbackUrl(providerClass)</tt></dt>
-    <dt><tt>craft.oauth.getAccount(providerClass, namespace = null)</tt></dt>
-    <dt><tt>craft.oauth.getProvider(providerClass, configuredOnly = true)</tt></dt>
+    <dt><tt>craft.oauth.connect(handle, scope = null, namespace = null)</tt></dt>
+    <dt><tt>craft.oauth.disconnect(handle, namespace = null)</tt></dt>
+    <dt><tt>craft.oauth.callbackUrl(handle)</tt></dt>
+    <dt><tt>craft.oauth.getAccount(handle, namespace = null)</tt></dt>
+    <dt><tt>craft.oauth.getProvider(handle, configuredOnly = true)</tt></dt>
     <dt><tt>craft.oauth.getProviders(configuredOnly = true)</tt></dt>
-    <dt><tt>craft.oauth.getSystemToken(providerClass, namespace)</tt></dt>
+    <dt><tt>craft.oauth.getSystemToken(handle, namespace)</tt></dt>
     <dt><tt>craft.oauth.getSystemTokens()</tt></dt>
-    <dt><tt>craft.oauth.getUserToken(providerClass, userId = null)</tt></dt>
+    <dt><tt>craft.oauth.getUserToken(handle, userId = null)</tt></dt>
     <dt><tt>craft.oauth.getUserTokens(userId = null)</tt></dt>
 </dl>
 
@@ -141,22 +149,19 @@ _This chapter is not ready yet._
 ## OauthService API
 
 <dl>
-    <dt><tt>craft()->oauth->callbackUrl($providerClass)</tt></dt>
-    <dt><tt>craft()->oauth->connect($providerClass, $scope = null, $namespace = null)</tt></dt>
-    <dt><tt>craft()->oauth->disconnect($providerClass, $namespace = null)</tt></dt>
-    <dt><tt>craft()->oauth->getAccount($providerClass, $namespace = null)</tt></dt>
-    <dt><tt>craft()->oauth->getProvider($providerClass)</tt></dt>
-    <dt><tt>craft()->oauth->getProviderSource($handle, $configuredOnly = true)</tt></dt>
-    <dt><tt>craft()->oauth->getProviderSources($configuredOnly = true)</tt></dt>
-    <dt><tt>craft()->oauth->getSystemToken($providerClass, $namespace)</tt></dt>
+    <dt><tt>craft()->oauth->callbackUrl($handle)</tt></dt>
+    <dt><tt>craft()->oauth->connect($handle, $scope = null, $namespace = null)</tt></dt>
+    <dt><tt>craft()->oauth->disconnect($handle, $namespace = null)</tt></dt>
+    <dt><tt>craft()->oauth->getAccount($handle, $namespace = null)</tt></dt>
+    <dt><tt>craft()->oauth->getProvider($handle)</tt></dt>
+    <dt><tt>craft()->oauth->getSystemToken($handle, $namespace)</tt></dt>
     <dt><tt>craft()->oauth->getSystemTokens()</tt></dt>
-    <dt><tt>craft()->oauth->getToken($providerClass, $namespace = null, $userId = null)</tt></dt>
+    <dt><tt>craft()->oauth->getToken($handle, $namespace = null, $userId = null)</tt></dt>
     <dt><tt>craft()->oauth->getTokenEncoded($encodedToken)</tt></dt>
-    <dt><tt>craft()->oauth->getTokenRecord($providerClass, $namespace = null, $userId = null)</tt></dt>
-    <dt><tt>craft()->oauth->getUserToken($providerClass, $userId = null)</tt></dt>
+    <dt><tt>craft()->oauth->getUserToken($handle, $userId = null)</tt></dt>
     <dt><tt>craft()->oauth->getUserTokens($userId = null)</tt></dt>
-    <dt><tt>craft()->oauth->httpSessionAdd($k, $v = null)</tt></dt>
-    <dt><tt>craft()->oauth->httpSessionClean()</tt></dt>
+    <dt><tt>craft()->oauth->sessionAdd($k, $v = null)</tt></dt>
+    <dt><tt>craft()->oauth->sessionClean()</tt></dt>
     <dt><tt>craft()->oauth->scopeIsEnough($scope1, $scope2)</tt></dt>
     <dt><tt>craft()->oauth->scopeMix($scope1, $scope2)</tt></dt>
 </dl>
@@ -176,37 +181,13 @@ _This chapter is not ready yet._
 - init()
 - connect($token = null, $scope = null)
 - getAccount()
-- getClassHandle()
+- getHandle()
 - getName()
 - getScope()
 - getSource()
-- getToken() _(formerly token())_
+- getToken()
 - hasScope($scope, $namespace = null)
 
-
-
-<a id="provider-api"></a>
-## OAuthProvider Object API
-
-### Properties
-
-<dl>
-    <dt><tt>isConfigured</tt></dt>
-    <dt><tt>record</tt></dt>
-    <dt><tt>providerSource</tt></dt>
-</dl>
-
-### Methods
-
-<dl>
-    <dt><tt>connect($token = null, $scope = null)</tt></dt>
-    <dt><tt>getScope()</tt></dt>
-    <dt><tt>getAccount()</tt></dt>
-    <dt><tt>token()</tt></dt>
-    <dt><tt>getName()</tt></dt>
-    <dt><tt>getClassHandle()</tt></dt>
-    <dt><tt>hasScope($scope, $namespace = null)</tt></dt>
-</dl>
 
 <a id="license"></a>
 ## Licensing

@@ -21,9 +21,9 @@ class Oauth_DisconnectController extends BaseController
 
         // clean session vars
 
-        craft()->oauth->httpSessionClean();
+        craft()->oauth->sessionClean();
 
-        craft()->oauth->httpSessionAdd('oauth.referer', $_SERVER['HTTP_REFERER']);
+        craft()->oauth->sessionAdd('oauth.referer', $_SERVER['HTTP_REFERER']);
 
 
         // redirect

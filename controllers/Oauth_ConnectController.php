@@ -14,7 +14,7 @@ class Oauth_ConnectController extends BaseController
     {
         // request params
 
-        $providerClass = craft()->request->getParam('provider');
+        $providerHandle = craft()->request->getParam('provider');
         $namespace     = craft()->request->getParam('namespace');
         $scope         = unserialize(base64_decode(craft()->request->getParam('scope')));
 
@@ -31,22 +31,22 @@ class Oauth_ConnectController extends BaseController
         // clean session vars
 
         if(!craft()->httpSession->get('oauth.social')) {
-            craft()->oauth->httpSessionClean();
+            craft()->oauth->sessionClean();
         }
 
 
         // set session vars
 
-        craft()->oauth->httpSessionAdd('oauth.providerClass', $providerClass);
-        craft()->oauth->httpSessionAdd('oauth.userMode', $userMode);
-        craft()->oauth->httpSessionAdd('oauth.referer', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null));
-        craft()->oauth->httpSessionAdd('oauth.scope', $scope);
+        craft()->oauth->sessionAdd('oauth.providerClass', $providerHandle);
+        craft()->oauth->sessionAdd('oauth.userMode', $userMode);
+        craft()->oauth->sessionAdd('oauth.referer', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null));
+        craft()->oauth->sessionAdd('oauth.scope', $scope);
 
 
         // redirect
 
         $url = UrlHelper::getActionUrl('oauth/public/connect/', array(
-                'provider' => $providerClass,
+                'provider' => $providerHandle,
                 'namespace' => $namespace
             ));
 

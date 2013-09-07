@@ -12,18 +12,16 @@ class Oauth_SettingsController extends BaseController
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
-        $class = craft()->request->getParam('providerClass');
+        $handle = craft()->request->getParam('providerHandle');
+
         $attributes = craft()->request->getPost('provider');
 
+        $provider = craft()->oauth->getProvider($handle, false);
 
-        $provider = new Oauth_ProviderModel();
         $provider->setAttributes($attributes);
-        $provider->id = craft()->request->getPost('providerId');
-        $provider->providerClass = $class;
 
+        // $provider->id = craft()->request->getPost('providerId');
 
-        // var_dump($provider);
-        // die();
 
         if (craft()->oauth->providerSave($provider)) {
             Craft::log(__METHOD__." : Service Saved", LogLevel::Info, true);
