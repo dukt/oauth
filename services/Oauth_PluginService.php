@@ -25,7 +25,7 @@ class Oauth_PluginService extends BaseApplicationComponent
     public function pluginUpdatePluginsUrl($plugins)
     {
         if(is_array($plugins)) {
-            $plugins = implode($plugins);
+            $plugins = implode(",", $plugins);
         }
 
         return UrlHelper::getActionUrl('oauth/plugin/updatePlugins', array('plugins' => $plugins));
