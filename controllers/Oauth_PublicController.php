@@ -245,15 +245,15 @@ class Oauth_PublicController extends BaseController
             }
 
 
-            // save token record
+            // save token
 
-            $tokenRecord = new Oauth_TokenRecord();
-            $tokenRecord->provider = $providerHandle;
-            $tokenRecord->namespace = $namespace;
-            $tokenRecord->token = $token;
-            $tokenRecord->scope = $scope;
+            $model = new Oauth_TokenModel();
+            $model->provider = $providerHandle;
+            $model->namespace = $namespace;
+            $model->token = $token;
+            $model->scope = $scope;
 
-            $tokenRecord->save();
+            craft()->oauth->tokenSave($model);
 
 
         } else {
