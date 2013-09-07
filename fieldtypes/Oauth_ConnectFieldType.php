@@ -22,8 +22,7 @@ class Oauth_ConnectFieldType extends BaseFieldType
 	public function getInputHtml($name, $value)
 	{
 		return craft()->templates->render('oauth/fields/connect', array(
-			'element' => $this->element,
-			'elementType' => $this->element->getElementType()
+			'element' => $this->element
 		));
 	}
 
