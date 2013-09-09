@@ -280,8 +280,10 @@ class OauthService extends BaseApplicationComponent
 
         $record = $this->_getTokenRecordById($model->id);
 
+
         $record->userId = $model->userId;
         $record->provider = $model->provider;
+        $record->namespace = $model->namespace;
         $record->userMapping = $model->userMapping;
         $record->token = $model->token;
         $record->scope = $model->scope;
