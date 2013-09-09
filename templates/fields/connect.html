@@ -10,7 +10,7 @@
 	        </thead>
 	        <tbody>
 
-			    {% for provider in craft.oauth.getProviders(false) %}
+			    {% for provider in craft.oauth.getProviders() %}
 
 			        <tr>
 			        	<td>{{provider.name}}</td>
