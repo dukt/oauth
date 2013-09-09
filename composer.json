@@ -1,4 +1,7 @@
 {
+    "config": {
+        "vendor-dir": "oauth/vendor/"
+    },
     "autoload": {
         "psr-0": {"OAuthProviders\\": "providers/"}
     },
