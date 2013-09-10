@@ -1,4 +1,15 @@
 <?php
+
+/**
+ * Craft OAuth by Dukt
+ *
+ * @package   Craft OAuth
+ * @author    Benjamin David
+ * @copyright Copyright (c) 2013, Dukt
+ * @license   http://dukt.net/craft/oauth/docs#license
+ * @link      http://dukt.net/craft/oauth/
+ */
+
 namespace Craft;
 
 /**
@@ -20,7 +31,7 @@ class m130715_191457_oauth_addUserMappingField extends BaseMigration
 			if (($userMappingColumn = $tokensTable->getColumn('userMapping')) == null)
 			{
 				Craft::log('Adding `userMapping` column to the `oauth_tokens` table.', LogLevel::Info, true);
-				
+
 				$this->addColumnAfter('oauth_tokens', 'userMapping', array(AttributeType::String, 'required' => false), 'userId');
 
 				Craft::log('Added `userMapping` column to the `oauth_tokens` table.', LogLevel::Info, true);

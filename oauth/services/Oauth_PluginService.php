@@ -1,14 +1,13 @@
 <?php
 
 /**
- * Craft OAuth
+ * Craft OAuth by Dukt
  *
- * @package     Craft OAuth
- * @version     Version 1.0
- * @author      Benjamin David
- * @copyright   Copyright (c) 2013 - DUKT
- * @link        http://dukt.net/add-ons/craft/Oauth/
- *
+ * @package   Craft OAuth
+ * @author    Benjamin David
+ * @copyright Copyright (c) 2013, Dukt
+ * @license   http://dukt.net/craft/oauth/docs#license
+ * @link      http://dukt.net/craft/oauth/
  */
 
 namespace Craft;
