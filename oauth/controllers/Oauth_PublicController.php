@@ -12,6 +12,8 @@ class Oauth_PublicController extends BaseController
 
     public function actionConnect()
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $namespace = craft()->oauth->sessionAdd('oauth.namespace', craft()->request->getParam('namespace'));
 
 
@@ -88,6 +90,8 @@ class Oauth_PublicController extends BaseController
 
     private function _connectUser()
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         // session variables
 
         $providerHandle  = craft()->httpSession->get('oauth.providerClass');
@@ -186,7 +190,7 @@ class Oauth_PublicController extends BaseController
             craft()->oauth->tokenSave($token);
 
         } else {
-            die('fail');
+            Craft::log(__METHOD__.'Could not post-connect user', LogLevel::Error);
         }
 
 
@@ -204,6 +208,8 @@ class Oauth_PublicController extends BaseController
 
     private function _connectSystem()
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         // namespace
 
         $namespace = craft()->oauth->sessionAdd('oauth.namespace', craft()->request->getParam('namespace'));
@@ -257,7 +263,7 @@ class Oauth_PublicController extends BaseController
 
 
         } else {
-            die('fail');
+            Craft::log(__METHOD__.'Could not post-connect system', LogLevel::Error);
         }
 
 

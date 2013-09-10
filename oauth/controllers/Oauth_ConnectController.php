@@ -12,6 +12,8 @@ class Oauth_ConnectController extends BaseController
 
     public function init()
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         // request params
 
         $providerHandle = craft()->request->getParam('provider');

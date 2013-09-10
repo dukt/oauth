@@ -25,6 +25,7 @@ class Oauth_SettingsController extends BaseController
 
         if (craft()->oauth->providerSave($provider)) {
             Craft::log(__METHOD__." : Service Saved", LogLevel::Info, true);
+
             craft()->userSession->setNotice(Craft::t('Service saved.'));
 
             $redirect = craft()->request->getPost('redirect');

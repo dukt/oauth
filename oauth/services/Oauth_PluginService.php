@@ -24,6 +24,8 @@ class Oauth_PluginService extends BaseApplicationComponent
 
     public function pluginUpdatePluginsUrl($plugins)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         if(is_array($plugins)) {
             $plugins = implode(",", $plugins);
         }
@@ -264,6 +266,8 @@ class Oauth_PluginService extends BaseApplicationComponent
 
     private function _sortableTag($tag)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $tagExploded = explode(".", $tag);
 
         $maxLength = 5;

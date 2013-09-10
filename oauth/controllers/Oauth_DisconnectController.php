@@ -12,6 +12,8 @@ class Oauth_DisconnectController extends BaseController
 
     public function init()
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         // request params
 
         $params = array();

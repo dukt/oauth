@@ -80,6 +80,7 @@ class OauthService extends BaseApplicationComponent
 
     public function getAccount($handle, $namespace = null)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
 
         // get token
 
@@ -109,6 +110,8 @@ class OauthService extends BaseApplicationComponent
 
     public function getProvider($handle,  $configuredOnly = true)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $this->_loadProviders();
 
         $lcHandle = strtolower($handle);
@@ -134,6 +137,8 @@ class OauthService extends BaseApplicationComponent
 
     public function getProviders($configuredOnly = true)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $this->_loadProviders();
 
         if($configuredOnly) {
@@ -147,6 +152,8 @@ class OauthService extends BaseApplicationComponent
 
     public function getToken($handle, $namespace = null, $userId = null)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $record = $this->_getTokenRecord($handle, $namespace, $userId);
 
         $model = Oauth_TokenModel::populateModel($record);
@@ -158,6 +165,8 @@ class OauthService extends BaseApplicationComponent
 
     public function getTokenEncoded($encodedToken)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $criteriaConditions = '';
         $criteriaParams = array();
 
@@ -180,6 +189,8 @@ class OauthService extends BaseApplicationComponent
 
     public function getSystemToken($handle, $namespace)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         return $this->getToken($handle, $namespace);
     }
 
@@ -202,6 +213,8 @@ class OauthService extends BaseApplicationComponent
 
     public function getUserToken($handle, $userId = null)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $record = $this->_getTokenRecord($handle, null, $userId);
 
         if($record) {
@@ -215,6 +228,8 @@ class OauthService extends BaseApplicationComponent
 
     public function getUserTokens($userId = null)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         if(!$userId) {
             $userId = craft()->userSession->user->id;
         }
@@ -233,6 +248,8 @@ class OauthService extends BaseApplicationComponent
 
     public function providerSave(Oauth_ProviderModel $model)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         // save record
 
         $record = $this->_getProviderRecordById($model->id);
@@ -263,6 +280,8 @@ class OauthService extends BaseApplicationComponent
 
     public function tokenDeleteByNamespace($handle, $namespace)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $record = $this->_getTokenRecordByNamespace($handle, $namespace);
 
         if($record) {
@@ -276,6 +295,8 @@ class OauthService extends BaseApplicationComponent
 
     public function tokenSave(Oauth_TokenModel $model)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         // save record
 
         $record = $this->_getTokenRecordById($model->id);
@@ -297,6 +318,8 @@ class OauthService extends BaseApplicationComponent
 
     public function sessionAdd($k, $v = null)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $returnValue = craft()->httpSession->get($k);
 
         if(!$returnValue && $v) {
@@ -312,6 +335,8 @@ class OauthService extends BaseApplicationComponent
 
     public function sessionClean()
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         craft()->httpSession->remove('oauth.userMode');
         craft()->httpSession->remove('oauth.referer');
         craft()->httpSession->remove('oauth.scope');
@@ -330,6 +355,8 @@ class OauthService extends BaseApplicationComponent
 
     public function scopeIsEnough($scope1, $scope2)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $scopeEnough = false;
 
         if(is_array($scope1) && is_array($scope2)) {
@@ -360,6 +387,8 @@ class OauthService extends BaseApplicationComponent
 
     public function scopeMix($scope1, $scope2)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $scope = array();
 
 
@@ -399,6 +428,7 @@ class OauthService extends BaseApplicationComponent
 
     public function getProviderSource($providerClass)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
 
         // Get the full class name
 
@@ -442,6 +472,8 @@ class OauthService extends BaseApplicationComponent
 
     private function _getProviderRecordByHandle($handle)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $providerRecord = Oauth_ProviderRecord::model()->find(
 
             // conditions
@@ -467,6 +499,8 @@ class OauthService extends BaseApplicationComponent
 
     private function _getProviderRecordById($providerId = null)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         if ($providerId)
         {
             $providerRecord = Oauth_ProviderRecord::model()->findById($providerId);
@@ -488,6 +522,8 @@ class OauthService extends BaseApplicationComponent
 
     private function _getProviderRecords()
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $records = Oauth_ProviderRecord::model()->findAll();
 
         return $records;
@@ -521,6 +557,8 @@ class OauthService extends BaseApplicationComponent
 
     private function _getTokenRecordById($tokenId = null)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         if ($tokenId)
         {
             $tokenRecord = Oauth_TokenRecord::model()->findById($tokenId);
@@ -543,6 +581,8 @@ class OauthService extends BaseApplicationComponent
 
     private function _getTokenRecordByUser($handle, $userId)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         if(!craft()->userSession->user) {
             return null;
         }
@@ -566,6 +606,8 @@ class OauthService extends BaseApplicationComponent
 
     private function _getTokenRecordByCurrentUser($handle)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         if(!craft()->userSession->user) {
             return null;
         }
@@ -589,6 +631,8 @@ class OauthService extends BaseApplicationComponent
 
     private function _getTokenRecordByNamespace($handle, $namespace)
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         $conditions = 'provider=:provider AND namespace=:namespace';
         $params = array(
                 ':provider' => $handle,
@@ -607,6 +651,8 @@ class OauthService extends BaseApplicationComponent
      */
     private function _loadProviders()
     {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
         if($this->_providersLoaded) {
 
             return;
