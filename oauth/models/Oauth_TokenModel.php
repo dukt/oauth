@@ -50,6 +50,9 @@ class Oauth_TokenModel extends BaseModel
 
     // --------------------------------------------------------------------
 
+    /**
+     * Get token as md5
+     */
     public function getMd5Token()
     {
         return md5($this->token);
