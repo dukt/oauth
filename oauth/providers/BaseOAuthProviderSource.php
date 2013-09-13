@@ -138,23 +138,26 @@ abstract class BaseOAuthProviderSource {
 
         // provider options
 
+        $opts = array(
+            'id' => 'x',
+            'secret' => 'x',
+            'redirect_url' => 'x'
+        );
+
     	if($this->_providerSource) {
 
-            $opts = array(
-                'id' => $this->_providerSource->client_id,
-                'secret' => $this->_providerSource->client_secret,
-                'redirect_url' => $callbackUrl
-            );
+            if(!empty($this->_providerSource->client_id) && !empty($this->_providerSource->client_secret)) {
 
-    		$this->isConfigured = true;
-    	} else {
-            $opts = array(
-                'id' => 'x',
-                'secret' => 'x',
-                'redirect_url' => 'x'
-            );
+                $opts = array(
+                    'id' => $this->_providerSource->client_id,
+                    'secret' => $this->_providerSource->client_secret,
+                    'redirect_url' => $callbackUrl
+                );
 
-        }
+                $this->isConfigured = true;
+            }
+
+    	}
 
         if($scope) {
             if(is_array($scope) && !empty($scope)) {
