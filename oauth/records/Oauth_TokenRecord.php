@@ -48,4 +48,18 @@ class Oauth_TokenRecord extends BaseRecord
     }
 
     // --------------------------------------------------------------------
+
+    /**
+     * @return array
+     */
+    public function defineIndexes()
+    {
+        return array(
+            array('columns' => array('userMapping', 'provider'), 'unique' => true),
+            array('columns' => array('userId', 'provider'), 'unique' => true),
+            array('columns' => array('namespace', 'provider'), 'unique' => true)
+        );
+    }
+
+    // --------------------------------------------------------------------
 }

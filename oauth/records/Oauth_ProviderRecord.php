@@ -30,9 +30,21 @@ class Oauth_ProviderRecord extends BaseRecord
     public function defineAttributes()
     {
         return array(
-            'class' => array(AttributeType::String, 'required' => true, 'unique' => true),
+            'class' => array(AttributeType::String, 'required' => true),
             'clientId' => array(AttributeType::String, 'required' => false),
             'clientSecret' => array(AttributeType::String, 'required' => false)
+        );
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * @return array
+     */
+    public function defineIndexes()
+    {
+        return array(
+            array('columns' => array('class'), 'unique' => true),
         );
     }
 
