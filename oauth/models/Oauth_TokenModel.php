@@ -45,7 +45,14 @@ class Oauth_TokenModel extends BaseModel
 
     public function getEncodedToken()
     {
-        return @unserialize(base64_decode($this->token));
+        return $this->token;
+    }
+
+    // --------------------------------------------------------------------
+
+    public function getMd5Token()
+    {
+        return md5($this->token);
     }
 
     // --------------------------------------------------------------------
