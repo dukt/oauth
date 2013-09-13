@@ -14,7 +14,7 @@ namespace OAuthProviderSources;
 
 class FacebookOAuthProviderSource extends BaseOAuthProviderSource {
 
-	public $consoleUrl = 'https://code.facebook.com/apis/console/';
+	public $consoleUrl = 'https://developers.facebook.com/apps';
 
 	public function getName()
 	{
