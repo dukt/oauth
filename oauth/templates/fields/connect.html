@@ -4,7 +4,6 @@
 	        <thead>
 	            <tr>
 	                <th scope="col">{{ "Provider"|t }}</th>
-	                <th scope="col">{{ "Account"|t }}</th>
 	                <th></th>
 	            </tr>
 	        </thead>
@@ -14,7 +13,6 @@
 
 			        <tr>
 			        	<td>{{provider.name}}</td>
-			        	<td>-</td>
 			        	<td>
 							{% set token = craft.oauth.getUserToken(provider.handle, element.id) %}
 
