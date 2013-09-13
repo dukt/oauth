@@ -189,10 +189,26 @@ class Oauth_PublicController extends BaseController
 
             // save token
 
-            $token = craft()->oauth->getToken($providerHandle);
+            $token = craft()->oauth->getTokenFromUserMapping($providerHandle, $account['uid']);
+
+            if($token) {
+                if($token->userId != craft()->userSession->user->id) {
+
+                    Craft::log(__METHOD__.$provider->name." account already used by another user.", LogLevel::Warning);
+
+                    craft()->userSession->setError(Craft::t($provider->name." account already used by another user."));
+
+                    $this->_redirect($referer);
+
+                    return null;
+
+                }
+            } else {
+                $token = new Oauth_TokenModel;
+            }
 
             $token->userId = craft()->userSession->user->id;
-            $token->provider = $providerHandle;
+            $token->provider = strtolower($providerHandle);
             $token->userMapping = $account['uid'];
             $token->token = base64_encode(serialize($provider->getToken()));
             $token->scope = $scope;
