@@ -197,6 +197,36 @@ class OauthService extends BaseApplicationComponent
 
     // --------------------------------------------------------------------
 
+    public function getTokenFromUserMapping($handle, $userMapping = null)
+    {
+        Craft::log(__METHOD__, LogLevel::Info, true);
+
+        // get record
+        if(!craft()->userSession->user) {
+            return null;
+        }
+
+        $conditions = 'userMapping=:userMapping';
+        $params = array(':userMapping' => $userMapping);
+
+        $conditions .= ' AND provider=:provider';
+        $params[':provider'] = $handle;
+
+        $record = Oauth_TokenRecord::model()->find($conditions, $params);
+
+        if(!$record) {
+            return null;
+        }
+
+        // model
+
+        $model = Oauth_TokenModel::populateModel($record);
+
+        return $model;
+    }
+
+    // --------------------------------------------------------------------
+
     public function getSystemToken($handle, $namespace)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
@@ -240,16 +270,14 @@ class OauthService extends BaseApplicationComponent
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
-        if(!$userId) {
-            $userId = craft()->userSession->user->id;
-        }
+        if($userId) {
+            $criteriaConditions = 'userId=:userId';
+            $criteriaParams = array(':userId' => $userId);
+        } else {
 
-        if(!$userId) {
-            return null;
+            $criteriaConditions = 'userId is not null';
+            $criteriaParams = array();
         }
-
-        $criteriaConditions = 'userId=:userId';
-        $criteriaParams = array(':userId' => $userId);
 
         return Oauth_TokenRecord::model()->findAll($criteriaConditions, $criteriaParams);;
     }
