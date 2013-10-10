@@ -107,7 +107,7 @@ class Oauth_ProviderModel extends BaseModel
 
     public function isConfigured()
     {
-        if(!empty($this->clientId) && !empty($this->clientSecret)) {
+        if(!empty($this->clientId)) {
             return true;
         }
 
