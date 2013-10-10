@@ -92,6 +92,11 @@ class OauthService extends BaseApplicationComponent
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
+        // provider
+
+        $provider = craft()->oauth->getProvider($handle);
+
+
         // get token
 
         if($namespace) {
@@ -106,11 +111,9 @@ class OauthService extends BaseApplicationComponent
 
         $token = unserialize(base64_decode($tokenRecord->token));
 
-
-        // provider
-
-        $provider = craft()->oauth->getProvider($handle);
-
+        if(!$token) {
+            return null; // no token defined
+        }
 
         $provider->setToken($token);
 
