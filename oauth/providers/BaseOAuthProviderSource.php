@@ -36,7 +36,9 @@ abstract class BaseOAuthProviderSource {
 
 	public function connect($token = null, $scope = null)
 	{
-		$this->_initProviderSource($token, $scope);
+        if($scope) {
+            $this->_initProviderSource(null, $scope);
+        }
 
 		if(!$token) {
 
@@ -78,11 +80,27 @@ abstract class BaseOAuthProviderSource {
 		return $scope;
 	}
 
+    public function setToken($token)
+    {
+        return $this->_providerSource->setToken($token);
+    }
 	// --------------------------------------------------------------------
 
 	public function getAccount()
 	{
-		return $this->_providerSource->getUserInfo();
+
+        $token = $this->getToken();
+
+        $key = 'oauth.'.$this->getHandle().'.'.md5($token->access_token).'.account';
+
+        $account = \Craft\craft()->fileCache->get($key);
+
+        if(!$account) {
+            $account = $this->_providerSource->getUserInfo();
+            \Craft\craft()->fileCache->set($key, $account);
+        }
+
+        return $account;
 	}
 
 	// --------------------------------------------------------------------
@@ -107,6 +125,8 @@ abstract class BaseOAuthProviderSource {
 
 		$handle = substr($handle, $start, $end);
 
+        $handle = strtolower($handle);
+
 		return $handle;
 	}
 
@@ -126,7 +146,6 @@ abstract class BaseOAuthProviderSource {
     {
     	$providerHandle = $this->getHandle();
 
-
         // get provider record
 
         if(!$callbackUrl) {
@@ -135,6 +154,7 @@ abstract class BaseOAuthProviderSource {
                 array('provider' => $providerHandle)
             );
         }
+
 
         // provider options
 
@@ -146,7 +166,7 @@ abstract class BaseOAuthProviderSource {
 
     	if($this->_providerSource) {
 
-            if(!empty($this->_providerSource->client_id) && !empty($this->_providerSource->client_secret)) {
+            if(!empty($this->_providerSource->client_id)) {
 
                 $opts = array(
                     'id' => $this->_providerSource->client_id,
