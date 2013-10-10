@@ -111,6 +111,7 @@ class OauthService extends BaseApplicationComponent
 
         $provider = craft()->oauth->getProvider($handle);
 
+
         $provider->setToken($token);
 
         return $provider->getAccount();
@@ -166,9 +167,13 @@ class OauthService extends BaseApplicationComponent
 
         $record = $this->_getTokenRecord($handle, $namespace, $userId);
 
-        $model = Oauth_TokenModel::populateModel($record);
+        if($record) {
+            $model = Oauth_TokenModel::populateModel($record);
 
-        return $model;
+            return $model;
+        }
+
+        return null;
     }
 
     // --------------------------------------------------------------------
