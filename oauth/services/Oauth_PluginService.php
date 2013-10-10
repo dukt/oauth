@@ -310,7 +310,11 @@ class Oauth_PluginService extends BaseApplicationComponent
 
         // or refresh cache and get new updates if cache expired or forced update
 
-        $xml = simplexml_load_file($url);
+        $xml = @simplexml_load_file($url);
+
+        if(!$xml) {
+            return null;
+        }
 
 
         // XML from here on
