@@ -69,6 +69,21 @@ class Oauth_PublicController extends BaseController
             }
         }
 
+        // remove cache
+
+        if($namespace) {
+
+            $token = craft()->oauth->getSystemToken($providerHandle, $namespace);
+            if($token) {
+                $token = $token->getRealToken();
+
+                $key = 'oauth.'.$providerHandle.'.'.md5($token->access_token).'.account';
+
+                craft()->fileCache->delete($key);
+            }
+        }
+
+
 
         // criteria conditions & params
 
@@ -254,7 +269,6 @@ class Oauth_PublicController extends BaseController
 
         $provider->setScope($scope);
 
-
         // save token
 
         if($provider) {
@@ -292,8 +306,6 @@ class Oauth_PublicController extends BaseController
             Craft::log(__METHOD__.'Could not post-connect system', LogLevel::Error);
         }
 
-
-        // redirect
 
         $this->_redirect($referer);
     }
