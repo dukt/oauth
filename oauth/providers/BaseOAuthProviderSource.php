@@ -96,8 +96,26 @@ abstract class BaseOAuthProviderSource {
         $account = \Craft\craft()->fileCache->get($key);
 
         if(!$account) {
-            $account = $this->_providerSource->getUserInfo();
-            \Craft\craft()->fileCache->set($key, $account);
+
+            // refresh token if needed
+
+            $this->tokenRefresh();
+
+
+            // $account = $this->_providerSource->getUserInfo();
+
+            // use guzzle in order to improve error handling
+
+            $account = @$this->_providerSource->getUserInfo();
+
+            if($account) {
+
+                if($account['uid']) {
+                    \Craft\craft()->fileCache->set($key, $account);
+                } else {
+                    $account = null;
+                }
+            }
         }
 
         return $account;
@@ -110,9 +128,29 @@ abstract class BaseOAuthProviderSource {
 		return $this->_providerSource->token();
 	}
 
+    // --------------------------------------------------------------------
+
+    public function getHandle()
+    {
+        // from : \OAuthProviderSource\FacebookOAuthProviderSource
+        // to : Facebook
+
+        $handle = get_class($this);
+
+        $start = strlen("\\OAuthProviderSource\\");
+
+        $end = - strlen('OAuthProviderSource');
+
+        $handle = substr($handle, $start, $end);
+
+        $handle = strtolower($handle);
+
+        return $handle;
+    }
+
 	// --------------------------------------------------------------------
 
-	public function getHandle()
+	public function getClass()
 	{
         // from : \OAuthProviderSource\FacebookOAuthProviderSource
         // to : Facebook
@@ -124,8 +162,6 @@ abstract class BaseOAuthProviderSource {
         $end = - strlen('OAuthProviderSource');
 
 		$handle = substr($handle, $start, $end);
-
-        $handle = strtolower($handle);
 
 		return $handle;
 	}
@@ -186,7 +222,7 @@ abstract class BaseOAuthProviderSource {
         }
 
 
-        $class = "\\OAuth\\Provider\\{$providerHandle}";
+        $class = "\\OAuth\\Provider\\{$this->getClass()}";
 
         $this->_providerSource = new $class($opts);
 
