@@ -45,7 +45,7 @@ abstract class BaseOAuthProviderSource {
             try {
                 Craft::log(__METHOD__." : Provider processing", LogLevel::Info, true);
 
-                $this->_providerSource->process(function($url, $token = null) {
+                $couldConnect = $this->_providerSource->process(function($url, $token = null) {
 
                     if ($token) {
                         $_SESSION['token'] = base64_encode(serialize($token));
@@ -58,6 +58,10 @@ abstract class BaseOAuthProviderSource {
                 }, function() {
                     return unserialize(base64_decode($_SESSION['token']));
                 });
+
+                if(!$couldConnect) {
+                    Craft::log(__METHOD__." : Could not connect", LogLevel::Error);
+                }
 
             } catch(\Exception $e) {
 
