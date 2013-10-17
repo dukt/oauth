@@ -13,6 +13,7 @@ The OAuth plugin handles OAuth providers settings & authentication so you can fo
 - [OauthService API](#service-api)
 - [Oauth_ProviderModel](#Oauth_ProviderModel)
 - [Oauth_TokenModel](#Oauth_TokenModel)
+- [Troubleshooting](#Troubleshooting)
 - [Licensing](#license)
 - [Feedback](#feedback)
 
@@ -225,6 +226,23 @@ _(And secretely crossing our fingers to see Craft Plugin Store with dependencies
     <dt><tt>getEncodedToken()</tt></dt>
     <dt><tt>hasScope($scope)</tt></dt>
 </dl>
+
+
+<a id="troubleshooting"></a>
+## Troubleshooting
+
+
+**Google Too Many Active Tokens**
+
+If you are getting an error like this :
+
+    file_get_contents(https://accounts.google.com/o/oauth2/token):
+    failed to open stream: HTTP request failed! HTTP/1.0 400
+    google_too_many_active_tokens
+
+You are probalby in the situation where you have too manu tokens associated to your Google Account.
+
+Go to [Google Tokens Management dashboard](https://accounts.google.com/IssuedAuthSubTokens) and revoke some tokens that you don't use anymore.
 
 
 <a id="license"></a>
