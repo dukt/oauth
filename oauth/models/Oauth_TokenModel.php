@@ -14,8 +14,6 @@ namespace Craft;
 
 class Oauth_TokenModel extends BaseModel
 {
-    // --------------------------------------------------------------------
-
     /**
      * Define Attributes
      */
@@ -34,43 +32,28 @@ class Oauth_TokenModel extends BaseModel
         return $attributes;
     }
 
-    // --------------------------------------------------------------------
-
     public function getDecodedToken()
     {
         return @unserialize(base64_decode($this->token));
     }
-
-    // --------------------------------------------------------------------
 
     public function getEncodedToken()
     {
         return $this->token;
     }
 
-    // --------------------------------------------------------------------
-
-    /**
-     * Get token as md5
-     */
     public function getMd5Token()
     {
         return md5($this->token);
     }
-
-    // --------------------------------------------------------------------
 
     public function getRealToken()
     {
         return $this->getDecodedToken();
     }
 
-    // --------------------------------------------------------------------
-
     public function hasScope($scope)
     {
         return \Craft\craft()->oauth->scopeIsEnough($scope, $this->scope);
     }
-
-    // --------------------------------------------------------------------
 }

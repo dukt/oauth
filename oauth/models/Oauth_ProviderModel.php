@@ -14,11 +14,8 @@ namespace Craft;
 
 class Oauth_ProviderModel extends BaseModel
 {
-    // --------------------------------------------------------------------
 
     public $providerSource;
-
-    // --------------------------------------------------------------------
 
     public function __construct($self = null)
     {
@@ -33,8 +30,6 @@ class Oauth_ProviderModel extends BaseModel
         }
     }
 
-    // --------------------------------------------------------------------
-
     public function defineAttributes()
     {
         $attributes = array(
@@ -47,63 +42,45 @@ class Oauth_ProviderModel extends BaseModel
         return $attributes;
     }
 
-    // --------------------------------------------------------------------
-
     public function getAccount()
     {
         return $this->providerSource->getAccount();
     }
-
-    // --------------------------------------------------------------------
 
     public function getConsoleUrl()
     {
         return $this->providerSource->consoleUrl;
     }
 
-    // --------------------------------------------------------------------
-
     public function getHandle()
     {
         return strtolower($this->class);
     }
-
-    // --------------------------------------------------------------------
 
     public function getName()
     {
         return $this->providerSource->getName();
     }
 
-    // --------------------------------------------------------------------
-
     public function getRedirectUri()
     {
         return $this->providerSource->getRedirectUri();
     }
-
-    // --------------------------------------------------------------------
 
     public function getSource()
     {
         return $this->providerSource;
     }
 
-    // --------------------------------------------------------------------
-
     public function getToken()
     {
         return $this->providerSource->getToken();
     }
 
-    // --------------------------------------------------------------------
-
     public function getScope()
     {
         return $this->providerSource->getScope();
     }
-
-    // --------------------------------------------------------------------
 
     public function isConfigured()
     {
@@ -114,19 +91,14 @@ class Oauth_ProviderModel extends BaseModel
         return false;
     }
 
-    // --------------------------------------------------------------------
-
     public function setToken($token)
     {
         $this->providerSource->setToken($token);
     }
-
-    // --------------------------------------------------------------------
 
     public function setScope($scope)
     {
         $this->providerSource->connect(null, $scope);
     }
 
-    // --------------------------------------------------------------------
 }

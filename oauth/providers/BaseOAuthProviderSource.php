@@ -25,14 +25,10 @@ abstract class BaseOAuthProviderSource {
 
 	private $_providerSource = null;
 
-	// --------------------------------------------------------------------
-
 	public function __construct($token = null, $scope = null)
 	{
 		$this->_initProviderSource($token, $scope);
 	}
-
-	// --------------------------------------------------------------------
 
 	public function connect($token = null, $scope = null)
 	{
@@ -41,7 +37,6 @@ abstract class BaseOAuthProviderSource {
         }
 
 		if(!$token) {
-
             try {
                 Craft::log(__METHOD__." : Provider processing", LogLevel::Info, true);
 
@@ -75,20 +70,36 @@ abstract class BaseOAuthProviderSource {
 		}
 	}
 
-	// --------------------------------------------------------------------
+    public function getClientId()
+    {
+        return $this->_providerSource->client_id;
+    }
+
+    public function getClientSecret()
+    {
+        return $this->_providerSource->client_secret;
+    }
+
+    public function getRedirectUri()
+    {
+        return $this->_providerSource->redirect_uri;
+    }
 
 	public function getScope()
 	{
-		$scope = $this->_providerSource->__get('scope');
-
-		return $scope;
+		return $this->_providerSource->__get('scope');
 	}
+
+    public function getToken()
+    {
+        return $this->_providerSource->token();
+    }
 
     public function setToken($token)
     {
         return $this->_providerSource->setToken($token);
     }
-	// --------------------------------------------------------------------
+
 
 	public function getAccount()
 	{
@@ -125,15 +136,6 @@ abstract class BaseOAuthProviderSource {
         return $account;
 	}
 
-	// --------------------------------------------------------------------
-
-	public function getToken()
-	{
-		return $this->_providerSource->token();
-	}
-
-    // --------------------------------------------------------------------
-
     public function getHandle()
     {
         // from : \OAuthProviderSource\FacebookOAuthProviderSource
@@ -152,8 +154,6 @@ abstract class BaseOAuthProviderSource {
         return $handle;
     }
 
-	// --------------------------------------------------------------------
-
 	public function getClass()
 	{
         // from : \OAuthProviderSource\FacebookOAuthProviderSource
@@ -170,8 +170,6 @@ abstract class BaseOAuthProviderSource {
 		return $handle;
 	}
 
-	// --------------------------------------------------------------------
-
     public function setClient($clientId = null, $clientSecret = null)
     {
         $this->_providerSource->client_id = $clientId;
@@ -179,8 +177,6 @@ abstract class BaseOAuthProviderSource {
 
         $this->_initProviderSource();
     }
-
-    // --------------------------------------------------------------------
 
     private function _initProviderSource($token = null, $scope = null, $callbackUrl = null)
     {
@@ -237,8 +233,6 @@ abstract class BaseOAuthProviderSource {
         }
     }
 
-    // --------------------------------------------------------------------
-
     public function tokenRefresh()
     {
         $difference = ($this->_providerSource->token->expires - time());
@@ -278,26 +272,4 @@ abstract class BaseOAuthProviderSource {
         }
     }
 
-    // --------------------------------------------------------------------
-
-    public function getClientId()
-    {
-        return $this->_providerSource->client_id;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function getClientSecret()
-    {
-        return $this->_providerSource->client_secret;
-    }
-
-    // --------------------------------------------------------------------
-
-    public function getRedirectUri()
-    {
-        return $this->_providerSource->redirect_uri;
-    }
-
-    // --------------------------------------------------------------------
 }

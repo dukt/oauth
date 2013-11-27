@@ -209,7 +209,6 @@ class Oauth_PublicController extends BaseController
             }
 
 
-
             // save token
 
             $token = craft()->oauth->getTokenFromUserMapping($providerHandle, $account['uid']);
