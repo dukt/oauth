@@ -117,10 +117,14 @@ class OauthService extends BaseApplicationComponent
 
         $provider->setToken($token);
 
-        $account = @$provider->getAccount();
+        try {
+            $account = @$provider->getAccount();
 
-        if($account) {
-            return $account;
+            if($account) {
+                return $account;
+            }
+        } catch(\Exception $e) {
+            // handle error
         }
 
         return null;
