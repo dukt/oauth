@@ -73,12 +73,9 @@ class Oauth_PublicController extends BaseController
         if($namespace) {
 
             $token = craft()->oauth->getSystemToken($providerHandle, $namespace);
+
             if($token) {
                 $token = $token->getRealToken();
-
-                $key = 'oauth.'.$providerHandle.'.'.md5($token->access_token).'.account';
-
-                craft()->fileCache->delete($key);
             }
         }
 
@@ -199,8 +196,11 @@ class Oauth_PublicController extends BaseController
             }
 
             try {
+
                 $account = $provider->getAccount();
+
             } catch(\Exception $e) {
+
                 craft()->userSession->setError(Craft::t($e->getMessage()));
 
                 // template errors

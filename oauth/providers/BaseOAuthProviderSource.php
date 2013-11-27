@@ -111,7 +111,7 @@ abstract class BaseOAuthProviderSource {
 
         $key = 'oauth.'.$this->getHandle().'.'.md5($token->access_token).'.account';
 
-        $account = \Craft\craft()->fileCache->get($key);
+        $account = null;
 
         if(!$account) {
 
@@ -120,15 +120,11 @@ abstract class BaseOAuthProviderSource {
             $this->tokenRefresh();
 
 
-            // $account = $this->_providerSource->getUserInfo();
-
-            // use guzzle in order to improve error handling
+            // account
 
             $account = $this->_providerSource->getUserInfo();
 
-            if(!empty($account['uid'])) {
-                \Craft\craft()->fileCache->set($key, $account);
-            } else {
+            if(empty($account['uid'])) {
                 $account = null;
             }
         }
