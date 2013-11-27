@@ -23,11 +23,15 @@
                     <td class="nowrap">{{token.provider}}</td>
                     <td>
                         {% if token['scope'] is defined and token.scope is iterable %}
-                            <ul>
-                                {% for scopeRow in token.scope %}
-                                    <li><em>{{scopeRow}}</em></li>
-                                {% endfor %}
-                            </ul>
+                            {% if token.scope|length > 0 %}
+                                <ul>
+                                    {% for scopeRow in token.scope %}
+                                        <li><em>{{scopeRow}}</em></li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                -
+                            {% endif %}
                         {% else %}
                             -
                         {% endif %}
