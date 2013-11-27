@@ -30,7 +30,6 @@ class Oauth_PublicController extends BaseController
         // connect user or system
 
         if($namespace) {
-
             $this->_connectSystem();
         } else {
             $this->_connectUser();
@@ -199,7 +198,16 @@ class Oauth_PublicController extends BaseController
                 $scope = $provider->getScope();
             }
 
-            $account = $provider->getAccount();
+            try {
+                $account = $provider->getAccount();
+            } catch(\Exception $e) {
+                craft()->userSession->setError(Craft::t($e->getMessage()));
+
+                // template errors
+
+                $this->_redirect($referer);
+            }
+
 
 
             // save token
@@ -211,7 +219,11 @@ class Oauth_PublicController extends BaseController
 
                     Craft::log(__METHOD__.$provider->name." account already used by another user.", LogLevel::Warning);
 
+                    // cp errors
+
                     craft()->userSession->setError(Craft::t($provider->name." account already used by another user."));
+
+                    // template errors
 
                     $this->_redirect($referer);
 

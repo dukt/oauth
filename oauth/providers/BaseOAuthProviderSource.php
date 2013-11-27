@@ -92,8 +92,11 @@ abstract class BaseOAuthProviderSource {
 
 	public function getAccount()
 	{
-
         $token = $this->getToken();
+
+        if(!$token) {
+            return null;
+        }
 
         $key = 'oauth.'.$this->getHandle().'.'.md5($token->access_token).'.account';
 
@@ -110,15 +113,12 @@ abstract class BaseOAuthProviderSource {
 
             // use guzzle in order to improve error handling
 
-            $account = @$this->_providerSource->getUserInfo();
+            $account = $this->_providerSource->getUserInfo();
 
-            if($account) {
-
-                if($account['uid']) {
-                    \Craft\craft()->fileCache->set($key, $account);
-                } else {
-                    $account = null;
-                }
+            if(!empty($account['uid'])) {
+                \Craft\craft()->fileCache->set($key, $account);
+            } else {
+                $account = null;
             }
         }
 
