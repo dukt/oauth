@@ -115,11 +115,13 @@ class Oauth_PublicController extends BaseController
 
         // session variables
 
-        $providerHandle  = craft()->httpSession->get('oauth.providerClass');
-        $social         = craft()->httpSession->get('oauth.social');
-        $socialCallback = craft()->httpSession->get('oauth.socialCallback');
-        $referer        = craft()->httpSession->get('oauth.referer');
-        $scope          = craft()->httpSession->get('oauth.scope');
+        $opts = array();
+
+        $providerHandle = $opts['oauth.providerClass'] = craft()->httpSession->get('oauth.providerClass');
+        $social         = $opts['oauth.social'] = craft()->httpSession->get('oauth.social');
+        $socialCallback = $opts['oauth.socialCallback'] = craft()->httpSession->get('oauth.socialCallback');
+        $referer        = $opts['oauth.referer'] = craft()->httpSession->get('oauth.referer');
+        $scope          = $opts['oauth.scope'] = craft()->httpSession->get('oauth.scope');
 
         $token = craft()->oauth->getToken($providerHandle);
 
@@ -140,7 +142,7 @@ class Oauth_PublicController extends BaseController
             // scope is not enough, connect user with new scope
 
             if(!$scopeEnough) {
-                $scope = craft()->oauth->scopeMix($scope, $tokenScope);
+                $scope = $opts['oauth.scope'] = craft()->oauth->scopeMix($scope, $tokenScope);
 
                 craft()->httpSession->add('oauth.scope', $scope);
             }
@@ -168,11 +170,13 @@ class Oauth_PublicController extends BaseController
             // ----------------------
             // social bypass
             // ----------------------
+            $oauthToken = $opts['oauth.token'] = base64_encode(serialize($provider->getToken()));
 
             if($social) {
-                craft()->httpSession->add('oauth.token', base64_encode(serialize($provider->getToken())));
 
-                $this->redirect($socialCallback);
+                $redirect = craft()->social->loginCallback($opts);
+
+                $this->redirect($redirect);
 
                 return;
             }
