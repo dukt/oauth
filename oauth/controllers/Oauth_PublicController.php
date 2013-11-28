@@ -287,7 +287,15 @@ class Oauth_PublicController extends BaseController
 
         $provider = craft()->oauth->getProvider($providerHandle);
 
-        $provider->setScope($scope);
+        $userSession = craft()->userSession;
+
+        try {
+            $provider->connectScope($scope);
+        } catch(\Exception $e) {
+
+            $userSession->setError(Craft::t($e->getMessage()));
+            $this->redirect($referer);
+        }
 
         // save token
 
