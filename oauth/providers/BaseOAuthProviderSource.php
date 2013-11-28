@@ -37,31 +37,24 @@ abstract class BaseOAuthProviderSource {
         }
 
 		if(!$token) {
-            try {
-                Craft::log(__METHOD__." : Provider processing", LogLevel::Info, true);
+            Craft::log(__METHOD__." : Provider processing", LogLevel::Info, true);
 
-                $couldConnect = $this->_providerSource->process(function($url, $token = null) {
+            $couldConnect = $this->_providerSource->process(function($url, $token = null) {
 
-                    if ($token) {
-                        $_SESSION['token'] = base64_encode(serialize($token));
-                    }
-
-                    header("Location: {$url}");
-
-                    exit;
-
-                }, function() {
-                    return unserialize(base64_decode($_SESSION['token']));
-                });
-
-                if(!$couldConnect) {
-                    Craft::log(__METHOD__." : Could not connect", LogLevel::Error);
+                if ($token) {
+                    $_SESSION['token'] = base64_encode(serialize($token));
                 }
 
-            } catch(\Exception $e) {
+                header("Location: {$url}");
 
-                Craft::log(__METHOD__." : Provider process failed : ".$e->getMessage(), LogLevel::Error);
+                exit;
 
+            }, function() {
+                return unserialize(base64_decode($_SESSION['token']));
+            });
+
+            if(!$couldConnect) {
+                Craft::log(__METHOD__." : Could not connect", LogLevel::Error);
             }
 		}
 
