@@ -159,7 +159,12 @@ class Oauth_PublicController extends BaseController
             return;
         }
 
-        $provider->setScope($scope);
+        try {
+            $provider->connectScope($scope);
+        } catch(\Exception $e) {
+            craft()->userSession->setError(Craft::t($e->getMessage()));
+            $this->redirect($referer);
+        }
 
 
         // post-connect

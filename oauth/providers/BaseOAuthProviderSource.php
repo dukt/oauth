@@ -30,6 +30,14 @@ abstract class BaseOAuthProviderSource {
 		$this->_initProviderSource($token, $scope);
 	}
 
+    public function connectToken($token) {
+        $this->connect($token);
+    }
+
+    public function connectScope($scope) {
+        $this->connect(null, $scope);
+    }
+
 	public function connect($token = null, $scope = null)
 	{
         if($scope) {
