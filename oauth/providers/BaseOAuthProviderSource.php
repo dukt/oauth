@@ -23,7 +23,7 @@ abstract class BaseOAuthProviderSource {
 	public $isConfigured = false;
 	public $isConnected = false;
 
-	private $_providerSource = null;
+	public $_providerSource = null;
 
 	public function __construct($token = null, $scope = null)
 	{
