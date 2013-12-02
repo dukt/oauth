@@ -101,4 +101,9 @@ class Oauth_ProviderModel extends BaseModel
         $this->providerSource->connectScope($scope);
     }
 
+    public function refreshToken()
+    {
+        return $this->providerSource->tokenRefresh();
+    }
+
 }
