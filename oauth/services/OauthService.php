@@ -183,6 +183,28 @@ class OauthService extends BaseApplicationComponent
         if($record) {
             $model = Oauth_TokenModel::populateModel($record);
 
+
+            // refresh ?
+
+            $realToken = $model->getDecodedToken();
+
+            if (isset($realToken->expires)) {
+
+                $remaining = $realToken->expires - time();
+
+                if ($remaining < 240) {
+                    $provider = craft()->oauth->getProvider($handle);
+                    $provider->setToken($realToken);
+                    $provider->refreshToken();
+
+                    $record = $this->_getTokenRecord($handle, $namespace, $userId);
+
+                    if($record) {
+                        $model = Oauth_TokenModel::populateModel($record);
+                    }
+                }
+            }
+
             return $model;
         }
 
