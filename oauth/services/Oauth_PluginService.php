@@ -171,7 +171,8 @@ class Oauth_PluginService extends BaseApplicationComponent
 		// remove download files
 
 		try {
-		    $filesystem->remove($pluginZipDir);
+            $filesystem->remove($pluginZipDir);
+		    $filesystem->remove(CRAFT_PLUGINS_PATH.'_old_'.$pluginHandle);
 
             if(!IOHelper::deleteFile($pluginZipPath)) {
                 Craft::log(__METHOD__.' : Crashed : '."Could not remove plugin zip file", LogLevel::Info, true);
