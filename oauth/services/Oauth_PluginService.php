@@ -158,16 +158,12 @@ class Oauth_PluginService extends BaseApplicationComponent
 		    // remove current files
 		    // make a backup of existing plugin (to storage ?) ?
 
-		    if(!$filesystem->rename(CRAFT_PLUGINS_PATH.$pluginHandle, CRAFT_PLUGINS_PATH.'_old_'.$pluginHandle)) {
-                die("Could not rename [plugin] to _old_[plugin]");
-            }
+		    $filesystem->rename(CRAFT_PLUGINS_PATH.$pluginHandle, CRAFT_PLUGINS_PATH.'_old_'.$pluginHandle);
 
 
 		    // move new files to final destination
 
-		    if(!$filesystem->rename($pluginZipDir.$contents[0].'/'.$pluginHandle.'/', CRAFT_PLUGINS_PATH.$pluginHandle)) {
-                die("Could not move new plugin files to final destination");
-            }
+		    $filesystem->rename($pluginZipDir.$contents[0].'/'.$pluginHandle.'/', CRAFT_PLUGINS_PATH.$pluginHandle);
 
 		} catch (\Exception $e) {
 

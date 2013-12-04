@@ -14,7 +14,7 @@
     "require": {
         "php": ">=5.3.2",
         "chrisnharvey/oauth": "dev-dukt",
-        "symfony/filesystem": "2.3.*@dev"
-
+        "symfony/filesystem": "2.3.*@dev",
+        "vipsoft/unzip": "dev-master"
     }
 }
