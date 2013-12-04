@@ -29,7 +29,7 @@ class OauthPlugin extends BasePlugin
      */
     function getVersion()
     {
-        return '0.9.39';
+        return '0.9.40';
     }
 
     // --------------------------------------------------------------------
