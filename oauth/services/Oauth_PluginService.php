@@ -14,9 +14,6 @@ namespace Craft;
 
 require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
 
-use VIPSoft\Unzip\Unzip;
-use Symfony\Component\Filesystem\Filesystem;
-
 class Oauth_PluginService extends BaseApplicationComponent
 {
     // --------------------------------------------------------------------
@@ -103,9 +100,6 @@ class Oauth_PluginService extends BaseApplicationComponent
 
 		$return = array('success' => false);
 
-		$filesystem = new Filesystem();
-		$unzipper  = new Unzip();
-
 		$pluginComponent = craft()->plugins->getPlugin($pluginHandle, false);
 
 
@@ -144,27 +138,26 @@ class Oauth_PluginService extends BaseApplicationComponent
 
 		    // unzip pluginZipPath into pluginZipDir
 
-		    $contents = $unzipper->extract($pluginZipPath, $pluginZipDir);
+		    $contents = Zip::unzip($pluginZipPath, $pluginZipDir);
 
 
 		    // move files we want to keep from their current location to unzipped location
 		    // keep : .git
 
 		    if(file_exists(CRAFT_PLUGINS_PATH.$pluginHandle.'/.git') && !$pluginZipDir.$contents[0].'/.git') {
-		        $filesystem->rename(CRAFT_PLUGINS_PATH.$pluginHandle.'/.git',
-		            $pluginZipDir.$contents[0].'/.git');
+                IOHelper::rename(CRAFT_PLUGINS_PATH.$pluginHandle.'/.git', $pluginZipDir.$contents[0].'/.git');
 		    }
 
 
 		    // remove current files
 		    // make a backup of existing plugin (to storage ?) ?
 
-		    $filesystem->remove(CRAFT_PLUGINS_PATH.$pluginHandle);
+		    IOHelper::deleteFile(CRAFT_PLUGINS_PATH.$pluginHandle);
 
 
 		    // move new files to final destination
 
-		    $filesystem->rename($pluginZipDir.$contents[0].'/'.$pluginHandle.'/', CRAFT_PLUGINS_PATH.$pluginHandle);
+		    IOHelper::rename($pluginZipDir.$contents[0].'/'.$pluginHandle.'/', CRAFT_PLUGINS_PATH.$pluginHandle);
 
 		} catch (\Exception $e) {
 
@@ -179,8 +172,8 @@ class Oauth_PluginService extends BaseApplicationComponent
 		// remove download files
 
 		try {
-		    $filesystem->remove($pluginZipDir);
-		    $filesystem->remove($pluginZipPath);
+		    IOHelper::deleteFile($pluginZipDir);
+		    IOHelper::deleteFile($pluginZipPath);
 		} catch(\Exception $e) {
 
 		    $return['msg'] = $e->getMessage();

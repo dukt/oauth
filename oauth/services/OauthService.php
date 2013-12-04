@@ -16,7 +16,6 @@ require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
 require_once(CRAFT_PLUGINS_PATH.'oauth/providers/BaseOAuthProviderSource.php');
 
 use ReflectionClass;
-use Symfony\Component\Finder\Finder;
 
 class OauthService extends BaseApplicationComponent
 {
