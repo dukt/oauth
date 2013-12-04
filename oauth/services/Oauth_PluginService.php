@@ -148,16 +148,6 @@ class Oauth_PluginService extends BaseApplicationComponent
             $contents = $unzipper->extract($pluginZipPath, $pluginZipDir);
 
 
-		    // move files we want to keep from their current location to unzipped location
-		    // keep : .git
-
-		    // if(file_exists(CRAFT_PLUGINS_PATH.$pluginHandle.'/.git') && !$pluginZipDir.$contents[0].'/.git') {
-      //           if($filesystem->rename(CRAFT_PLUGINS_PATH.$pluginHandle.'/.git', $pluginZipDir.$contents[0].'/.git')) {
-
-      //           }
-		    // }
-
-
 		    // remove current files
 		    // make a backup of existing plugin (to storage ?) ?
 
@@ -181,12 +171,10 @@ class Oauth_PluginService extends BaseApplicationComponent
 		// remove download files
 
 		try {
-		    if(!$filesystem->remove($pluginZipDir)) {
-                die("Could not remove plugin zip directory");
-            }
+		    $filesystem->remove($pluginZipDir);
 
             if(!IOHelper::deleteFile($pluginZipPath)) {
-                die("Could not remove plugin zip file");
+                Craft::log(__METHOD__.' : Crashed : '."Could not remove plugin zip file", LogLevel::Info, true);
             }
 		} catch(\Exception $e) {
 
