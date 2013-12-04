@@ -149,7 +149,7 @@ class Oauth_PluginService extends BaseApplicationComponent
 		    // keep : .git
 
 		    // if(file_exists(CRAFT_PLUGINS_PATH.$pluginHandle.'/.git') && !$pluginZipDir.$contents[0].'/.git') {
-      //           if(IOHelper::rename(CRAFT_PLUGINS_PATH.$pluginHandle.'/.git', $pluginZipDir.$contents[0].'/.git')) {
+      //           if($filesystem->rename(CRAFT_PLUGINS_PATH.$pluginHandle.'/.git', $pluginZipDir.$contents[0].'/.git')) {
 
       //           }
 		    // }
@@ -158,14 +158,14 @@ class Oauth_PluginService extends BaseApplicationComponent
 		    // remove current files
 		    // make a backup of existing plugin (to storage ?) ?
 
-		    if(!IOHelper::rename(CRAFT_PLUGINS_PATH.$pluginHandle, CRAFT_PLUGINS_PATH.'_old_'.$pluginHandle)) {
+		    if(!$filesystem->rename(CRAFT_PLUGINS_PATH.$pluginHandle, CRAFT_PLUGINS_PATH.'_old_'.$pluginHandle)) {
                 die("Could not rename [plugin] to _old_[plugin]");
             }
 
 
 		    // move new files to final destination
 
-		    if(!IOHelper::rename($pluginZipDir.$contents[0].'/'.$pluginHandle.'/', CRAFT_PLUGINS_PATH.$pluginHandle)) {
+		    if(!$filesystem->rename($pluginZipDir.$contents[0].'/'.$pluginHandle.'/', CRAFT_PLUGINS_PATH.$pluginHandle)) {
                 die("Could not move new plugin files to final destination");
             }
 
