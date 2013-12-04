@@ -14,6 +14,7 @@ namespace Craft;
 
 require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
 
+use VIPSoft\Unzip\Unzip;
 use Symfony\Component\Filesystem\Filesystem;
 
 class Oauth_PluginService extends BaseApplicationComponent
@@ -142,7 +143,9 @@ class Oauth_PluginService extends BaseApplicationComponent
 
 		    // unzip pluginZipPath into pluginZipDir
 
-		    $contents = Zip::unzip($pluginZipPath, $pluginZipDir);
+            $unzipper  = new Unzip();
+
+            $contents = $unzipper->extract($pluginZipPath, $pluginZipDir);
 
 
 		    // move files we want to keep from their current location to unzipped location
