@@ -14,6 +14,8 @@ namespace Craft;
 
 require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
 
+use Symfony\Component\Filesystem\Filesystem;
+
 class Oauth_PluginService extends BaseApplicationComponent
 {
     // --------------------------------------------------------------------
@@ -100,6 +102,8 @@ class Oauth_PluginService extends BaseApplicationComponent
 
 		$return = array('success' => false);
 
+        $filesystem = new Filesystem();
+
 		$pluginComponent = craft()->plugins->getPlugin($pluginHandle, false);
 
 
@@ -144,20 +148,26 @@ class Oauth_PluginService extends BaseApplicationComponent
 		    // move files we want to keep from their current location to unzipped location
 		    // keep : .git
 
-		    if(file_exists(CRAFT_PLUGINS_PATH.$pluginHandle.'/.git') && !$pluginZipDir.$contents[0].'/.git') {
-                IOHelper::rename(CRAFT_PLUGINS_PATH.$pluginHandle.'/.git', $pluginZipDir.$contents[0].'/.git');
-		    }
+		    // if(file_exists(CRAFT_PLUGINS_PATH.$pluginHandle.'/.git') && !$pluginZipDir.$contents[0].'/.git') {
+      //           if(IOHelper::rename(CRAFT_PLUGINS_PATH.$pluginHandle.'/.git', $pluginZipDir.$contents[0].'/.git')) {
+
+      //           }
+		    // }
 
 
 		    // remove current files
 		    // make a backup of existing plugin (to storage ?) ?
 
-		    IOHelper::deleteFile(CRAFT_PLUGINS_PATH.$pluginHandle);
+		    if(!IOHelper::rename(CRAFT_PLUGINS_PATH.$pluginHandle, CRAFT_PLUGINS_PATH.'_old_'.$pluginHandle)) {
+                die("Could not rename [plugin] to _old_[plugin]");
+            }
 
 
 		    // move new files to final destination
 
-		    IOHelper::rename($pluginZipDir.$contents[0].'/'.$pluginHandle.'/', CRAFT_PLUGINS_PATH.$pluginHandle);
+		    if(!IOHelper::rename($pluginZipDir.$contents[0].'/'.$pluginHandle.'/', CRAFT_PLUGINS_PATH.$pluginHandle)) {
+                die("Could not move new plugin files to final destination");
+            }
 
 		} catch (\Exception $e) {
 
@@ -172,8 +182,13 @@ class Oauth_PluginService extends BaseApplicationComponent
 		// remove download files
 
 		try {
-		    IOHelper::deleteFile($pluginZipDir);
-		    IOHelper::deleteFile($pluginZipPath);
+		    if(!$filesystem->remove($pluginZipDir)) {
+                die("Could not remove plugin zip directory");
+            }
+
+            if(!IOHelper::deleteFile($pluginZipPath)) {
+                die("Could not remove plugin zip file");
+            }
 		} catch(\Exception $e) {
 
 		    $return['msg'] = $e->getMessage();
