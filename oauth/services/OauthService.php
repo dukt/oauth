@@ -270,7 +270,13 @@ class OauthService extends BaseApplicationComponent
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
-        return $this->getToken($handle, $namespace);
+        $token = $this->getToken($handle, $namespace);
+
+        if(!$token->getRealToken()) {
+            return null;
+        }
+
+        return $token;
     }
 
     // --------------------------------------------------------------------
