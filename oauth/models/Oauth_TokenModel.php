@@ -32,6 +32,14 @@ class Oauth_TokenModel extends BaseModel
         return $attributes;
     }
 
+    public function getAccessToken()
+    {
+        $realToken = $this->getRealToken();
+
+        if(isset($realToken->access_token)) {
+            return $realToken->access_token;
+        }
+    }
     public function getDecodedToken()
     {
         return @unserialize(base64_decode($this->token));
