@@ -52,7 +52,7 @@ class Oauth_TokenModel extends BaseModel
 
     public function getDecodedToken()
     {
-        return @unserialize(base64_decode($this->token));
+        return $this->getRealToken();
     }
 
     public function getEncodedToken()
@@ -67,7 +67,11 @@ class Oauth_TokenModel extends BaseModel
 
     public function getRealToken()
     {
-        return $this->getDecodedToken();
+        if(!$this->token) {
+            return false;
+        }
+
+        return @unserialize(base64_decode($this->token));
     }
 
     public function hasScope($scope)
