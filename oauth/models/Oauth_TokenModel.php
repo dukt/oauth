@@ -40,6 +40,16 @@ class Oauth_TokenModel extends BaseModel
             return $realToken->access_token;
         }
     }
+
+    public function getSecret()
+    {
+        $realToken = $this->getRealToken();
+
+        if(isset($realToken->secret)) {
+            return $realToken->secret;
+        }
+    }
+
     public function getDecodedToken()
     {
         return @unserialize(base64_decode($this->token));
