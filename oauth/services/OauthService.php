@@ -272,6 +272,10 @@ class OauthService extends BaseApplicationComponent
 
         $token = $this->getToken($handle, $namespace);
 
+        if(!$token) {
+            return null;
+        }
+
         if(!$token->getRealToken()) {
             return null;
         }
