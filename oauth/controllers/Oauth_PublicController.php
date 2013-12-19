@@ -155,6 +155,7 @@ class Oauth_PublicController extends BaseController
 
         if(!$provider) {
             craft()->userSession->setError(Craft::t("Provider not configured."));
+            craft()->httpSession->add('error', Craft::t("Provider not configured."));
             $this->redirect($referer);
             return;
         }
@@ -163,6 +164,7 @@ class Oauth_PublicController extends BaseController
             $provider->connectScope($scope);
         } catch(\Exception $e) {
             craft()->userSession->setError(Craft::t($e->getMessage()));
+            craft()->httpSession->add('error', Craft::t($e->getMessage()));
             $this->redirect($referer);
         }
 
@@ -211,6 +213,7 @@ class Oauth_PublicController extends BaseController
             } catch(\Exception $e) {
 
                 craft()->userSession->setError(Craft::t($e->getMessage()));
+                craft()->httpSession->add('error', Craft::t($e->getMessage()));
 
                 // template errors
 
@@ -230,6 +233,7 @@ class Oauth_PublicController extends BaseController
                     // cp errors
 
                     craft()->userSession->setError(Craft::t($provider->name." account already used by another user."));
+                    craft()->httpSession->add('error', Craft::t($provider->name." account already used by another user."));
 
                     // template errors
 
@@ -294,6 +298,8 @@ class Oauth_PublicController extends BaseController
         } catch(\Exception $e) {
 
             $userSession->setError(Craft::t($e->getMessage()));
+            craft()->httpSession->add('error', Craft::t($e->getMessage()));
+
             $this->redirect($referer);
         }
 
