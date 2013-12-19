@@ -22,8 +22,38 @@ class Oauth_ProviderModel extends BaseModel
         if($self) {
             $this->id = $self->id;
             $this->class = $self->class;
-            $this->clientId = $self->clientId;
-            $this->clientSecret = $self->clientSecret;
+
+
+            // client id and secret
+
+            $clientId = false;
+            $clientSecret = false;
+
+            $oauthConfig = craft()->config->get('oauth');
+
+            if($oauthConfig) {
+
+                if(!empty($oauthConfig[$this->getHandle()]['clientId'])) {
+                    $clientId = $oauthConfig[$this->getHandle()]['clientId'];
+                }
+                if(!empty($oauthConfig[$this->getHandle()]['clientSecret'])) {
+                    $clientSecret = $oauthConfig[$this->getHandle()]['clientSecret'];
+                }
+            }
+
+            if(!$clientId) {
+                $clientId = $self->clientId;
+            }
+
+            if(!$clientSecret) {
+                $clientSecret = $self->clientSecret;
+            }
+
+            $this->clientId = $clientId;
+            $this->clientSecret = $clientSecret;
+
+
+            // set client
 
             $this->providerSource = craft()->oauth->getProviderSource($this->class);
             $this->providerSource->setClient($this->clientId, $this->clientSecret);
