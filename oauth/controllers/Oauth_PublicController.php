@@ -121,9 +121,18 @@ class Oauth_PublicController extends BaseController
         $social         = $opts['oauth.social'] = craft()->httpSession->get('oauth.social');
         $socialCallback = $opts['oauth.socialCallback'] = craft()->httpSession->get('oauth.socialCallback');
         $referer        = $opts['oauth.referer'] = craft()->httpSession->get('oauth.referer');
-        $scope          = $opts['oauth.scope'] = craft()->httpSession->get('oauth.scope');
+
+        $scope          = craft()->httpSession->get('oauth.scope');
 
         $token = craft()->oauth->getToken($providerHandle);
+
+        $provider = craft()->oauth->getProvider($providerHandle);
+
+        $minimumScope = $provider->getScope();
+
+        $scope = craft()->oauth->scopeMix($scope, $minimumScope);
+
+        $opts['oauth.scope'] = $scope;
 
         // scope
 
@@ -149,9 +158,8 @@ class Oauth_PublicController extends BaseController
         }
 
 
-        // instantiate provider
 
-        $provider = craft()->oauth->getProvider($providerHandle);
+        // instantiate provider
 
         if(!$provider) {
             craft()->userSession->setError(Craft::t("Provider not configured."));
@@ -177,6 +185,8 @@ class Oauth_PublicController extends BaseController
             // ----------------------
             // social bypass
             // ----------------------
+
+
             $oauthToken = $opts['oauth.token'] = base64_encode(serialize($provider->getToken()));
 
             if($social) {

@@ -212,7 +212,9 @@ abstract class BaseOAuthProviderSource {
 
     	}
 
+
         if($scope) {
+
             if(is_array($scope) && !empty($scope)) {
                 $opts['scope'] = $scope;
             }
