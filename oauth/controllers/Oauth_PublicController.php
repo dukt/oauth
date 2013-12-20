@@ -27,6 +27,20 @@ class Oauth_PublicController extends BaseController
         $namespace = craft()->oauth->sessionAdd('oauth.namespace', craft()->request->getParam('namespace'));
 
 
+        // minimum scope
+
+        $scope          = craft()->httpSession->get('oauth.scope');
+        $providerHandle = craft()->httpSession->get('oauth.providerClass');
+
+        $provider = craft()->oauth->getProvider($providerHandle);
+
+        $minimumScope = $provider->getScope();
+
+        $scope = craft()->oauth->scopeMix($scope, $minimumScope);
+
+        craft()->httpSession->add('oauth.scope', $scope);
+
+
         // connect user or system
 
         if($namespace) {
@@ -122,19 +136,13 @@ class Oauth_PublicController extends BaseController
         $socialCallback = $opts['oauth.socialCallback'] = craft()->httpSession->get('oauth.socialCallback');
         $referer        = $opts['oauth.referer'] = craft()->httpSession->get('oauth.referer');
 
-        $scope          = craft()->httpSession->get('oauth.scope');
-
         $token = craft()->oauth->getToken($providerHandle);
-
         $provider = craft()->oauth->getProvider($providerHandle);
 
-        $minimumScope = $provider->getScope();
-
-        $scope = craft()->oauth->scopeMix($scope, $minimumScope);
-
-        $opts['oauth.scope'] = $scope;
 
         // scope
+
+        $scope          = craft()->httpSession->get('oauth.scope');
 
         if(!$scope) {
 
@@ -151,12 +159,13 @@ class Oauth_PublicController extends BaseController
             // scope is not enough, connect user with new scope
 
             if(!$scopeEnough) {
-                $scope = $opts['oauth.scope'] = craft()->oauth->scopeMix($scope, $tokenScope);
+                $scope = craft()->oauth->scopeMix($scope, $tokenScope);
 
                 craft()->httpSession->add('oauth.scope', $scope);
             }
         }
 
+        $opts['oauth.scope'] = $scope;
 
 
         // instantiate provider
