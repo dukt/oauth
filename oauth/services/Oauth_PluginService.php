@@ -6,7 +6,7 @@
  * @package   Craft OAuth
  * @author    Benjamin David
  * @copyright Copyright (c) 2013, Dukt
- * @license   http://dukt.net/craft/oauth/docs#license
+ * @license   http://dukt.net/craft/oauth/docs/license
  * @link      http://dukt.net/craft/oauth/
  */
 
@@ -19,8 +19,6 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class Oauth_PluginService extends BaseApplicationComponent
 {
-    // --------------------------------------------------------------------
-
     public function pluginUpdatePluginsUrl($plugins)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
@@ -31,8 +29,6 @@ class Oauth_PluginService extends BaseApplicationComponent
 
         return UrlHelper::getActionUrl('oauth/plugin/updatePlugins', array('plugins' => $plugins));
     }
-
-    // --------------------------------------------------------------------
 
     public function checkUpdates($pluginHandle)
     {
@@ -90,8 +86,6 @@ class Oauth_PluginService extends BaseApplicationComponent
             return false;
         }
     }
-
-    // --------------------------------------------------------------------
 
     public function download($pluginHandle)
     {
@@ -193,8 +187,6 @@ class Oauth_PluginService extends BaseApplicationComponent
 		return $return;
     }
 
-    // --------------------------------------------------------------------
-
     public function enable($pluginHandle)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
@@ -221,7 +213,6 @@ class Oauth_PluginService extends BaseApplicationComponent
         }
     }
 
-    // --------------------------------------------------------------------
 
     public function install($pluginHandle)
     {
@@ -257,8 +248,6 @@ class Oauth_PluginService extends BaseApplicationComponent
         }
     }
 
-    // --------------------------------------------------------------------
-
     private function _sortableTag($tag)
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
@@ -283,8 +272,6 @@ class Oauth_PluginService extends BaseApplicationComponent
 
         return $sortableTag;
     }
-
-    // --------------------------------------------------------------------
 
     private function _getRemotePlugin($pluginHandle)
     {
@@ -332,7 +319,5 @@ class Oauth_PluginService extends BaseApplicationComponent
             Craft::log(__METHOD__.' : Could not get channel items', LogLevel::Info, true);
         }
     }
-
-    // --------------------------------------------------------------------
 }
 

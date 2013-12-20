@@ -6,7 +6,7 @@
  * @package   Craft OAuth
  * @author    Benjamin David
  * @copyright Copyright (c) 2013, Dukt
- * @license   http://dukt.net/craft/oauth/docs#license
+ * @license   http://dukt.net/craft/oauth/docs/license
  * @link      http://dukt.net/craft/oauth/
  */
 
@@ -14,19 +14,14 @@ namespace Craft;
 
 class Oauth_PluginController extends BaseController
 {
-    // --------------------------------------------------------------------
 
     private $pluginService;
     private $referer;
-
-    // --------------------------------------------------------------------
 
     public function __construct()
     {
         $this->pluginService = craft()->oauth_plugin;
     }
-
-    // --------------------------------------------------------------------
 
     public function actionUpdate()
     {
@@ -47,8 +42,6 @@ class Oauth_PluginController extends BaseController
         }
     }
 
-    // --------------------------------------------------------------------
-
     public function actionUpdateAllPlugins()
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
@@ -64,7 +57,6 @@ class Oauth_PluginController extends BaseController
 
         $this->redirect($_SERVER['HTTP_REFERER']);
     }
-    // --------------------------------------------------------------------
 
     public function actionUpdatePlugins()
     {
@@ -81,8 +73,6 @@ class Oauth_PluginController extends BaseController
         $this->redirect($_SERVER['HTTP_REFERER']);
     }
 
-    // --------------------------------------------------------------------
-
     public function actionCheckUpdates()
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
@@ -91,6 +81,4 @@ class Oauth_PluginController extends BaseController
 
         $this->returnJson($plugin);
     }
-
-    // --------------------------------------------------------------------
 }

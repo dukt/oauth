@@ -6,7 +6,7 @@
  * @package   Craft OAuth
  * @author    Benjamin David
  * @copyright Copyright (c) 2013, Dukt
- * @license   http://dukt.net/craft/oauth/docs#license
+ * @license   http://dukt.net/craft/oauth/docs/license
  * @link      http://dukt.net/craft/oauth/
  */
 
@@ -22,8 +22,6 @@ class OauthPlugin extends BasePlugin
         return Craft::t('OAuth');
     }
 
-    // --------------------------------------------------------------------
-
     /**
      * Get Version
      */
@@ -31,8 +29,6 @@ class OauthPlugin extends BasePlugin
     {
         return '0.9.47';
     }
-
-    // --------------------------------------------------------------------
 
     /**
      * Get Developer
@@ -42,8 +38,6 @@ class OauthPlugin extends BasePlugin
         return 'Dukt';
     }
 
-    // --------------------------------------------------------------------
-
     /**
      * Get Developer URL
      */
@@ -52,8 +46,6 @@ class OauthPlugin extends BasePlugin
         return 'http://dukt.net/';
     }
 
-    // --------------------------------------------------------------------
-
     /**
      * Has CP Section
      */
@@ -61,8 +53,6 @@ class OauthPlugin extends BasePlugin
     {
         return true;
     }
-
-    // --------------------------------------------------------------------
 
     /**
      * Hook Register CP Routes

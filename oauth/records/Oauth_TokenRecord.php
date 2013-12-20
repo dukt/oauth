@@ -6,7 +6,7 @@
  * @package   Craft OAuth
  * @author    Benjamin David
  * @copyright Copyright (c) 2013, Dukt
- * @license   http://dukt.net/craft/oauth/docs#license
+ * @license   http://dukt.net/craft/oauth/docs/license
  * @link      http://dukt.net/craft/oauth/
  */
 
@@ -22,8 +22,6 @@ class Oauth_TokenRecord extends BaseRecord
         return 'oauth_tokens';
     }
 
-    // --------------------------------------------------------------------
-
     /**
      * Define Attributes
      */
@@ -38,16 +36,12 @@ class Oauth_TokenRecord extends BaseRecord
         );
     }
 
-    // --------------------------------------------------------------------
-
     public function defineRelations()
     {
         return array(
             'user' => array(static::BELONGS_TO, 'UserRecord', 'onDelete' => static::CASCADE, 'required' => false),
         );
     }
-
-    // --------------------------------------------------------------------
 
     /**
      * @return array
@@ -60,6 +54,4 @@ class Oauth_TokenRecord extends BaseRecord
             array('columns' => array('namespace', 'provider'), 'unique' => true)
         );
     }
-
-    // --------------------------------------------------------------------
 }

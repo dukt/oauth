@@ -6,7 +6,7 @@
  * @package   Craft OAuth
  * @author    Benjamin David
  * @copyright Copyright (c) 2013, Dukt
- * @license   http://dukt.net/craft/oauth/docs#license
+ * @license   http://dukt.net/craft/oauth/docs/license
  * @link      http://dukt.net/craft/oauth/
  */
 
@@ -16,8 +16,6 @@ require(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
 
 class Oauth_SettingsController extends BaseController
 {
-    // --------------------------------------------------------------------
-
     public function actionProviderSave()
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
@@ -29,9 +27,6 @@ class Oauth_SettingsController extends BaseController
         $provider = craft()->oauth->getProvider($handle, false);
 
         $provider->setAttributes($attributes);
-
-        // $provider->id = craft()->request->getPost('providerId');
-
 
         if (craft()->oauth->providerSave($provider)) {
             Craft::log(__METHOD__." : Service Saved", LogLevel::Info, true);
@@ -50,8 +45,6 @@ class Oauth_SettingsController extends BaseController
         }
     }
 
-    // --------------------------------------------------------------------
-
     public function actionDeleteToken()
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
@@ -64,7 +57,4 @@ class Oauth_SettingsController extends BaseController
 
         $this->redirect($_SERVER['HTTP_REFERER']);
     }
-
-    // --------------------------------------------------------------------
-
 }

@@ -6,7 +6,7 @@
  * @package   Craft OAuth
  * @author    Benjamin David
  * @copyright Copyright (c) 2013, Dukt
- * @license   http://dukt.net/craft/oauth/docs#license
+ * @license   http://dukt.net/craft/oauth/docs/license
  * @link      http://dukt.net/craft/oauth/
  */
 
@@ -17,8 +17,6 @@ require(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
 class Oauth_PublicController extends BaseController
 {
     protected $allowAnonymous = true;
-
-    // --------------------------------------------------------------------
 
     public function actionConnect()
     {
@@ -49,8 +47,6 @@ class Oauth_PublicController extends BaseController
             $this->_connectUser();
         }
     }
-
-    // --------------------------------------------------------------------
 
     public function actionDisconnect()
     {
@@ -120,8 +116,6 @@ class Oauth_PublicController extends BaseController
 
         $this->_redirect($redirect);
     }
-
-    // --------------------------------------------------------------------
 
     private function _connectUser()
     {
@@ -288,8 +282,6 @@ class Oauth_PublicController extends BaseController
         $this->_redirect($referer);
     }
 
-    // --------------------------------------------------------------------
-
     private function _connectSystem()
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
@@ -363,14 +355,10 @@ class Oauth_PublicController extends BaseController
         $this->_redirect($referer);
     }
 
-    // --------------------------------------------------------------------
-
     private function _redirect($referer)
     {
         Craft::log(__METHOD__." : Referer : ".$referer, LogLevel::Info, true);
 
         $this->redirect($referer);
     }
-
-    // --------------------------------------------------------------------
 }
