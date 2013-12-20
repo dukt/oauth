@@ -783,7 +783,7 @@ class OauthService extends BaseApplicationComponent
             $provider = Oauth_ProviderModel::populateModel($record);
             $provider->class = $providerSource->getHandle();
 
-            if($record) {
+            if($record && !empty($provider->clientId)) {
                 $providerSource->setClient($provider->clientId, $provider->clientSecret);
                 $provider->providerSource = $providerSource;
                 $this->_configuredProviders[$lcHandle] = $provider;
