@@ -5,9 +5,9 @@
  *
  * @package   Craft OAuth
  * @author    Benjamin David
- * @copyright Copyright (c) 2013, Dukt
- * @license   http://dukt.net/craft/oauth/docs/license
- * @link      http://dukt.net/craft/oauth/
+ * @copyright Copyright (c) 2014, Dukt
+ * @license   https://dukt.net/craft/oauth/docs/license
+ * @link      https://dukt.net/craft/oauth/
  */
 
 namespace Craft;
@@ -43,7 +43,7 @@ class OauthPlugin extends BasePlugin
      */
     function getDeveloperUrl()
     {
-        return 'http://dukt.net/';
+        return 'https://dukt.net/';
     }
 
     /**

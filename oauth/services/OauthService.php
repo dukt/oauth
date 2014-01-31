@@ -5,9 +5,9 @@
  *
  * @package   Craft OAuth
  * @author    Benjamin David
- * @copyright Copyright (c) 2013, Dukt
- * @license   http://dukt.net/craft/oauth/docs/license
- * @link      http://dukt.net/craft/oauth/
+ * @copyright Copyright (c) 2014, Dukt
+ * @license   https://dukt.net/craft/oauth/docs/license
+ * @link      https://dukt.net/craft/oauth/
  */
 
 namespace Craft;
@@ -176,9 +176,13 @@ class OauthService extends BaseApplicationComponent
                 $remaining = $realToken->expires - time();
 
                 if ($remaining < 240) {
+
                     $provider = craft()->oauth->getProvider($handle);
                     $provider->setToken($realToken);
+                    // var_dump($provider);
+                    // return null;
                     $provider->refreshToken();
+
 
                     $record = $this->_getTokenRecord($handle, $namespace, $userId);
 
@@ -186,6 +190,7 @@ class OauthService extends BaseApplicationComponent
                         $model = Oauth_TokenModel::populateModel($record);
                     }
                 }
+
             }
 
             return $model;

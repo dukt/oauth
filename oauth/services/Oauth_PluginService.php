@@ -5,9 +5,9 @@
  *
  * @package   Craft OAuth
  * @author    Benjamin David
- * @copyright Copyright (c) 2013, Dukt
- * @license   http://dukt.net/craft/oauth/docs/license
- * @link      http://dukt.net/craft/oauth/
+ * @copyright Copyright (c) 2014, Dukt
+ * @license   https://dukt.net/craft/oauth/docs/license
+ * @link      https://dukt.net/craft/oauth/
  */
 
 namespace Craft;
@@ -277,7 +277,7 @@ class Oauth_PluginService extends BaseApplicationComponent
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
-        $url = 'http://dukt.net/craft/'.$pluginHandle.'/releases.xml';
+        $url = 'https://dukt.net/craft/'.$pluginHandle.'/releases.xml';
 
 
 
@@ -287,7 +287,7 @@ class Oauth_PluginService extends BaseApplicationComponent
 
         if(isset($pluginHashes[$pluginHandle])) {
 
-            $url = 'http://dukt.net/actions/tracks/updates/'.$pluginHashes[$pluginHandle].'/develop/xml';
+            $url = 'https://dukt.net/actions/tracks/updates/'.$pluginHashes[$pluginHandle].'/develop/xml';
         }
 
 
