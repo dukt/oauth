@@ -57,7 +57,7 @@ class OauthPlugin extends BasePlugin
     /**
      * Hook Register CP Routes
      */
-    public function hookRegisterCpRoutes()
+    public function registerCpRoutes()
     {
         return array(
             'oauth\/settings\/(?P<providerHandle>.*)' => 'oauth/_settings',
