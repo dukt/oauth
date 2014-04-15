@@ -161,40 +161,47 @@ class OauthService extends BaseApplicationComponent
     {
         Craft::log(__METHOD__, LogLevel::Info, true);
 
-        $record = $this->_getTokenRecord($handle, $namespace, $userId);
+        try {
+            $record = $this->_getTokenRecord($handle, $namespace, $userId);
 
-        if($record) {
-            $model = Oauth_TokenModel::populateModel($record);
-
-
-            // refresh ?
-
-            $realToken = $model->getDecodedToken();
-
-            if (isset($realToken->expires)) {
-
-                $remaining = $realToken->expires - time();
-
-                if ($remaining < 240) {
-
-                    $provider = craft()->oauth->getProvider($handle);
-                    $provider->setToken($realToken);
-                    // var_dump($provider);
-                    // return null;
-                    $provider->refreshToken();
+            if($record) {
+                $model = Oauth_TokenModel::populateModel($record);
 
 
-                    $record = $this->_getTokenRecord($handle, $namespace, $userId);
+                // refresh ?
 
-                    if($record) {
-                        $model = Oauth_TokenModel::populateModel($record);
+                $realToken = $model->getDecodedToken();
+
+                if (isset($realToken->expires)) {
+
+                    $remaining = $realToken->expires - time();
+
+                    if ($remaining < 240) {
+
+                        $provider = craft()->oauth->getProvider($handle);
+                        $provider->setToken($realToken);
+                        // var_dump($provider);
+                        // return null;
+                        $provider->refreshToken();
+
+
+                        $record = $this->_getTokenRecord($handle, $namespace, $userId);
+
+                        if($record) {
+                            $model = Oauth_TokenModel::populateModel($record);
+                        }
                     }
+
                 }
 
+                return $model;
             }
-
-            return $model;
         }
+        catch(\Exception $e)
+        {
+            Craft::log($e->getMessage(), LogLevel::Info, true);
+        }
+
 
         return null;
     }
