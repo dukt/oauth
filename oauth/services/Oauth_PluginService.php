@@ -280,17 +280,6 @@ class Oauth_PluginService extends BaseApplicationComponent
         $url = 'https://dukt.net/craft/'.$pluginHandle.'/releases.xml';
 
 
-
-        // devMode
-
-        $pluginHashes = craft()->config->get('pluginHashes');
-
-        if(isset($pluginHashes[$pluginHandle])) {
-
-            $url = 'https://dukt.net/actions/tracks/updates/'.$pluginHashes[$pluginHandle].'/develop/xml';
-        }
-
-
         // or refresh cache and get new updates if cache expired or forced update
 
         $xml = @simplexml_load_file($url);
