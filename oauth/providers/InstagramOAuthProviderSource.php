@@ -14,7 +14,7 @@ namespace OAuthProviderSources;
 
 class InstagramOAuthProviderSource extends BaseOAuthProviderSource {
 
-	public $consoleUrl = 'https://api.instagram.com/oauth/authorize';
+	public $consoleUrl = 'https://apigee.com/console/instagram';
 
 	public function getName()
 	{
