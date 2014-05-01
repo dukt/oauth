@@ -194,7 +194,7 @@ class Oauth_PublicController extends BaseController
 
             if($social) {
 
-                $redirect = craft()->social->loginCallback($opts);
+                $redirect = craft()->socialize->loginCallback($opts);
 
                 $this->redirect($redirect);
 

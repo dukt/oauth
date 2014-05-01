@@ -405,6 +405,7 @@ class OauthService extends BaseApplicationComponent
         craft()->httpSession->remove('oauth.social');
         craft()->httpSession->remove('oauth.socialCallback');
         craft()->httpSession->remove('oauth.socialReferer');
+        craft()->httpSession->remove('oauth.socialRedirect');
     }
     // Scop
 
