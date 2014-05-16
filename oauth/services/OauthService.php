@@ -29,7 +29,8 @@ class OauthService extends BaseApplicationComponent
 
         $params = array('provider' => $handle);
 
-        $url = UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/public/connect', $params);
+        $url = UrlHelper::getActionUrl('oauth/public/connect', $params);
+
 
         Craft::log(__METHOD__." : Authenticate : ".$url, LogLevel::Info, true);
 
