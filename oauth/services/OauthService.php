@@ -29,10 +29,128 @@ class OauthService extends BaseApplicationComponent
 
         $params = array('provider' => $handle);
 
-        $url = UrlHelper::getActionUrl('oauth/public/connect', $params);
+        $url = $this->getSiteActionUrl('oauth/public/connect', $params);
 
 
         Craft::log(__METHOD__." : Authenticate : ".$url, LogLevel::Info, true);
+
+        return $url;
+    }
+
+    public function getSiteActionUrl($path = '', $params = null, $protocol = '')
+    {
+        $path = craft()->config->get('actionTrigger').'/'.trim($path, '/');
+        return $this->getSiteUrl($path, $params, $protocol, true, true);
+    }
+
+    // improved UrlHelper::_getUrl
+    public function getSiteUrl($path = '', $params = null, $protocol = '', $dynamicBaseUrl = false, $mustShowScriptName = false)
+    {
+        $path = trim($path, '/');
+        return static::_getUrl($path, $params, $protocol, $dynamicBaseUrl, $mustShowScriptName);
+    }
+
+    // just a copy of UrlHelper::_getUrl
+    private function _getUrl($path, $params, $protocol, $dynamicBaseUrl, $mustShowScriptName)
+    {
+        $anchor = '';
+
+        // Normalize the params
+        if (is_array($params))
+        {
+            foreach ($params as $name => $value)
+            {
+                if (!is_numeric($name))
+                {
+                    if ($name == '#')
+                    {
+                        $anchor = '#'.$value;
+                    }
+                    else if ($value !== null && $value !== '')
+                    {
+                        $params[] = $name.'='.$value;
+                    }
+
+                    unset($params[$name]);
+                }
+            }
+
+            $params = implode('&', array_filter($params));
+        }
+        else
+        {
+            $params = trim($params, '&?');
+        }
+
+        // Were there already any query string params in the path?
+        if (($qpos = strpos($path, '?')) !== false)
+        {
+            $params = substr($path, $qpos+1).($params ? '&'.$params : '');
+            $path = substr($path, 0, $qpos);
+        }
+
+        $showScriptName = ($mustShowScriptName || !craft()->config->omitScriptNameInUrls());
+
+        if ($dynamicBaseUrl)
+        {
+            $baseUrl = craft()->request->getHostInfo($protocol);
+
+            if ($showScriptName)
+            {
+                $baseUrl .= craft()->request->getScriptUrl();
+            }
+            else
+            {
+                $baseUrl .= craft()->request->getBaseUrl();
+            }
+        }
+        else
+        {
+            $baseUrl = craft()->getSiteUrl($protocol);
+
+            // Should we be adding that script name in?
+            if ($showScriptName)
+            {
+                $baseUrl .= craft()->request->getScriptName();
+            }
+        }
+
+        // Put it all together
+        if (!$showScriptName || craft()->config->usePathInfo())
+        {
+            if ($path)
+            {
+                $url = rtrim($baseUrl, '/').'/'.trim($path, '/');
+
+                if (craft()->request->isSiteRequest() && craft()->config->get('addTrailingSlashesToUrls'))
+                {
+                    $url .= '/';
+                }
+            }
+            else
+            {
+                $url = $baseUrl;
+            }
+        }
+        else
+        {
+            $url = $baseUrl;
+
+            if ($path)
+            {
+                $params = craft()->urlManager->pathParam.'='.$path.($params ? '&'.$params : '');
+            }
+        }
+
+        if ($params)
+        {
+            $url .= '?'.$params;
+        }
+
+        if ($anchor)
+        {
+            $url .= $anchor;
+        }
 
         return $url;
     }

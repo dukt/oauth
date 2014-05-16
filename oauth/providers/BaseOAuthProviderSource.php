@@ -181,11 +181,9 @@ abstract class BaseOAuthProviderSource {
 
         // get provider record
 
-        if(!$callbackUrl) {
-            $callbackUrl = UrlHelper::getSiteUrl(
-                \Craft\craft()->config->get('actionTrigger').'/oauth/public/connect',
-                array('provider' => $providerHandle)
-            );
+        if(!$callbackUrl)
+        {
+            $callbackUrl = \Craft\craft()->oauth->callbackUrl($providerHandle);
         }
 
 
