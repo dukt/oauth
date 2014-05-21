@@ -29,28 +29,33 @@
         {% if provider %}<input type="hidden" name="providerId" value="{{ provider.id }}" />{% endif %}
         <input type="hidden" name="providerHandle" value="{{ provider.handle }}" />
 
-        <h2 class="first">Create an OAuth application</h2>
+        <h2 class="first">{{ "Create an OAuth application"|t }}</h2>
 
-        <p>Create an OAuth 2.0 application and enable associated providers in the
+        <p>
             {% if provider.consoleUrl %}
-                <a target="_blank" href="{{provider.consoleUrl}}">{{provider.name}} API management Console</a>.
+                {{ "Create an OAuth 2.0 application and enable associated providers in the {console}"|t({
+                    console:           '<a href=\"'~provider.consoleUrl~'\">'~'{provider} API Management Console'|t({provider:provider.name})~'</a>'
+                })|raw }}
             {% else %}
-                 API management Console.
+                {{ "Create an OAuth 2.0 application and enable associated providers in the API management Console."|t }}
             {% endif %}
+
+
         </p>
 
 
-        <p>Once created, configure the application with the following settings. You might not need to use all of them.</p>
+        <p>{{ "Once created, configure the application with the following settings. You might not need to use all of them."|t }}</p>
 
         <ul>
-            <li><strong>Web Origin :</strong> {{siteUrl}}</li>
-            <li><strong>Redirect URI :</strong> {{craft.oauth.callbackUrl(provider.handle)}}</li>
+            <li><strong>{{ "Web Origin"|t }}:</strong> {{siteUrl}}</li>
+            <li><strong>{{ "Redirect URI"|t }}:</strong> {{craft.oauth.callbackUrl(provider.handle)}}</li>
         </ul>
 
         <hr>
-        <h2>Client ID &amp; Secret</h2>
 
-        <p>Use the client ID & secret from the OAuth application that you've just created.</p>
+        <h2>{{ "Client ID & Secret"|t }}</h2>
+
+        <p>{{ "Use the client ID & secret from the OAuth application that you've just created."|t }}</p>
 
         {{ forms.textField({
             label: 'Client Id'|t,

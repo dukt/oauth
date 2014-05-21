@@ -43,8 +43,8 @@
                             </td>
                             <td>{{token.userMapping}}</td>
                             <td><a href="mailto:{{token.user.email}}">{{token.user.email}}</a></td>
-                            <td class="thin"><a class="btn small" href="{{url('users/'~token.user.id)}}">View User</a></td>
-                            <td class="thin"><a class="btn small" href="{{actionUrl('oauth/settings/deleteToken', {id:token.id})}}">Delete</a></td>
+                            <td class="thin"><a class="btn small" href="{{url('users/'~token.user.id)}}">{{ "View User"|t }}</a></td>
+                            <td class="thin"><a class="btn small" href="{{actionUrl('oauth/settings/deleteToken', {id:token.id})}}">{{ "Delete"|t }}</a></td>
                         </tr>
                         {% endif %}
                 {% endfor %}

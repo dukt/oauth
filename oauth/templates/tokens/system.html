@@ -41,7 +41,7 @@
                             {% endif %}
                         </td>
                         <td>{{(token['namespace'] is defined ? token.namespace : '')}}</td>
-                        <td class="thin"><a class="btn small" href="{{actionUrl('oauth/settings/deleteToken', {id:token.id})}}">Delete</a></td>
+                        <td class="thin"><a class="btn small" href="{{actionUrl('oauth/settings/deleteToken', {id:token.id})}}">{{ "Delete"|t }}</a></td>
                     </tr>
 
                 {% endfor %}
