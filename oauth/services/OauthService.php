@@ -197,7 +197,7 @@ class OauthService extends BaseApplicationComponent
         }
         catch(\Exception $e)
         {
-            Craft::log($e->getMessage(), LogLevel::Error);
+            Craft::log("Couldn't get token: ".$e->getMessage(), LogLevel::Error);
         }
 
         return null;

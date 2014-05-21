@@ -290,7 +290,7 @@ class Oauth_PublicController extends BaseController
 
     private function _connectSystem()
     {
-        Craft::log(__METHOD__, LogLevel::Info);
+        Craft::log("Connect System", LogLevel::Info);
 
         // namespace
         $namespace = craft()->oauth->sessionAdd('oauth.namespace', craft()->request->getParam('namespace'));
@@ -349,7 +349,7 @@ class Oauth_PublicController extends BaseController
         }
         else
         {
-            Craft::log(__METHOD__.'Could not post-connect system', LogLevel::Error);
+            Craft::log('Could not post-connect system', LogLevel::Error);
         }
 
         $this->_redirect($referer);
@@ -357,7 +357,6 @@ class Oauth_PublicController extends BaseController
 
     private function _redirect($referer)
     {
-        Craft::log(__METHOD__." : Referer : ".$referer, LogLevel::Info);
         $this->redirect($referer);
     }
 }

@@ -64,7 +64,7 @@ abstract class BaseOAuthProviderSource {
 
             if(!$couldConnect)
             {
-                Craft::log(__METHOD__." : Could not connect", LogLevel::Error);
+                Craft::log("Could not connect provider", LogLevel::Error);
             }
 		}
 
@@ -248,7 +248,7 @@ abstract class BaseOAuthProviderSource {
 
                 if(!$accessToken)
                 {
-                    Craft::log(__METHOD__." : Could not refresh token", LogLevel::Error);
+                    Craft::log("Could not refresh token", LogLevel::Error);
                 }
 
 
@@ -263,7 +263,7 @@ abstract class BaseOAuthProviderSource {
             }
             else
             {
-                Craft::log(__METHOD__." : Access method (for refresh) doesn't exists for this provider", LogLevel::Info);
+                Craft::log("Access method (for refresh) doesn't exists for this provider", LogLevel::Info);
             }
         }
     }
