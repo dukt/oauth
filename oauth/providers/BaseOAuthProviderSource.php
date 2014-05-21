@@ -40,16 +40,17 @@ abstract class BaseOAuthProviderSource {
 
 	public function connect($token = null, $scope = null)
 	{
+
         if($scope) {
             $this->_initProviderSource(null, $scope);
         }
 
-		if(!$token) {
-            Craft::log(__METHOD__." : Provider processing", LogLevel::Info, true);
-
+		if(!$token)
+        {
             $couldConnect = $this->_providerSource->process(function($url, $token = null) {
 
-                if ($token) {
+                if ($token)
+                {
                     $_SESSION['token'] = base64_encode(serialize($token));
                 }
 
@@ -61,12 +62,15 @@ abstract class BaseOAuthProviderSource {
                 return unserialize(base64_decode($_SESSION['token']));
             });
 
-            if(!$couldConnect) {
+            if(!$couldConnect)
+            {
                 Craft::log(__METHOD__." : Could not connect", LogLevel::Error);
             }
 		}
 
-		if($this->_providerSource) {
+
+		if($this->_providerSource)
+        {
 			$this->isConnected = true;
 		}
 	}
@@ -106,7 +110,8 @@ abstract class BaseOAuthProviderSource {
 	{
         $token = $this->getToken();
 
-        if(!$token) {
+        if(!$token)
+        {
             return null;
         }
 
@@ -114,18 +119,17 @@ abstract class BaseOAuthProviderSource {
 
         $account = null;
 
-        if(!$account) {
-
+        if(!$account)
+        {
             // refresh token if needed
-
             $this->tokenRefresh();
-
 
             // account
 
             $account = $this->_providerSource->getUserInfo();
 
-            if(empty($account['uid'])) {
+            if(empty($account['uid']))
+            {
                 $account = null;
             }
         }
@@ -141,7 +145,6 @@ abstract class BaseOAuthProviderSource {
         $handle = get_class($this);
 
         $start = strlen("\\OAuthProviderSource\\");
-
         $end = - strlen('OAuthProviderSource');
 
         $handle = substr($handle, $start, $end);
@@ -159,7 +162,6 @@ abstract class BaseOAuthProviderSource {
 		$handle = get_class($this);
 
         $start = strlen("\\OAuthProviderSource\\");
-
         $end = - strlen('OAuthProviderSource');
 
 		$handle = substr($handle, $start, $end);
@@ -171,7 +173,6 @@ abstract class BaseOAuthProviderSource {
     {
         $this->_providerSource->client_id = $clientId;
         $this->_providerSource->client_secret = $clientSecret;
-
         $this->_initProviderSource();
     }
 
@@ -186,7 +187,6 @@ abstract class BaseOAuthProviderSource {
             $callbackUrl = \Craft\craft()->oauth->callbackUrl($providerHandle);
         }
 
-
         // provider options
 
         $opts = array(
@@ -195,10 +195,10 @@ abstract class BaseOAuthProviderSource {
             'redirect_url' => 'x'
         );
 
-    	if($this->_providerSource) {
-
-            if(!empty($this->_providerSource->client_id)) {
-
+    	if($this->_providerSource)
+        {
+            if(!empty($this->_providerSource->client_id))
+            {
                 $opts = array(
                     'id' => $this->_providerSource->client_id,
                     'secret' => $this->_providerSource->client_secret,
@@ -208,12 +208,12 @@ abstract class BaseOAuthProviderSource {
                 $this->isConfigured = true;
             }
 
-    	}
+        }
 
-
-        if($scope) {
-
-            if(is_array($scope) && !empty($scope)) {
+        if($scope)
+        {
+            if(is_array($scope) && !empty($scope))
+            {
                 $opts['scope'] = $scope;
             }
         }
@@ -223,9 +223,9 @@ abstract class BaseOAuthProviderSource {
 
         $this->_providerSource = new $class($opts);
 
-        if($token) {
+        if($token)
+        {
             $this->_providerSource->setToken($token);
-
             $this->tokenRefresh();
         }
     }
@@ -236,20 +236,19 @@ abstract class BaseOAuthProviderSource {
 
         // token expired : we need to refresh it
 
-        if($difference < 1) {
-
-            Craft::log(__METHOD__." : Refresh token ", LogLevel::Info, true);
-
+        if($difference < 1)
+        {
             $encodedToken = base64_encode(serialize($this->_providerSource->token));
 
             $token = \Craft\craft()->oauth->getTokenEncoded($encodedToken);
 
-            if(method_exists($this->_providerSource, 'access') && $this->_providerSource->token->refresh_token) {
-
+            if(method_exists($this->_providerSource, 'access') && $this->_providerSource->token->refresh_token)
+            {
                 $accessToken = $this->_providerSource->access($this->_providerSource->token->refresh_token, array('grant_type' => 'refresh_token'));
 
-                if(!$accessToken) {
-                    Craft::log(__METHOD__." : Could not refresh token", LogLevel::Info, true);
+                if(!$accessToken)
+                {
+                    Craft::log(__METHOD__." : Could not refresh token", LogLevel::Error);
                 }
 
 
@@ -260,13 +259,12 @@ abstract class BaseOAuthProviderSource {
 
                 $token->token = base64_encode(serialize($this->_providerSource->token));
 
-                if(\Craft\craft()->oauth->tokenSave($token)) {
-                    Craft::log(__METHOD__." : Token saved", LogLevel::Info, true);
-                }
-            } else {
-                Craft::log(__METHOD__." : Access method (for refresh) doesn't exists for this provider", LogLevel::Info, true);
+                \Craft\craft()->oauth->tokenSave($token);
+            }
+            else
+            {
+                Craft::log(__METHOD__." : Access method (for refresh) doesn't exists for this provider", LogLevel::Info);
             }
         }
     }
-
 }

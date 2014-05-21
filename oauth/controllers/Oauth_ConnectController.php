@@ -20,7 +20,7 @@ class Oauth_ConnectController extends BaseController
 
     public function init()
     {
-        Craft::log(__METHOD__, LogLevel::Info, true);
+        Craft::log(__METHOD__, LogLevel::Info);
 
         // request params
 

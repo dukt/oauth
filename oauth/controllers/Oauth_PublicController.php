@@ -20,7 +20,7 @@ class Oauth_PublicController extends BaseController
 
     public function actionConnect()
     {
-        Craft::log(__METHOD__, LogLevel::Info, true);
+        Craft::log(__METHOD__, LogLevel::Info);
 
         $namespace = craft()->oauth->sessionAdd('oauth.namespace', craft()->request->getParam('namespace'));
 
@@ -50,7 +50,7 @@ class Oauth_PublicController extends BaseController
 
     public function actionDisconnect()
     {
-        Craft::log(__METHOD__, LogLevel::Info, true);
+        Craft::log(__METHOD__, LogLevel::Info);
 
         // redirect url
 
@@ -119,7 +119,7 @@ class Oauth_PublicController extends BaseController
 
     private function _connectUser()
     {
-        Craft::log(__METHOD__, LogLevel::Info, true);
+        Craft::log(__METHOD__, LogLevel::Info);
 
         // session variables
 
@@ -291,7 +291,7 @@ class Oauth_PublicController extends BaseController
 
     private function _connectSystem()
     {
-        Craft::log(__METHOD__, LogLevel::Info, true);
+        Craft::log(__METHOD__, LogLevel::Info);
 
         // namespace
 
@@ -366,7 +366,7 @@ class Oauth_PublicController extends BaseController
 
     private function _redirect($referer)
     {
-        Craft::log(__METHOD__." : Referer : ".$referer, LogLevel::Info, true);
+        Craft::log(__METHOD__." : Referer : ".$referer, LogLevel::Info);
 
         $this->redirect($referer);
     }
