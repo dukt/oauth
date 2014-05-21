@@ -20,7 +20,7 @@ class Oauth_PublicController extends BaseController
 
     public function actionConnect()
     {
-        Craft::log(__METHOD__, LogLevel::Info);
+        Craft::log("OAuth Connect", LogLevel::Info);
 
         $namespace = craft()->oauth->sessionAdd('oauth.namespace', craft()->request->getParam('namespace'));
 
@@ -41,50 +41,58 @@ class Oauth_PublicController extends BaseController
 
         // connect user or system
 
-        if($namespace) {
+        if($namespace)
+        {
             $this->_connectSystem();
-        } else {
+        }
+        else
+        {
             $this->_connectUser();
         }
     }
 
     public function actionDisconnect()
     {
-        Craft::log(__METHOD__, LogLevel::Info);
+        Craft::log("OAuth Disconnect", LogLevel::Info);
 
         // redirect url
 
         $redirect = craft()->httpSession->get('oauth.referer');
 
-        if(!$redirect) {
+        if(!$redirect)
+        {
             $redirect = $_SERVER['HTTP_REFERER'];
         }
-
 
         // get request params
 
         $providerHandle = craft()->request->getParam('provider');
         $namespace = craft()->request->getParam('namespace');
 
-
-
-        if($namespace) {
+        if($namespace)
+        {
             $userMode = false;
-        } else {
-            if(craft()->userSession->user) {
+        }
+        else
+        {
+            if(craft()->userSession->user)
+            {
                 $userMode = true;
-            } else {
+            }
+            else
+            {
                 $this->_redirect($redirect);
             }
         }
 
         // remove cache
 
-        if($namespace) {
-
+        if($namespace)
+        {
             $token = craft()->oauth->getSystemToken($providerHandle, $namespace);
 
-            if($token) {
+            if($token)
+            {
                 $token = $token->getRealToken();
             }
         }
@@ -96,30 +104,28 @@ class Oauth_PublicController extends BaseController
         $conditions = 'provider=:provider';
         $params = array(':provider' => $providerHandle);
 
-        if($namespace) {
+        if($namespace)
+        {
             $conditions .= ' AND namespace=:namespace';
             $params[':namespace']  = $namespace;
         }
 
-        if($userMode) {
+        if($userMode)
+        {
             $conditions .= ' AND userId=:userId';
             $params[':userId']  = craft()->userSession->user->id;
         }
 
-
         // delete all matching records
-
         Oauth_TokenRecord::model()->deleteAll($conditions, $params);
 
-
         // redirect
-
         $this->_redirect($redirect);
     }
 
     private function _connectUser()
     {
-        Craft::log(__METHOD__, LogLevel::Info);
+        Craft::log("Connect User", LogLevel::Info);
 
         // session variables
 
@@ -136,25 +142,22 @@ class Oauth_PublicController extends BaseController
 
         // scope
 
-        $scope          = craft()->httpSession->get('oauth.scope');
+        $scope = craft()->httpSession->get('oauth.scope');
 
-        if(!$scope) {
-
+        if(!$scope)
+        {
             // tokenScope
-
             $tokenScope = @unserialize(base64_decode($token->scope));
 
-
             // is scope enough ?
-
             $scopeEnough = craft()->oauth->scopeIsEnough($scope, $tokenScope);
 
 
-            // scope is not enough, connect user with new scope
+            // scope not enough? connect user with new scope
 
-            if(!$scopeEnough) {
+            if(!$scopeEnough)
+            {
                 $scope = craft()->oauth->scopeMix($scope, $tokenScope);
-
                 craft()->httpSession->add('oauth.scope', $scope);
             }
         }
@@ -164,16 +167,20 @@ class Oauth_PublicController extends BaseController
 
         // instantiate provider
 
-        if(!$provider) {
+        if(!$provider)
+        {
             craft()->userSession->setError(Craft::t("Provider not configured."));
             craft()->httpSession->add('error', Craft::t("Provider not configured."));
             $this->redirect($referer);
             return;
         }
 
-        try {
+        try
+        {
             $provider->connectScope($scope);
-        } catch(\Exception $e) {
+        }
+        catch(\Exception $e)
+        {
             craft()->userSession->setError(Craft::t($e->getMessage()));
             craft()->httpSession->add('error', Craft::t($e->getMessage()));
             $this->redirect($referer);
@@ -182,18 +189,16 @@ class Oauth_PublicController extends BaseController
 
         // post-connect
 
-        if($provider) {
-
-
+        if($provider)
+        {
             // ----------------------
             // social bypass
             // ----------------------
 
-
             $oauthToken = $opts['oauth.token'] = base64_encode(serialize($provider->getToken()));
 
-            if($social) {
-
+            if($social)
+            {
                 if(isset(craft()->social))
                 {
                     $redirect = craft()->social->loginCallback($opts);
@@ -214,41 +219,37 @@ class Oauth_PublicController extends BaseController
             // ----------------------
 
             // craft user must be logged in
-
-            if(!craft()->userSession->user) {
+            if(!craft()->userSession->user)
+            {
                 return null;
             }
 
-
             // set default scope if none set
-
-            if(!$scope) {
+            if(!$scope)
+            {
                 $scope = $provider->getScope();
             }
 
-            try {
-
+            try
+            {
                 $account = $provider->getAccount();
-
-            } catch(\Exception $e) {
-
+            }
+            catch(\Exception $e)
+            {
                 craft()->userSession->setError(Craft::t($e->getMessage()));
                 craft()->httpSession->add('error', Craft::t($e->getMessage()));
-
-                // template errors
-
                 $this->_redirect($referer);
             }
 
 
             // save token
-
             $token = craft()->oauth->getTokenFromUserMapping($providerHandle, $account['uid']);
 
-            if($token) {
-                if($token->userId != craft()->userSession->user->id) {
-
-                    Craft::log(__METHOD__.$provider->name." account already used by another user.", LogLevel::Warning);
+            if($token)
+            {
+                if($token->userId != craft()->userSession->user->id)
+                {
+                    Craft::log($provider->name." account already used by another user.", LogLevel::Warning);
 
                     // cp errors
 
@@ -260,9 +261,10 @@ class Oauth_PublicController extends BaseController
                     $this->_redirect($referer);
 
                     return null;
-
                 }
-            } else {
+            }
+            else
+            {
                 $token = new Oauth_TokenModel;
             }
 
@@ -273,19 +275,16 @@ class Oauth_PublicController extends BaseController
             $token->scope = $scope;
 
             craft()->oauth->tokenSave($token);
-
-        } else {
-            Craft::log(__METHOD__.'Could not post-connect user', LogLevel::Error);
+        }
+        else
+        {
+            Craft::log('Could not post-connect user', LogLevel::Error);
         }
 
-
         // remove httpSession variables
-
         craft()->oauth->sessionClean();
 
-
         // redirect
-
         $this->_redirect($referer);
     }
 
@@ -294,12 +293,10 @@ class Oauth_PublicController extends BaseController
         Craft::log(__METHOD__, LogLevel::Info);
 
         // namespace
-
         $namespace = craft()->oauth->sessionAdd('oauth.namespace', craft()->request->getParam('namespace'));
 
 
         // session vars
-
         $providerHandle = craft()->httpSession->get('oauth.providerClass');
         $scope         = craft()->httpSession->get('oauth.scope');
         $referer       = craft()->httpSession->get('oauth.referer');
@@ -308,39 +305,34 @@ class Oauth_PublicController extends BaseController
         // connect provider
 
         $provider = craft()->oauth->getProvider($providerHandle);
-
         $userSession = craft()->userSession;
 
-        try {
+        try
+        {
             $provider->connectScope($scope);
-        } catch(\Exception $e) {
-
+        }
+        catch(\Exception $e)
+        {
             $userSession->setError(Craft::t($e->getMessage()));
             craft()->httpSession->add('error', Craft::t($e->getMessage()));
-
             $this->redirect($referer);
         }
 
         // save token
 
-        if($provider) {
-
+        if($provider)
+        {
             // remove any existing token with this namespace
-
             craft()->oauth->tokenDeleteByNamespace($providerHandle, $namespace);
 
-
             // token
-
             $token = $provider->getToken();
-
             $token = base64_encode(serialize($token));
-
-
 
             // scope
 
-            if(!$scope) {
+            if(!$scope)
+            {
                 $scope = $provider->getScope();
             }
 
@@ -354,12 +346,11 @@ class Oauth_PublicController extends BaseController
             $model->scope = $scope;
 
             craft()->oauth->tokenSave($model);
-
-
-        } else {
+        }
+        else
+        {
             Craft::log(__METHOD__.'Could not post-connect system', LogLevel::Error);
         }
-
 
         $this->_redirect($referer);
     }
@@ -367,7 +358,6 @@ class Oauth_PublicController extends BaseController
     private function _redirect($referer)
     {
         Craft::log(__METHOD__." : Referer : ".$referer, LogLevel::Info);
-
         $this->redirect($referer);
     }
 }
