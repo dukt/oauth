@@ -12,8 +12,6 @@
 
 namespace Craft;
 
-require(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
-
 class Oauth_DisconnectController extends BaseController
 {
     protected $allowAnonymous = true;

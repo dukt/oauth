@@ -36,21 +36,27 @@ class OauthService extends BaseApplicationComponent
         return $this->getSiteUrl($path, $params, $protocol, true, true);
     }
 
-    public function connect($handle, $scope = null, $namespace = null)
+    public function connect($handle, $scopes = null, $namespace = null, $params = array())
     {
-        $params = array('provider' => $handle);
+        $queryParams = array('provider' => $handle);
 
-        if($scope)
-        {
-            $params['scope'] = base64_encode(serialize($scope));
-        }
 
         if($namespace)
         {
-            $params['namespace'] = $namespace;
+            $queryParams['namespace'] = $namespace;
         }
 
-        return UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/connect', $params);
+        if($scopes)
+        {
+            $queryParams['scopes'] = base64_encode(serialize($scopes));
+        }
+
+        if($params)
+        {
+            $queryParams['params'] = base64_encode(serialize($params));
+        }
+
+        return UrlHelper::getSiteUrl(craft()->config->get('actionTrigger').'/oauth/connect', $queryParams);
     }
 
     public function disconnect($handle, $namespace = null)
@@ -459,46 +465,6 @@ class OauthService extends BaseApplicationComponent
         return null;
     }
 
-    public function getProviderSource($providerClass)
-    {
-        // Get the full class name
-
-        $class = $providerClass.'OAuthProviderSource';
-
-        $nsClass = 'OAuthProviderSources\\'.$class;
-
-
-        // Skip the autoloader
-
-        if (!class_exists($nsClass, false))
-        {
-            $path = CRAFT_PLUGINS_PATH.'oauth/providers/'.$class.'.php';
-
-            if (($path = IOHelper::fileExists($path, false)) !== false)
-            {
-                require_once $path;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        if (!class_exists($nsClass, false))
-        {
-            return null;
-        }
-
-        $providerSource = new $nsClass;
-
-        if (!$providerSource instanceof \OAuthProviderSources\BaseOAuthProviderSource)
-        {
-            die("this provider doesn't implement BaseOAuthProviderSource abstract class");
-        }
-
-        return $providerSource;
-    }
-
     private function _getProviderRecordByHandle($handle)
     {
         $providerRecord = Oauth_ProviderRecord::model()->find(
@@ -658,35 +624,9 @@ class OauthService extends BaseApplicationComponent
             return;
         }
 
-        // providerSources
-
-        $providerSources = array();
-
-        $providersPath = CRAFT_PLUGINS_PATH.'oauth/providers/';
-        $providersFolderContents = IOHelper::getFolderContents($providersPath, false);
-
-        if($providersFolderContents) {
-
-            foreach($providersFolderContents as $path) {
-                $path = IOHelper::normalizePathSeparators($path);
-                $fileName = IOHelper::getFileName($path, false);
-
-                if($fileName == 'BaseOAuthProviderSource') continue;
-
-                // Chop off the "OAuthProviderSource" suffix
-
-                $handle = substr($fileName, 0, strlen($fileName) - 19);
-
-                $providerSource = $this->getProviderSource($handle);
-
-                array_push($providerSources, $providerSource);
-
-            }
-        }
-
         // providers
 
-        foreach($providerSources as $providerSource)
+        foreach($this->getProviderSources() as $providerSource)
         {
             $lcHandle = strtolower($providerSource->getHandle());
 
@@ -711,6 +651,105 @@ class OauthService extends BaseApplicationComponent
 
         $this->_providersLoaded = true;
     }
+
+    public function getProviderSources()
+    {
+        $providerSources = array();
+
+        $providersPath = CRAFT_PLUGINS_PATH.'oauth/providers/';
+        $providersFolderContents = IOHelper::getFolderContents($providersPath, false);
+
+        if($providersFolderContents)
+        {
+            foreach($providersFolderContents as $path)
+            {
+                $path = IOHelper::normalizePathSeparators($path);
+                $fileName = IOHelper::getFileName($path, false);
+
+                if($fileName == 'BaseOAuthProviderSource') continue;
+
+                // Chop off the "OAuthProviderSource" suffix
+                $handle = substr($fileName, 0, strlen($fileName) - 19);
+
+                $providerSources[] = $this->getProviderSource($handle);
+            }
+        }
+
+        return $providerSources;
+    }
+
+    public function getProviderSource($providerClass)
+    {
+        // Get the full class name
+
+        $class = $providerClass.'OAuthProviderSource';
+
+        $nsClass = 'OAuthProviderSources\\'.$class;
+
+
+        // Skip the autoloader
+
+        if (!class_exists($nsClass, false))
+        {
+            $path = CRAFT_PLUGINS_PATH.'oauth/providers/'.$class.'.php';
+
+            if (($path = IOHelper::fileExists($path, false)) !== false)
+            {
+                require_once $path;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        if (!class_exists($nsClass, false))
+        {
+            return null;
+        }
+
+        $providerSource = new $nsClass;
+
+        if (!$providerSource instanceof \OAuthProviderSources\BaseOAuthProviderSource)
+        {
+            die("this provider doesn't implement BaseOAuthProviderSource abstract class");
+        }
+
+        return $providerSource;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /* Craft Helpers*/

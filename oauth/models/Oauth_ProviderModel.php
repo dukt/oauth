@@ -97,6 +97,11 @@ class Oauth_ProviderModel extends BaseModel
         return $this->providerSource->getRedirectUri();
     }
 
+    public function getService()
+    {
+
+    }
+
     public function getSource()
     {
         return $this->providerSource;

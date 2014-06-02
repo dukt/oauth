@@ -19,9 +19,9 @@ class OauthVariable
         return craft()->oauth->callbackUrl($handle);
     }
 
-    public function connect($handle, $scope = null, $namespace = null)
+    public function connect($handle, $scopes = null, $namespace = null, $params = array())
     {
-        return craft()->oauth->connect($handle, $scope, $namespace);
+        return craft()->oauth->connect($handle, $scopes, $namespace, $params);
     }
 
     public function disconnect($handle, $namespace = null)
