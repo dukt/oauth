@@ -5,16 +5,7 @@
     "autoload": {
         "psr-0": {"OAuthProviders\\": "providers/"}
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/dukt/oauth"
-        }
-    ],
     "require": {
-        "php": ">=5.3.2",
-        "chrisnharvey/oauth": "dev-dukt",
-        "symfony/filesystem": "2.3.*@dev",
-        "vipsoft/unzip": "dev-master"
+        "lusitanian/oauth": "v0.3.0"
     }
 }
