@@ -23,6 +23,16 @@ class OauthService extends BaseApplicationComponent
     private $_allProviders = array();
     private $_providersLoaded = false;
 
+    public function onBeforeSaveUserToken(Event $event)
+    {
+        $this->raiseEvent('onBeforeSaveUserToken', $event);
+    }
+
+    public function onConnectUser(Event $event)
+    {
+        $this->raiseEvent('onConnectUser', $event);
+    }
+
     public function callbackUrl($handle)
     {
         $params = array('provider' => $handle);
@@ -229,12 +239,12 @@ class OauthService extends BaseApplicationComponent
         return $model;
     }
 
-    public function getTokenFromUserMapping($handle, $userMapping = null)
+    public function getTokenFromUserMapping($handle, $userMapping)
     {
-        if(!craft()->userSession->user)
-        {
-            return null;
-        }
+        // if(!craft()->userSession->user)
+        // {
+        //     return null;
+        // }
 
         $conditions = 'userMapping=:userMapping';
         $params = array(':userMapping' => $userMapping);

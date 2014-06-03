@@ -119,6 +119,12 @@ abstract class BaseOAuthProviderSource {
         $this->initService();
     }
 
+    public function setRealToken($realToken)
+    {
+        $this->storage->storeAccessToken('Google', $realToken);
+        $this->initService();
+    }
+
     public function getAccount()
     {
         $response = $this->service->request('https://www.googleapis.com/oauth2/v1/userinfo');
@@ -128,6 +134,7 @@ abstract class BaseOAuthProviderSource {
 
         $account['uid'] = $response['id'];
         $account['name'] = $response['name'];
+        $account['email'] = $response['email'];
 
         return $account;
 
