@@ -28,6 +28,11 @@ class OauthService extends BaseApplicationComponent
         $this->raiseEvent('onBeforeSaveUserToken', $event);
     }
 
+    public function onConnect(Event $event)
+    {
+        $this->raiseEvent('onConnect', $event);
+    }
+
     public function onConnectUser(Event $event)
     {
         $this->raiseEvent('onConnectUser', $event);

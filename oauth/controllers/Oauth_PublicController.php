@@ -22,9 +22,20 @@ class Oauth_PublicController extends BaseController
     private $params;
     private $referer;
 
-    private function actionConnect()
+    public function actionConnect()
     {
+        // handle
+        $this->handle = craft()->request->getParam('provider');
         $code = craft()->request->getParam('code');
+
+        // session vars
+        $this->referer = craft()->httpSession->get('oauth.referer');
+        $this->namespace = craft()->httpSession->get('oauth.namespace');
+        $this->scopes = craft()->httpSession->get('oauth.scopes');
+        $this->params = craft()->httpSession->get('oauth.params');
+
+
+        // provider
         $provider = craft()->oauth->getProvider($this->handle);
 
         // init service
@@ -47,6 +58,7 @@ class Oauth_PublicController extends BaseController
 
             // Fire an 'onConnect' event
             craft()->oauth->onConnect(new Event($this, array(
+                'provider' => $provider,
                 'token'      => $token
             )));
         }
