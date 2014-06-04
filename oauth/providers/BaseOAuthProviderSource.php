@@ -122,6 +122,7 @@ abstract class BaseOAuthProviderSource {
     public function setRealToken($realToken)
     {
         $this->storage->storeAccessToken('Google', $realToken);
+
         $this->initService();
     }
 

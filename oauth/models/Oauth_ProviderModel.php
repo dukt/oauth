@@ -131,6 +131,11 @@ class Oauth_ProviderModel extends BaseModel
         $this->providerSource->setToken($token);
     }
 
+    public function setRealToken($token)
+    {
+        $this->providerSource->setRealToken($token);
+    }
+
     public function connectScope($scope)
     {
         $this->providerSource->connectScope($scope);
