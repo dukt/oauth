@@ -51,7 +51,7 @@ class OauthPlugin extends BasePlugin
      */
     public function hasCpSection()
     {
-        return true;
+        return false;
     }
 
     /**
@@ -60,7 +60,18 @@ class OauthPlugin extends BasePlugin
     public function registerCpRoutes()
     {
         return array(
-            'oauth\/settings\/(?P<providerHandle>.*)' => 'oauth/_settings',
+            'oauth\/provider\/(?P<providerHandle>.*)' => 'oauth/_provider',
         );
+    }
+
+    public function getSettingsHtml()
+    {
+        if(craft()->request->getPath() == 'settings/plugins') {
+            return true;
+        }
+
+        return craft()->templates->render('oauth/index', array(
+            'settings' => $this->getSettings()
+        ));
     }
 }

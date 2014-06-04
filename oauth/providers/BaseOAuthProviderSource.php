@@ -14,17 +14,16 @@ namespace OAuthProviderSources;
 
 use \Craft\Craft;
 use \Craft\LogLevel;
-use \Craft\Oauth_TokenModel;
 use \Craft\Oauth_TokenRecord;
 use \Craft\Oauth_ProviderRecord;
 use \Craft\UrlHelper;
 
-use OAuth\OAuth2\Service\Google;
 use OAuth\Common\Storage\Session;
 use OAuth\Common\Consumer\Credentials;
 
 abstract class BaseOAuthProviderSource {
 
+    public $class;
     public $isConfigured = false;
     public $isConnected = false;
 
@@ -34,55 +33,18 @@ abstract class BaseOAuthProviderSource {
     public $service = null;
     public $storage = null;
 
-    public function __construct($token = null, $scopes = array())
+    public function initStorage()
     {
-        $this->storage = new Session();
-        // $this->initService($token, $scopes);
+        if(!$this->storage)
+        {
+            $this->storage = new Session();
+        }
+
     }
 
-    public function connectToken($token) {
-        $this->connect($token);
-    }
-
-    public function connectScope($scope) {
-        $this->connect(null, $scope);
-    }
-
-    public function connect($token = null, $scope = null)
+    public function retrieveAccessToken()
     {
-
-        if($scope) {
-            $this->initService(null, $scope);
-        }
-
-        if(!$token)
-        {
-            $couldConnect = $this->service->process(function($url, $token = null) {
-
-                if ($token)
-                {
-                    $_SESSION['token'] = base64_encode(serialize($token));
-                }
-
-                header("Location: {$url}");
-
-                exit;
-
-            }, function() {
-                return unserialize(base64_decode($_SESSION['token']));
-            });
-
-            if(!$couldConnect)
-            {
-                Craft::log("Could not connect provider", LogLevel::Error);
-            }
-        }
-
-
-        if($this->service)
-        {
-            $this->isConnected = true;
-        }
+        return $this->storage->retrieveAccessToken($this->getClass());
     }
 
     public function getClientId()
@@ -97,78 +59,26 @@ abstract class BaseOAuthProviderSource {
 
     public function getRedirectUri()
     {
-        // return $this->service->redirect_uri;
         return 'fake redirect uri';
-    }
-
-    public function getScope()
-    {
-        return $this->service->scopes;
-    }
-
-    public function getToken()
-    {
-        return $this->service->token();
     }
 
     public function setToken(OAuth_TokenModel $token)
     {
+        $this->initStorage();
+
         $realToken = $token->getRealToken();
 
-        $this->storage->storeAccessToken('Google', $realToken);
+        $this->storage->storeAccessToken($this->getClass(), $realToken);
         $this->initService();
     }
 
     public function setRealToken($realToken)
     {
-        $this->storage->storeAccessToken('Google', $realToken);
+        $this->initStorage();
+
+        $this->storage->storeAccessToken($this->getClass(), $realToken);
 
         $this->initService();
-    }
-
-    public function getAccount()
-    {
-        $response = $this->service->request('https://www.googleapis.com/oauth2/v1/userinfo');
-        $response = json_decode($response, true);
-
-        $account = array();
-
-        $account['uid'] = $response['id'];
-        $account['name'] = $response['name'];
-        $account['email'] = $response['email'];
-
-        return $account;
-
-        // die();
-
-        // return array('test');
-        // $token = $this->getToken();
-
-        // if(!$token)
-        // {
-        //     return null;
-        // }
-
-        // $key = 'oauth.'.$this->getHandle().'.'.md5($token->access_token).'.account';
-
-        // $account = null;
-
-        // if(!$account)
-        // {
-        //     // refresh token if needed
-        //     $this->tokenRefresh();
-
-        //     // account
-
-        //     $account = $this->service->getUserInfo();
-
-        //     if(empty($account['uid']))
-        //     {
-        //         $account = null;
-        //     }
-        // }
-
-        // return $account;
     }
 
     public function getHandle()
@@ -207,7 +117,6 @@ abstract class BaseOAuthProviderSource {
     {
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
-        //$this->initService();
     }
 
     public function request($path, $method = 'GET', $body = null, array $extraHeaders = array())
@@ -217,9 +126,9 @@ abstract class BaseOAuthProviderSource {
 
     public function initService($scopes = array())
     {
-        try {
-            //$this->storage->retrieveAccessToken('google');
+        $this->initStorage();
 
+        // try {
 
             $handle = $this->getHandle();
             $serviceFactory = new \OAuth\ServiceFactory();
@@ -231,135 +140,10 @@ abstract class BaseOAuthProviderSource {
             );
 
             $this->service = $serviceFactory->createService($handle, $credentials, $this->storage, $scopes);
-        }
-        catch(\Exception $e)
-        {
+        // }
+        // catch(\Exception $e)
+        // {
 
-        }
-    }
-
-    public function tokenRefresh()
-    {
-        $difference = ($this->service->token->expires - time());
-
-        // token expired : we need to refresh it
-
-        if($difference < 1)
-        {
-            $encodedToken = base64_encode(serialize($this->service->token));
-
-            $token = \Craft\craft()->oauth->getTokenEncoded($encodedToken);
-
-            if(method_exists($this->service, 'access') && $this->service->token->refresh_token)
-            {
-                $accessToken = $this->service->access($this->service->token->refresh_token, array('grant_type' => 'refresh_token'));
-
-                if(!$accessToken)
-                {
-                    Craft::log("Could not refresh token", LogLevel::Error);
-                }
-
-
-                // save token
-
-                $this->service->token->access_token = $accessToken->access_token;
-                $this->service->token->expires = $accessToken->expires;
-
-                $token->token = base64_encode(serialize($this->service->token));
-
-                \Craft\craft()->oauth->tokenSave($token);
-            }
-            else
-            {
-                Craft::log("Access method (for refresh) doesn't exists for this provider", LogLevel::Info);
-            }
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private function deprecatedinitService($token = null, $scope = null, $callbackUrl = null)
-    {
-        $providerHandle = $this->getHandle();
-
-        // get provider record
-
-        if(!$callbackUrl)
-        {
-            $callbackUrl = \Craft\craft()->oauth->callbackUrl($providerHandle);
-        }
-
-        // provider options
-
-        $opts = array(
-            'id' => 'x',
-            'secret' => 'x',
-            'redirect_url' => 'x'
-        );
-
-        if($this->service)
-        {
-            if(!empty($this->service->client_id))
-            {
-                $opts = array(
-                    'id' => $this->service->client_id,
-                    'secret' => $this->service->client_secret,
-                    'redirect_url' => $callbackUrl
-                );
-
-                $this->isConfigured = true;
-            }
-
-        }
-
-        if($scope)
-        {
-            if(is_array($scope) && !empty($scope))
-            {
-                $opts['scope'] = $scope;
-            }
-        }
-
-
-        $class = "\\OAuth\\Provider\\{$this->getClass()}";
-
-        $this->service = new $class($opts);
-
-        if($token)
-        {
-            $this->service->setToken($token);
-            $this->tokenRefresh();
-        }
+        // }
     }
 }

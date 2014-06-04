@@ -1,39 +1,36 @@
-{% extends "oauth/_layout" %}
-{% set selectedTab = 'providers' %}
+{% import "_includes/forms" as forms %}
 
-{% set content %}
+{% includeCssResource 'oauth/css/disableSave.css' %}
 
-    <table id="fields" class="data fullwidth collapsible">
-        <thead>
+<table id="fields" class="data fullwidth collapsible">
+    <thead>
+        <tr>
+            <th scope="col">{{ "Provider"|t }}</th>
+            <th>{{ "Status"|t }}</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for provider in craft.oauth.getProviders(false) %}
+
             <tr>
-                <th scope="col">{{ "Provider"|t }}</th>
-                <th>{{ "Status"|t }}</th>
-                <th></th>
+                <td><a href="{{ url('oauth/provider/'~provider.handle) }}">{{provider.name}}</a></td>
+
+                <td class="nowrap">
+                    {% if provider.isConfigured %}
+                        <span class="status on"></span> {{ "Configured"|t }}
+                    {% else %}
+                        <span class="status"></span><span class="light">{{ "Not Configured"|t }}</span>
+                    {% endif %}
+                </td>
+
+                <td class="thin">
+                    <a class="btn small" href="{{ url('oauth/provider/'~provider.handle) }}">{{ "API Settings"|t }}</a>
+                </td>
+
             </tr>
-        </thead>
 
-        <tbody>
-            {% for provider in craft.oauth.getProviders(false) %}
-
-                <tr>
-                    <td><a href="{{ url('oauth/settings/'~provider.handle) }}">{{provider.name}}</a></td>
-
-                    <td class="nowrap">
-                        {% if provider.isConfigured %}
-                            <span class="status on"></span> {{ "Configured"|t }}
-                        {% else %}
-                            <span class="status"></span><span class="light">{{ "Not Configured"|t }}</span>
-                        {% endif %}
-                    </td>
-
-                    <td class="thin">
-                        <a class="btn small" href="{{ url('oauth/settings/'~provider.handle) }}">{{ "API Settings"|t }}</a>
-                    </td>
-
-                </tr>
-
-            {% endfor %}
-        </tbody>
-    </table>
-
-{% endset %}
+        {% endfor %}
+    </tbody>
+</table>

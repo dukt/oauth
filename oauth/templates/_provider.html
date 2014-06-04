@@ -17,7 +17,9 @@
 {% set title = provider.name~" Settings"|t %}
 
 {% set crumbs = [
-    { label: "OAuth"|t, url: url('oauth') }
+    { label: "Settings"|t, url: url('settings') },
+    { label: "Plugin"|t, url: url('settings/plugins') },
+    { label: "OAuth"|t, url: url('settings/plugins/oauth') }
 ] %}
 
 {% set content %}

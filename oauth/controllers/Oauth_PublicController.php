@@ -20,289 +20,90 @@ class Oauth_PublicController extends BaseController
     private $namespace;
     private $scopes;
     private $params;
-    private $referer;
+    private $redirect;
 
     public function actionConnect()
     {
         // handle
         $this->handle = craft()->request->getParam('provider');
-        $code = craft()->request->getParam('code');
+
 
         // session vars
-        $this->referer = craft()->httpSession->get('oauth.referer');
-        $this->namespace = craft()->httpSession->get('oauth.namespace');
+        $this->redirect = craft()->httpSession->get('oauth.redirect');
         $this->scopes = craft()->httpSession->get('oauth.scopes');
         $this->params = craft()->httpSession->get('oauth.params');
 
 
         // provider
+
         $provider = craft()->oauth->getProvider($this->handle);
 
         // init service
         $provider->source->initService($this->scopes);
 
-        if (!$code)
+        switch($this->handle)
         {
-            // redirect to authorization url if we don't have a code yet
+            case 'google':
 
-            $authorizationUrl = $provider->source->service->getAuthorizationUri($this->params);
+                $code = craft()->request->getParam('code');
 
-            $this->redirect($authorizationUrl);
-        }
-        else
-        {
-            // get token from code
-            $token = $provider->source->service->requestAccessToken($code);
-
-            // ... token now ready to be used, trigger some event ?
-
-            // Fire an 'onConnect' event
-            craft()->oauth->onConnect(new Event($this, array(
-                'provider' => $provider,
-                'token'      => $token
-            )));
-        }
-
-        $this->redirect($this->referer);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public function deprecated_actionConnect()
-    {
-        // handle
-        $this->handle = craft()->request->getParam('provider');
-
-        // session vars
-        $this->referer = craft()->httpSession->get('oauth.referer');
-        $this->namespace = craft()->httpSession->get('oauth.namespace');
-        $this->scopes = craft()->httpSession->get('oauth.scopes');
-        $this->params = craft()->httpSession->get('oauth.params');
-
-
-        // connect user or system
-
-
-        if($this->namespace)
-        {
-            $this->connectSystem();
-        }
-        else
-        {
-            $this->connectUser();
-        }
-
-    }
-
-    private function connectUser()
-    {
-        $code = craft()->request->getParam('code');
-        $provider = craft()->oauth->getProvider($this->handle);
-
-        // init service
-        $provider->source->initService($this->scopes);
-
-        if (!$code)
-        {
-            // redirect to authorization url if we don't have a code yet
-
-            $authorizationUrl = $provider->source->service->getAuthorizationUri($this->params);
-
-            $this->redirect($authorizationUrl);
-        }
-        else
-        {
-            // get token from code
-            $realToken = $provider->source->service->requestAccessToken($code);
-
-            // current user
-            $user = craft()->userSession->getUser();
-
-
-            // retrieve user
-
-            $account = false;
-
-            if($realToken)
-            {
-                $provider->source->setRealToken($realToken);
-                $account = $provider->getAccount();
-            }
-
-            $token = craft()->oauth->getTokenFromUserMapping($this->handle, $account['uid']);
-
-            if($user && $token)
-            {
-                if ($user->id != $token->userId)
+                if (!$code)
                 {
-                    // error because uid is associated with another user
-                    throw new Exception("uid is already associated with another user. Disconnect from your current session and retry.");
+                    // redirect to authorization url if we don't have a code yet
+
+                    $authorizationUrl = $provider->source->service->getAuthorizationUri($this->params);
+
+                    $this->redirect($authorizationUrl);
                 }
-            }
-
-
-            // save token
-
-            if(!$token)
-            {
-                $token = new Oauth_TokenModel();
-
-                if($user)
+                else
                 {
-                    $token->userId = $user->id;
+                    // get token from code
+                    $token = $provider->source->service->requestAccessToken($code);
                 }
-            }
+                break;
 
-            $token->provider = $this->handle;
-            $token->token = base64_encode(serialize($realToken));
-            $token->userMapping = $account['uid'];
-            $token->scope = $this->scopes;
+            case 'twitter':
+
+                $oauth_token = craft()->request->getParam('oauth_token');
+                $oauth_verifier = craft()->request->getParam('oauth_verifier');
+
+                if (!$oauth_token)
+                {
+                    // redirect to authorization url if we don't have a oauth_token yet
+
+                    $token = $provider->source->service->requestRequestToken();
+                    $authorizationUrl = $provider->source->service->getAuthorizationUri(array('oauth_token' => $token->getRequestToken()));
+                    $this->redirect($authorizationUrl);
+                }
+                else
+                {
+                    // get token from oauth_token
+                    $token = $provider->source->storage->retrieveAccessToken('Twitter');
+
+                    // This was a callback request from twitter, get the token
+                    $token = $provider->source->service->requestAccessToken(
+                        $oauth_token,
+                        $oauth_verifier,
+                        $token->getRequestTokenSecret()
+                    );
+                }
+
+            break;
+
+            default:
+                throw new Exception("Couldn't handle connect for this provider");
 
 
-            // Fire an 'onBeforeSaveToken' event
-            craft()->oauth->onBeforeSaveUserToken(new Event($this, array(
-                'user'      => $user,
-                'account'   => $account,
-                'token'     => $token
-            )));
-
-            // save token
-            craft()->oauth->tokenSave($token);
-
-            // Fire an 'onConnectUser' event
-            craft()->oauth->onConnectUser(new Event($this, array(
-                'realToken'      => $realToken
-            )));
-
-            // redirect
-            $this->redirect($this->referer);
         }
+
+        // ... token now ready to be used, trigger some event ?
+
+        // Fire an 'onConnect' event
+        craft()->oauth->onConnect(new Event($this, array(
+            'provider' => $provider,
+            'token'      => $token
+        )));
+
+        $this->redirect($this->redirect);
     }
-
-    private function connectSystem()
-    {
-        $code = craft()->request->getParam('code');
-        $provider = craft()->oauth->getProvider($this->handle);
-
-        // init service
-        $provider->source->initService($this->scopes);
-
-        if (!$code)
-        {
-            // redirect to authorization url if we don't have a code yet
-
-            $authorizationUrl = $provider->source->service->getAuthorizationUri($this->params);
-
-            $this->redirect($authorizationUrl);
-        }
-        else
-        {
-            // get token from code
-            $token = $provider->source->service->requestAccessToken($code);
-
-            // remove any existing token with this namespace
-            craft()->oauth->tokenDeleteByNamespace($this->handle, $this->namespace);
-
-
-            // save token
-
-            $model = new Oauth_TokenModel();
-            $model->provider = $this->handle;
-            $model->namespace = $this->namespace;
-            $model->token = base64_encode(serialize($token));
-            $model->scope = $this->scopes;
-
-            craft()->oauth->tokenSave($model);
-        }
-
-        $this->redirect($this->referer);
-    }
-
-    public function actionDisconnect()
-    {
-        Craft::log("OAuth Disconnect", LogLevel::Info);
-
-        // redirect url
-
-        $redirect = craft()->httpSession->get('oauth.referer');
-
-        if(!$redirect)
-        {
-            $redirect = $_SERVER['HTTP_REFERER'];
-        }
-
-        // get request params
-
-        $providerHandle = craft()->request->getParam('provider');
-        $namespace = craft()->request->getParam('namespace');
-
-        if($namespace)
-        {
-            $userMode = false;
-        }
-        else
-        {
-            if(craft()->userSession->user)
-            {
-                $userMode = true;
-            }
-            else
-            {
-                $this->redirect($redirect);
-            }
-        }
-
-        // remove cache
-
-        if($namespace)
-        {
-            $token = craft()->oauth->getSystemToken($providerHandle, $namespace);
-
-            if($token)
-            {
-                $token = $token->getRealToken();
-            }
-        }
-
-
-
-        // criteria conditions & params
-
-        $conditions = 'provider=:provider';
-        $params = array(':provider' => $providerHandle);
-
-        if($namespace)
-        {
-            $conditions .= ' AND namespace=:namespace';
-            $params[':namespace']  = $namespace;
-        }
-
-        if($userMode)
-        {
-            $conditions .= ' AND userId=:userId';
-            $params[':userId']  = craft()->userSession->user->id;
-        }
-
-        // delete all matching records
-        Oauth_TokenRecord::model()->deleteAll($conditions, $params);
-
-        // redirect
-        $this->redirect($redirect);
-    }
-
 }

@@ -97,19 +97,9 @@ class Oauth_ProviderModel extends BaseModel
         return $this->providerSource->getRedirectUri();
     }
 
-    public function getService()
-    {
-
-    }
-
     public function getSource()
     {
         return $this->providerSource;
-    }
-
-    public function getToken()
-    {
-        return $this->providerSource->getToken();
     }
 
     public function getScope()
@@ -135,15 +125,4 @@ class Oauth_ProviderModel extends BaseModel
     {
         $this->providerSource->setRealToken($token);
     }
-
-    public function connectScope($scope)
-    {
-        $this->providerSource->connectScope($scope);
-    }
-
-    public function refreshToken()
-    {
-        return $this->providerSource->tokenRefresh();
-    }
-
 }
