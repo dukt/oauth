@@ -70,7 +70,7 @@ class OauthPlugin extends BasePlugin
             return true;
         }
 
-        return craft()->templates->render('oauth/index', array(
+        return craft()->templates->render('oauth/settings', array(
             'settings' => $this->getSettings()
         ));
     }

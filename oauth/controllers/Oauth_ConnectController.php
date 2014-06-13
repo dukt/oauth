@@ -18,6 +18,7 @@ class Oauth_ConnectController extends BaseController
 
     public function init()
     {
+
         $handle    = craft()->request->getParam('provider');
         $namespace = craft()->request->getParam('namespace');
 

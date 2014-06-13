@@ -44,6 +44,9 @@ class Oauth_PublicController extends BaseController
         switch($this->handle)
         {
             case 'google':
+            case 'github':
+            case 'facebook':
+            case 'vimeo':
 
                 $code = craft()->request->getParam('code');
 
@@ -60,6 +63,7 @@ class Oauth_PublicController extends BaseController
                     // get token from code
                     $token = $provider->source->service->requestAccessToken($code);
                 }
+
                 break;
 
             case 'twitter':
@@ -96,10 +100,31 @@ class Oauth_PublicController extends BaseController
 
         }
 
+
+        // call oauth connect for specified plugin
+
+        $plugin = null;
+        $pluginHandle = craft()->httpSession->get('oauth.plugin');
+
+        if($pluginHandle)
+        {
+            $plugin = craft()->plugins->getPlugin($pluginHandle);
+
+            if(method_exists($plugin, 'registerOauthConnect'))
+            {
+                $plugin->registerOauthConnect(array(
+                    'provider' => $provider,
+                    'token'      => $token
+                ));
+            }
+        }
+
+
         // ... token now ready to be used, trigger some event ?
 
         // Fire an 'onConnect' event
         craft()->oauth->onConnect(new Event($this, array(
+            'plugin' => $plugin,
             'provider' => $provider,
             'token'      => $token
         )));

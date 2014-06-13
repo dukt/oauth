@@ -35,7 +35,7 @@ class OauthService extends BaseApplicationComponent
     {
         if($token)
         {
-            return base64_encode(serialize($token));
+            return unserialize(base64_decode($token));
         }
     }
 
@@ -48,12 +48,19 @@ class OauthService extends BaseApplicationComponent
 
             $token = $provider->source->retrieveAccessToken();
 
-            if(time() > $token->getEndOfLife())
+            if(time() > 0)
             {
                 // refresh token
                 if(method_exists($provider->source->service, 'refreshAccessToken'))
                 {
-                    $token = $provider->source->service->refreshAccessToken($token);
+                    // generate new token
+                    $newToken = $provider->source->service->refreshAccessToken($token);
+
+                    // keep our refresh token as it always remains valid
+                    $newToken->setRefreshToken($token->getRefreshToken());
+
+                    // make new token current
+                    $token = $newToken;
                 }
             }
 
@@ -186,7 +193,8 @@ class OauthService extends BaseApplicationComponent
         craft()->httpSession->remove('oauth.userMode');
         craft()->httpSession->remove('oauth.referer');
         craft()->httpSession->remove('oauth.redirect');
-        craft()->httpSession->remove('oauth.scope');
+        craft()->httpSession->remove('oauth.scopes');
+        craft()->httpSession->remove('oauth.params');
         craft()->httpSession->remove('oauth.namespace');
         craft()->httpSession->remove('oauth.provider');
         craft()->httpSession->remove('oauth.providerClass');
