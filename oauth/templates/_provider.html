@@ -27,7 +27,7 @@
 
     <form method="post" action="" accept-charset="UTF-8">
         <input type="hidden" name="action" value="oauth/settings/providerSave">
-        <input type="hidden" name="redirect" value="oauth" />
+        <input type="hidden" name="redirect" value="settings/plugins/oauth" />
         {% if provider %}<input type="hidden" name="providerId" value="{{ provider.id }}" />{% endif %}
         <input type="hidden" name="providerHandle" value="{{ provider.handle }}" />
 
