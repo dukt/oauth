@@ -42,6 +42,11 @@ abstract class BaseOAuthProviderSource {
 
     }
 
+    public function hasAccessToken()
+    {
+        return $this->storage->hasAccessToken($this->getClass());
+    }
+
     public function retrieveAccessToken()
     {
         return $this->storage->retrieveAccessToken($this->getClass());
