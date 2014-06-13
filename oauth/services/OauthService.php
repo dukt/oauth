@@ -66,6 +66,60 @@ class OauthService extends BaseApplicationComponent
         $this->raiseEvent('onConnect', $event);
     }
 
+    public function connect($variables)
+    {
+        craft()->oauth->sessionClean();
+
+        // plugin
+        if(!empty($variables['plugin']))
+        {
+            craft()->httpSession->add('oauth.plugin', $variables['plugin']);
+        }
+
+        // redirect
+        if(!empty($variables['redirect']))
+        {
+            $redirect = $variables['redirect'];
+        }
+        else
+        {
+            $redirect = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null;
+        }
+
+        craft()->httpSession->add('oauth.redirect', $redirect);
+
+
+        // scopes
+
+        if(!empty($variables['scopes']))
+        {
+            $scopes = $variables['scopes'];
+        }
+        else
+        {
+            $scopes = array();
+        }
+
+        craft()->httpSession->add('oauth.scopes', $scopes);
+
+        // params
+        if(!empty($variables['params']))
+        {
+            $params = $variables['params'];
+        }
+        else
+        {
+            $params = array();
+        }
+
+        craft()->httpSession->add('oauth.params', $params);
+
+        // redirect
+        craft()->request->redirect(UrlHelper::getActionUrl('oauth/public/connect/', array(
+            'provider' => $variables['provider']
+        )));
+    }
+
     public function callbackUrl($handle)
     {
         $params = array('provider' => $handle);
