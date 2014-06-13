@@ -5,7 +5,13 @@
     "autoload": {
         "psr-0": {"OAuthProviders\\": "providers/"}
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/dukt/PHPoAuthLib"
+        }
+    ],
     "require": {
-        "lusitanian/oauth": "v0.3.0"
+        "lusitanian/oauth": "dev-dukt"
     }
 }
