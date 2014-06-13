@@ -20,4 +20,26 @@ class VimeoOAuthProviderSource extends BaseOAuthProviderSource {
 	{
 		return 'Vimeo';
 	}
+
+    public function getAccount()
+    {
+        try {
+
+            $response = $this->service->request('/me');
+            $response = json_decode($response, true);
+
+            $account = array();
+
+            $account['uid'] = substr($response['uri'], strrpos($response['uri'], "/") + 1);
+            $account['name'] = $response['name'];
+
+            return $account;
+        }
+        catch(\Exception $e)
+        {
+            // todo
+            throw new \Exception($e, 1);
+
+        }
+    }
 }
