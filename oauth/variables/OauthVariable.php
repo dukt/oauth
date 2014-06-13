@@ -53,26 +53,6 @@ class OauthVariable
         return craft()->oauth->getProviders($configuredOnly);
     }
 
-    public function getSystemToken($handle, $namespace)
-    {
-        return craft()->oauth->getSystemToken($handle, $namespace);
-    }
-
-    public function getSystemTokens()
-    {
-        return craft()->oauth->getSystemTokens();
-    }
-
-    public function getUserToken($handle, $userId = null)
-    {
-        return craft()->oauth->getUserToken($handle, $userId);
-    }
-
-    public function getUserTokens($userId = null)
-    {
-        return craft()->oauth->getUserTokens($userId);
-    }
-
     public function pluginCheckUpdates($pluginHandle)
     {
         return craft()->oauth_plugin->checkUpdates($pluginHandle);
