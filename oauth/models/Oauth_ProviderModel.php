@@ -14,51 +14,7 @@ namespace Craft;
 
 class Oauth_ProviderModel extends BaseModel
 {
-
-    public $providerSource;
-
-    public function __construct($self = null)
-    {
-        if($self) {
-            $this->id = $self->id;
-            $this->class = $self->class;
-
-
-            // client id and secret
-
-            $clientId = false;
-            $clientSecret = false;
-
-            $oauthConfig = craft()->config->get('oauth');
-
-            if($oauthConfig) {
-
-                if(!empty($oauthConfig[$this->getHandle()]['clientId'])) {
-                    $clientId = $oauthConfig[$this->getHandle()]['clientId'];
-                }
-                if(!empty($oauthConfig[$this->getHandle()]['clientSecret'])) {
-                    $clientSecret = $oauthConfig[$this->getHandle()]['clientSecret'];
-                }
-            }
-
-            if(!$clientId) {
-                $clientId = $self->clientId;
-            }
-
-            if(!$clientSecret) {
-                $clientSecret = $self->clientSecret;
-            }
-
-            $this->clientId = $clientId;
-            $this->clientSecret = $clientSecret;
-
-
-            // set client
-
-            $this->providerSource = craft()->oauth->getProviderSource($this->class);
-            $this->providerSource->setClient($this->clientId, $this->clientSecret);
-        }
-    }
+    private $_source;
 
     public function defineAttributes()
     {
@@ -72,16 +28,6 @@ class Oauth_ProviderModel extends BaseModel
         return $attributes;
     }
 
-    public function getAccount()
-    {
-        return $this->providerSource->getAccount();
-    }
-
-    public function getConsoleUrl()
-    {
-        return $this->providerSource->consoleUrl;
-    }
-
     public function getHandle()
     {
         return strtolower($this->class);
@@ -89,40 +35,105 @@ class Oauth_ProviderModel extends BaseModel
 
     public function getName()
     {
-        return $this->providerSource->getName();
-    }
-
-    public function getRedirectUri()
-    {
-        return $this->providerSource->getRedirectUri();
-    }
-
-    public function getSource()
-    {
-        return $this->providerSource;
-    }
-
-    public function getScope()
-    {
-        return $this->providerSource->getScope();
+        return $this->_source->getName();
     }
 
     public function isConfigured()
     {
-        if(!empty($this->clientId)) {
+        if(!empty($this->clientId))
+        {
             return true;
         }
 
         return false;
     }
 
-    public function setToken($token)
+    public function getSource()
     {
-        $this->providerSource->setToken($token);
+        return $this->_source;
     }
 
-    public function setRealToken($token)
+    public function setSource($source)
     {
-        $this->providerSource->setRealToken($token);
+        $this->_source = $source;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // public function __construct($self = null)
+    // {
+    //     if($self)
+    //     {
+    //         $this->id = $self->id;
+    //         $this->class = $self->class;
+
+
+    //         // client id and secret
+
+    //         $clientId = false;
+    //         $clientSecret = false;
+
+    //         // from config
+
+    //         $oauthConfig = craft()->config->get('oauth');
+
+    //         if($oauthConfig)
+    //         {
+
+    //             if(!empty($oauthConfig[$this->getHandle()]['clientId']))
+    //             {
+    //                 $clientId = $oauthConfig[$this->getHandle()]['clientId'];
+    //             }
+
+    //             if(!empty($oauthConfig[$this->getHandle()]['clientSecret']))
+    //             {
+    //                 $clientSecret = $oauthConfig[$this->getHandle()]['clientSecret'];
+    //             }
+    //         }
+
+    //         if(!$clientId)
+    //         {
+    //             $clientId = $self->clientId;
+    //         }
+
+    //         if(!$clientSecret)
+    //         {
+    //             $clientSecret = $self->clientSecret;
+    //         }
+
+    //         $this->clientId = $clientId;
+    //         $this->clientSecret = $clientSecret;
+    //     }
+    // }
+
 }

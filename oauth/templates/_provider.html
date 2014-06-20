@@ -26,7 +26,7 @@
 
 
     <form method="post" action="" accept-charset="UTF-8">
-        <input type="hidden" name="action" value="oauth/settings/providerSave">
+        <input type="hidden" name="action" value="oauth/providerSave">
         <input type="hidden" name="redirect" value="settings/plugins/oauth" />
         {% if provider %}<input type="hidden" name="providerId" value="{{ provider.id }}" />{% endif %}
         <input type="hidden" name="providerHandle" value="{{ provider.handle }}" />
@@ -34,9 +34,9 @@
         <h2 class="first">{{ "Create an OAuth application"|t }}</h2>
 
         <p>
-            {% if provider.consoleUrl %}
+            {% if provider.source.consoleUrl %}
                 {{ "Create an OAuth 2.0 application and enable associated providers in the {console}"|t({
-                    console:           '<a href=\"'~provider.consoleUrl~'\">'~'{provider} API Management Console'|t({provider:provider.name})~'</a>'
+                    console:           '<a href=\"'~provider.source.consoleUrl~'\">'~'{provider} API Management Console'|t({provider:provider.name})~'</a>'
                 })|raw }}
             {% else %}
                 {{ "Create an OAuth 2.0 application and enable associated providers in the API management Console."|t }}

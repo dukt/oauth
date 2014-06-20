@@ -14,6 +14,11 @@ namespace Craft;
 
 class OauthVariable
 {
+    public function getToken($providerHandle)
+    {
+        return craft()->oauth->getToken($providerHandle);
+    }
+
     public function encodeToken($token)
     {
         return craft()->oauth->encodeToken($token);

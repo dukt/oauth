@@ -23,10 +23,23 @@ class TwitterOAuthProviderSource extends BaseOAuthProviderSource {
 
     public function getAccount()
     {
+
         try {
 
-            $response = $this->service->request('account/verify_credentials.json');
+            $response = @$this->service->request('account/verify_credentials.json');
+
+            if(!$response)
+            {
+                throw new \Exception("Request error", 1);
+
+            }
+
             $response = json_decode($response, true);
+
+            if(!empty($response['errors']))
+            {
+                throw new \Exception($response['errors'][0]['message']);
+            }
 
             $account = array();
 

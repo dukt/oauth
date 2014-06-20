@@ -12,6 +12,7 @@
         }
     ],
     "require": {
-        "lusitanian/oauth": "dev-dukt"
+        "lusitanian/oauth": "dev-dukt",
+        "chrisnharvey/oauth": "dev-master"
     }
 }

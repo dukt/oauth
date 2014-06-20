@@ -21,114 +21,127 @@ class Oauth_PublicController extends BaseController
     private $scopes;
     private $params;
     private $redirect;
+    private $referer;
+    private $errorRedirect;
 
     public function actionConnect()
     {
-        // handle
-        $this->handle = craft()->request->getParam('provider');
+        $error = false;
+        $success = false;
+        $token = false;
+        $errorMsg = false;
 
-
-        // session vars
-        $this->redirect = craft()->httpSession->get('oauth.redirect');
-        $this->scopes = craft()->httpSession->get('oauth.scopes');
-        $this->params = craft()->httpSession->get('oauth.params');
-
-
-        // provider
-
-        $provider = craft()->oauth->getProvider($this->handle);
-
-        // init service
-        $provider->source->initService($this->scopes);
-
-        switch($this->handle)
+        try
         {
-            case 'google':
-            case 'github':
-            case 'facebook':
-            case 'vimeo':
+            // handle
+            $this->handle = craft()->request->getParam('provider');
 
-                $code = craft()->request->getParam('code');
 
-                if (!$code)
-                {
-                    // redirect to authorization url if we don't have a code yet
+            // session vars
 
-                    $authorizationUrl = $provider->source->service->getAuthorizationUri($this->params);
+            $this->redirect = craft()->httpSession->get('oauth.redirect');
+            $this->errorRedirect = craft()->httpSession->get('oauth.errorRedirect');
+            $this->scopes = craft()->httpSession->get('oauth.scopes');
+            $this->params = craft()->httpSession->get('oauth.params');
+            $this->referer = craft()->httpSession->get('oauth.referer');
 
-                    $this->redirect($authorizationUrl);
-                }
-                else
-                {
-                    // get token from code
-                    $token = $provider->source->service->requestAccessToken($code);
-                }
+
+            // provider
+
+            $provider = craft()->oauth->getProvider($this->handle);
+
+            // init service
+            $provider->source->initializeService($this->scopes);
+            $classname = get_class($provider->source->service);
+
+            switch($classname::OAUTH_VERSION)
+            {
+                case 2:
+
+                    // oauth 2
+
+                    $code = craft()->request->getParam('code');
+
+                    if (!$code)
+                    {
+                        // redirect to authorization url if we don't have a code yet
+
+                        $authorizationUrl = $provider->source->service->getAuthorizationUri($this->params);
+
+                        $this->redirect($authorizationUrl);
+                    }
+                    else
+                    {
+                        // get token from code
+                        $token = $provider->source->service->requestAccessToken($code);
+                    }
+
+                    break;
+
+                case 1:
+
+                    // oauth 1
+
+                    $oauth_token = craft()->request->getParam('oauth_token');
+                    $oauth_verifier = craft()->request->getParam('oauth_verifier');
+
+                    if (!$oauth_token)
+                    {
+                        // redirect to authorization url if we don't have a oauth_token yet
+
+                        $token = $provider->source->service->requestRequestToken();
+                        $authorizationUrl = $provider->source->service->getAuthorizationUri(array('oauth_token' => $token->getRequestToken()));
+                        $this->redirect($authorizationUrl);
+                    }
+                    else
+                    {
+                        // get token from oauth_token
+                        $token = $provider->source->storage->retrieveAccessToken($provider->source->getClass());
+
+                        // This was a callback request, now get the token
+                        $token = @$provider->source->service->requestAccessToken(
+                            $oauth_token,
+                            $oauth_verifier,
+                            $token->getRequestTokenSecret()
+                        );
+
+                        if(!$token->getAccessToken())
+                        {
+                            throw new Exception("Couldn't retrieve token");
+                        }
+                    }
 
                 break;
 
-            case 'twitter':
-
-                $oauth_token = craft()->request->getParam('oauth_token');
-                $oauth_verifier = craft()->request->getParam('oauth_verifier');
-
-                if (!$oauth_token)
-                {
-                    // redirect to authorization url if we don't have a oauth_token yet
-
-                    $token = $provider->source->service->requestRequestToken();
-                    $authorizationUrl = $provider->source->service->getAuthorizationUri(array('oauth_token' => $token->getRequestToken()));
-                    $this->redirect($authorizationUrl);
-                }
-                else
-                {
-                    // get token from oauth_token
-                    $token = $provider->source->storage->retrieveAccessToken('Twitter');
-
-                    // This was a callback request from twitter, get the token
-                    $token = $provider->source->service->requestAccessToken(
-                        $oauth_token,
-                        $oauth_verifier,
-                        $token->getRequestTokenSecret()
-                    );
-                }
-
-            break;
-
-            default:
-                throw new Exception("Couldn't handle connect for this provider");
+                default:
+                    throw new Exception("Couldn't handle connect for this provider");
 
 
-        }
-
-
-        // call oauth connect for specified plugin
-
-        $plugin = null;
-        $pluginHandle = craft()->httpSession->get('oauth.plugin');
-
-        if($pluginHandle)
-        {
-            $plugin = craft()->plugins->getPlugin($pluginHandle);
-
-            if(method_exists($plugin, 'registerOauthConnect'))
-            {
-                $plugin->registerOauthConnect(array(
-                    'provider' => $provider,
-                    'token'      => $token
-                ));
             }
+
+            $success = true;
+        }
+        catch(\Exception $e)
+        {
+            $error = true;
+            $errorMsg = $e->getMessage();
         }
 
 
-        // ... token now ready to be used, trigger some event ?
+        // we now have $token, build up response
 
-        // Fire an 'onConnect' event
-        craft()->oauth->onConnect(new Event($this, array(
-            'plugin' => $plugin,
-            'provider' => $provider,
-            'token'      => $token
-        )));
+        $response = array(
+            'error'         => $error,
+            'errorMsg'      => $errorMsg,
+            'errorRedirect' => $this->errorRedirect,
+            'redirect'      => $this->redirect,
+            'success'       => $success,
+            'token'         => $token
+        );
 
-        $this->redirect($this->redirect);
+        craft()->httpSession->add('oauth.response', $response);
+
+        $this->redirect($this->referer);
+
     }
 }

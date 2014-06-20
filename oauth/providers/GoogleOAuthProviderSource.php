@@ -21,6 +21,22 @@ class GoogleOAuthProviderSource extends BaseOAuthProviderSource {
 		return 'Google';
 	}
 
+    public function getScopes()
+    {
+        return  array(
+            'userinfo_profile',
+            'userinfo_email'
+        );
+    }
+
+    public function getParams()
+    {
+        return  array(
+            'access_type' => 'offline',
+            'approval_prompt' => 'force'
+        );
+    }
+
     public function getAccount()
     {
         $response = $this->service->request('https://www.googleapis.com/oauth2/v1/userinfo');

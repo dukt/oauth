@@ -23,6 +23,23 @@ class OauthService extends BaseApplicationComponent
     private $_allProviders = array();
     private $_providersLoaded = false;
 
+    public function getToken($providerHandle)
+    {
+        $token = craft()->httpSession->get('oauth.test.'.$providerHandle);
+
+        if($token)
+        {
+            return craft()->oauth->decodeToken($token);
+        }
+    }
+
+    public function saveToken($providerHandle, $token)
+    {
+        $token = craft()->oauth->encodeToken($token);
+
+        craft()->httpSession->add('oauth.test.'.$providerHandle, $token);
+    }
+
     public function encodeToken($token)
     {
         if($token)
@@ -39,12 +56,12 @@ class OauthService extends BaseApplicationComponent
         }
     }
 
-    public function refreshToken($handle, $token)
+    public function refreshToken($handle, &$token)
     {
-        if($token)
+        if(is_object($token))
         {
             $provider = craft()->oauth->getProvider($handle);
-            $provider->setRealToken($token);
+            $provider->source->setToken($token);
 
             $token = $provider->source->retrieveAccessToken();
 
@@ -53,78 +70,103 @@ class OauthService extends BaseApplicationComponent
                 // refresh token
                 if(method_exists($provider->source->service, 'refreshAccessToken'))
                 {
-                    // generate new token
-                    $newToken = $provider->source->service->refreshAccessToken($token);
+                    if($token->getRefreshToken())
+                    {
+                        // generate new token
+                        $newToken = $provider->source->service->refreshAccessToken($token);
 
-                    // keep our refresh token as it always remains valid
-                    $newToken->setRefreshToken($token->getRefreshToken());
+                        // keep our refresh token as it always remains valid
+                        $newToken->setRefreshToken($token->getRefreshToken());
 
-                    // make new token current
-                    $token = $newToken;
+                        // make new token current
+                        $token = $newToken;
+
+                        return true;
+                    }
                 }
             }
-
-            return $token;
         }
-    }
 
-    public function onConnect(Event $event)
-    {
-        $this->raiseEvent('onConnect', $event);
+        return false;
     }
 
     public function connect($variables)
     {
-        craft()->oauth->sessionClean();
-
-        // plugin
-        if(!empty($variables['plugin']))
+        if(!craft()->httpSession->get('oauth.response'))
         {
-            craft()->httpSession->add('oauth.plugin', $variables['plugin']);
-        }
+            craft()->oauth->sessionClean();
 
-        // redirect
-        if(!empty($variables['redirect']))
-        {
-            $redirect = $variables['redirect'];
+            craft()->httpSession->add('oauth.referer', craft()->request->getUrl());
+
+
+            // redirect
+
+            if(!empty($variables['redirect']))
+            {
+                $redirect = $variables['redirect'];
+            }
+            else
+            {
+                $redirect = craft()->request->getUrlReferrer();
+            }
+
+            craft()->httpSession->add('oauth.redirect', $redirect);
+
+
+            // error redirect
+
+            if(!empty($variables['errorRedirect']))
+            {
+                $errorRedirect = $variables['errorRedirect'];
+            }
+            else
+            {
+                $errorRedirect = craft()->request->getUrlReferrer();
+            }
+
+            craft()->httpSession->add('oauth.errorRedirect', $errorRedirect);
+
+
+            // scopes
+
+            if(!empty($variables['scopes']))
+            {
+                $scopes = $variables['scopes'];
+            }
+            else
+            {
+                $scopes = array();
+            }
+
+            craft()->httpSession->add('oauth.scopes', $scopes);
+
+
+            // params
+
+            if(!empty($variables['params']))
+            {
+                $params = $variables['params'];
+            }
+            else
+            {
+                $params = array();
+            }
+
+            craft()->httpSession->add('oauth.params', $params);
+
+            // redirect
+            craft()->request->redirect(UrlHelper::getActionUrl('oauth/public/connect/', array(
+                'provider' => $variables['provider']
+            )));
         }
         else
         {
-            $redirect = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null;
+            $response = craft()->httpSession->get('oauth.response');
+
+            craft()->oauth->sessionClean();
+
+            return $response;
         }
-
-        craft()->httpSession->add('oauth.redirect', $redirect);
-
-
-        // scopes
-
-        if(!empty($variables['scopes']))
-        {
-            $scopes = $variables['scopes'];
-        }
-        else
-        {
-            $scopes = array();
-        }
-
-        craft()->httpSession->add('oauth.scopes', $scopes);
-
-        // params
-        if(!empty($variables['params']))
-        {
-            $params = $variables['params'];
-        }
-        else
-        {
-            $params = array();
-        }
-
-        craft()->httpSession->add('oauth.params', $params);
-
-        // redirect
-        craft()->request->redirect(UrlHelper::getActionUrl('oauth/public/connect/', array(
-            'provider' => $variables['provider']
-        )));
     }
 
     public function callbackUrl($handle)
@@ -153,7 +195,6 @@ class OauthService extends BaseApplicationComponent
             {
                 return $this->_allProviders[$lcHandle];
             }
-
         }
 
         return null;
@@ -173,13 +214,11 @@ class OauthService extends BaseApplicationComponent
         }
     }
 
-
     public function providerSave(Oauth_ProviderModel $model)
     {
         // save record
 
         $record = $this->_getProviderRecordById($model->id);
-
         $record->class = $model->class;
         $record->clientId = $model->clientId;
         $record->clientSecret = $model->clientSecret;
@@ -189,16 +228,11 @@ class OauthService extends BaseApplicationComponent
 
     public function sessionClean()
     {
-        craft()->httpSession->remove('oauth.plugin');
-        craft()->httpSession->remove('oauth.userMode');
         craft()->httpSession->remove('oauth.referer');
-        craft()->httpSession->remove('oauth.redirect');
-        craft()->httpSession->remove('oauth.scopes');
         craft()->httpSession->remove('oauth.params');
-        craft()->httpSession->remove('oauth.namespace');
-        craft()->httpSession->remove('oauth.provider');
-        craft()->httpSession->remove('oauth.providerClass');
-        craft()->httpSession->remove('oauth.token');
+        craft()->httpSession->remove('oauth.redirect');
+        craft()->httpSession->remove('oauth.response');
+        craft()->httpSession->remove('oauth.scopes');
     }
 
     private function _getProviderRecordByHandle($handle)
@@ -248,7 +282,6 @@ class OauthService extends BaseApplicationComponent
         return $records;
     }
 
-
     /**
      * Loads the configured providers.
      */
@@ -258,6 +291,7 @@ class OauthService extends BaseApplicationComponent
         {
             return;
         }
+
 
         // providers
 
@@ -270,15 +304,54 @@ class OauthService extends BaseApplicationComponent
             $provider = Oauth_ProviderModel::populateModel($record);
             $provider->class = $providerSource->getHandle();
 
+
+            // source
+
             if($record && !empty($provider->clientId))
             {
-                $providerSource->setClient($provider->clientId, $provider->clientSecret);
-                $provider->providerSource = $providerSource;
+                // client id and secret
+
+                $clientId = false;
+                $clientSecret = false;
+
+                // ...from config
+
+                $oauthConfig = craft()->config->get('oauth');
+
+                if($oauthConfig)
+                {
+
+                    if(!empty($oauthConfig[$this->getHandle()]['clientId']))
+                    {
+                        $clientId = $oauthConfig[$this->getHandle()]['clientId'];
+                    }
+
+                    if(!empty($oauthConfig[$this->getHandle()]['clientSecret']))
+                    {
+                        $clientSecret = $oauthConfig[$this->getHandle()]['clientSecret'];
+                    }
+                }
+
+                // ...from provider
+
+                if(!$clientId)
+                {
+                    $clientId = $provider->clientId;
+                }
+
+                if(!$clientSecret)
+                {
+                    $clientSecret = $provider->clientSecret;
+                }
+
+                // source
+                $providerSource->initProviderSource($clientId, $clientSecret);
+                $provider->setSource($providerSource);
                 $this->_configuredProviders[$lcHandle] = $provider;
             }
             else
             {
-                $provider->providerSource = $providerSource;
+                $provider->setSource($providerSource);
             }
 
             $this->_allProviders[$lcHandle] = $provider;

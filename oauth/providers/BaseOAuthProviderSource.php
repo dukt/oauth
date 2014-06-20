@@ -33,13 +33,22 @@ abstract class BaseOAuthProviderSource {
     public $service = null;
     public $storage = null;
 
-    public function initStorage()
+    public function getScopes()
+    {
+        return array();
+    }
+
+    public function getParams()
+    {
+        return array();
+    }
+
+    public function getStorage()
     {
         if(!$this->storage)
         {
             $this->storage = new Session();
         }
-
     }
 
     public function hasAccessToken()
@@ -62,28 +71,13 @@ abstract class BaseOAuthProviderSource {
         return $this->service->client_secret;
     }
 
-    public function getRedirectUri()
+    public function setToken($token)
     {
-        return 'fake redirect uri';
-    }
+        $this->getStorage();
 
-    public function setToken(OAuth_TokenModel $token)
-    {
-        $this->initStorage();
+        $this->storage->storeAccessToken($this->getClass(), $token);
 
-        $realToken = $token->getRealToken();
-
-        $this->storage->storeAccessToken($this->getClass(), $realToken);
-        $this->initService();
-    }
-
-    public function setRealToken($realToken)
-    {
-        $this->initStorage();
-
-        $this->storage->storeAccessToken($this->getClass(), $realToken);
-
-        $this->initService();
+        $this->initializeService();
     }
 
     public function getHandle()
@@ -118,20 +112,15 @@ abstract class BaseOAuthProviderSource {
         return $handle;
     }
 
-    public function setClient($clientId = null, $clientSecret = null)
+    public function initProviderSource($clientId = null, $clientSecret = null)
     {
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
     }
 
-    public function request($path, $method = 'GET', $body = null, array $extraHeaders = array())
+    public function initializeService($scopes = array())
     {
-        return $this->service->request('https://www.googleapis.com/oauth2/v1/userinfo');
-    }
-
-    public function initService($scopes = array())
-    {
-        $this->initStorage();
+        $this->getStorage();
 
         // try {
 
@@ -144,6 +133,11 @@ abstract class BaseOAuthProviderSource {
                 \Craft\craft()->oauth->callbackUrl($handle)
             );
 
+            if(!$scopes)
+            {
+                $scopes = array();
+            }
+
             $this->service = $serviceFactory->createService($handle, $credentials, $this->storage, $scopes);
         // }
         // catch(\Exception $e)
@@ -151,4 +145,45 @@ abstract class BaseOAuthProviderSource {
 
         // }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // public function request($path, $method = 'GET', $body = null, array $extraHeaders = array())
+    // {
+    //     return $this->service->request('https://www.googleapis.com/oauth2/v1/userinfo');
+    // }
+
 }
