@@ -9,10 +9,14 @@
         {
             "type": "vcs",
             "url": "https://github.com/dukt/PHPoAuthLib"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/dukt/oauth"
         }
     ],
     "require": {
         "lusitanian/oauth": "dev-dukt",
-        "chrisnharvey/oauth": "dev-master"
+        "chrisnharvey/oauth": "dev-dukt"
     }
 }

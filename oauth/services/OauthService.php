@@ -321,14 +321,14 @@ class OauthService extends BaseApplicationComponent
                 if($oauthConfig)
                 {
 
-                    if(!empty($oauthConfig[$this->getHandle()]['clientId']))
+                    if(!empty($oauthConfig[$providerSource->getHandle()]['clientId']))
                     {
-                        $clientId = $oauthConfig[$this->getHandle()]['clientId'];
+                        $clientId = $oauthConfig[$providerSource->getHandle()]['clientId'];
                     }
 
-                    if(!empty($oauthConfig[$this->getHandle()]['clientSecret']))
+                    if(!empty($oauthConfig[$providerSource->getHandle()]['clientSecret']))
                     {
-                        $clientSecret = $oauthConfig[$this->getHandle()]['clientSecret'];
+                        $clientSecret = $oauthConfig[$providerSource->getHandle()]['clientSecret'];
                     }
                 }
 
