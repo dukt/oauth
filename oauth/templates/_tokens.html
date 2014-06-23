@@ -1,0 +1,72 @@
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% if providerHandle is not defined %}{% set providerHandle = null %}{% endif %}
+
+{% if provider is not defined %}
+    {% if providerHandle %}
+        {% set provider = craft.oauth.getProvider(providerHandle, false) %}
+
+        {% if not provider %}{% exit 404 %}{% endif %}
+    {% else %}
+        {% set provider = null %}
+    {% endif %}
+{% endif %}
+
+
+{% set title = provider.name~" Tokens"|t %}
+
+{% set crumbs = [
+    { label: "Settings"|t, url: url('settings') },
+    { label: "Plugin"|t, url: url('settings/plugins') },
+    { label: "OAuth"|t, url: url('settings/plugins/oauth') }
+] %}
+
+{% set content %}
+
+    {% set tokens = provider.tokens %}
+
+    <p id="notokens"{% if tokens|length %} class="hidden"{% endif %}>
+        {{ "No tokens exist yet."|t }}
+    </p>
+
+    {% if tokens|length %}
+
+        <table id="tokens" class="data fullwidth collapsible">
+            <thead>
+                <tr>
+                    <th class="col">ID</th>
+                    <th class="col">Plugin</th>
+                    <th class="col">Token Hash</th>
+                    <th class="col"></th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for token in tokens %}
+                    <tr data-id="{{ token.id }}" data-name="Token #{{ token.id|t }}">
+                        <td>{{ token.id }}</td>
+                        <td>{{ token.plugin.name }}</td>
+                        <td class="light">{{ token.hash }}</td>
+                        <td class="thin"><a class="delete icon" title="{{ 'Delete'|t }}" role="button"></a></td>
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+    {% endif %}
+
+{% endset %}
+
+
+{% set js %}
+    new Craft.AdminTable({
+        tableSelector: '#tokens',
+        noObjectsSelector: '#notokens',
+        deleteAction: 'oauth/deleteToken'
+    });
+{% endset %}
+
+{% includeJs js %}

@@ -28,28 +28,9 @@ class Oauth_TokenRecord extends BaseRecord
     public function defineAttributes()
     {
         return array(
-            'userMapping' => array(AttributeType::String, 'required' => false),
-            'namespace' => array(AttributeType::String, 'required' => false),
-            'provider' => array(AttributeType::String, 'required' => true),
-            'scope' => array(AttributeType::Mixed, 'required' => false),
-            'token' => array(AttributeType::String, 'column' => ColumnType::Text),
-        );
-    }
-
-    public function defineRelations()
-    {
-        return array(
-            'user' => array(static::BELONGS_TO, 'UserRecord', 'onDelete' => static::CASCADE, 'required' => false),
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public function defineIndexes()
-    {
-        return array(
-            array('columns' => array('provider', 'userMapping', 'namespace'), 'unique' => true)
+            'providerHandle' => array(AttributeType::String, 'required' => true),
+            'pluginHandle' => array(AttributeType::String, 'required' => true),
+            'encodedToken' => array(AttributeType::String, 'column' => ColumnType::Text),
         );
     }
 }

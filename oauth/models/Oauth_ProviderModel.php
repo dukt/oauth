@@ -58,7 +58,15 @@ class Oauth_ProviderModel extends BaseModel
         $this->_source = $source;
     }
 
+    public function setToken(Oauth_TokenModel $model)
+    {
+        $this->_source->setToken($model->token);
+    }
 
+    public function getTokens()
+    {
+        return craft()->oauth->getTokensByProvider($this->getHandle());
+    }
 
 
 

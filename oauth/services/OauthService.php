@@ -23,7 +23,128 @@ class OauthService extends BaseApplicationComponent
     private $_allProviders = array();
     private $_providersLoaded = false;
 
-    public function getToken($providerHandle)
+    public function getTokensByProvider($providerHandle)
+    {
+        $conditions = 'providerHandle=:providerHandle';
+        $params = array(':providerHandle' => $providerHandle);
+        $records = Oauth_TokenRecord::model()->findAll($conditions, $params);
+        return Oauth_TokenModel::populateModels($records);
+    }
+
+    public function getToken($encodedToken)
+    {
+        $conditions = 'encodedToken=:encodedToken';
+        $params = array(':encodedToken' => $encodedToken);
+        $record = Oauth_TokenRecord::model()->find($conditions, $params);
+        return Oauth_TokenModel::populateModel($record);
+    }
+
+    /**
+     * Delete token ID
+     */
+    public function deleteToken(Oauth_TokenModel $token)
+    {
+        if (!$token->id)
+        {
+            return false;
+        }
+
+        $record = Oauth_TokenRecord::model()->findById($token->id);
+
+        if($record)
+        {
+            return $record->delete();
+        }
+
+        return false;
+    }
+
+    public function deleteTokensByPlugin($pluginHandle)
+    {
+        $conditions = 'pluginHandle=:pluginHandle';
+        $params = array(':pluginHandle' => $pluginHandle);
+        return Oauth_TokenRecord::model()->deleteAll($conditions, $params);
+    }
+
+    /**
+     * Get token by ID
+     */
+    public function getTokenById($id)
+    {
+        if ($id)
+        {
+            $record = Oauth_TokenRecord::model()->findById($id);
+
+            if ($record)
+            {
+                $token = Oauth_TokenModel::populateModel($record);
+
+                // will refresh token if needed
+                if($this->refreshToken($token))
+                {
+                    // save refreshed token
+                    $this->saveToken($token);
+                }
+
+                return $token;
+            }
+        }
+    }
+
+    /**
+     * Save token
+     */
+    public function saveToken(Oauth_TokenModel &$model)
+    {
+        // is new ?
+        $isNewToken = !$model->id;
+
+        // populate record
+        $record = $this->getTokenRecordById($model->id);
+        $record->providerHandle = strtolower($model->providerHandle);
+        $record->pluginHandle = strtolower($model->pluginHandle);
+        $record->encodedToken = $model->encodedToken;
+
+        // save record
+        if($record->save(false))
+        {
+            // populate id
+            if($isNewToken)
+            {
+                $model->id = $record->id;
+            }
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /**
+     * Get token record by ID
+     */
+    private function getTokenRecordById($id = null)
+    {
+        if ($id)
+        {
+            $record = Oauth_TokenRecord::model()->findById($id);
+
+            if (!$record)
+            {
+                throw new Exception(Craft::t('No oauth token exists with the ID “{id}”', array('id' => $id)));
+            }
+        }
+        else
+        {
+            $record = new Oauth_TokenRecord();
+        }
+
+        return $record;
+    }
+
+    public function getTestToken($providerHandle)
     {
         $token = craft()->httpSession->get('oauth.test.'.$providerHandle);
 
@@ -33,7 +154,7 @@ class OauthService extends BaseApplicationComponent
         }
     }
 
-    public function saveToken($providerHandle, $token)
+    public function saveTestToken($providerHandle, $token)
     {
         $token = craft()->oauth->encodeToken($token);
 
@@ -56,11 +177,13 @@ class OauthService extends BaseApplicationComponent
         }
     }
 
-    public function refreshToken($handle, &$token)
+    public function refreshToken(Oauth_TokenModel &$model)
     {
+        $token = $model->getToken();
+
         if(is_object($token))
         {
-            $provider = craft()->oauth->getProvider($handle);
+            $provider = craft()->oauth->getProvider($model->providerHandle);
             $provider->source->setToken($token);
 
             $token = $provider->source->retrieveAccessToken();
@@ -72,6 +195,7 @@ class OauthService extends BaseApplicationComponent
                 {
                     if($token->getRefreshToken())
                     {
+
                         // generate new token
                         $newToken = $provider->source->service->refreshAccessToken($token);
 
@@ -79,7 +203,7 @@ class OauthService extends BaseApplicationComponent
                         $newToken->setRefreshToken($token->getRefreshToken());
 
                         // make new token current
-                        $token = $newToken;
+                        $model->encodedToken = $this->encodeToken($newToken);
 
                         return true;
                     }
@@ -155,7 +279,7 @@ class OauthService extends BaseApplicationComponent
             craft()->httpSession->add('oauth.params', $params);
 
             // redirect
-            craft()->request->redirect(UrlHelper::getActionUrl('oauth/public/connect/', array(
+            craft()->request->redirect(UrlHelper::getActionUrl('oauth/connect/', array(
                 'provider' => $variables['provider']
             )));
         }
@@ -172,8 +296,9 @@ class OauthService extends BaseApplicationComponent
     public function callbackUrl($handle)
     {
         $params = array('provider' => $handle);
+        $params = array();
 
-        return $this->getSiteActionUrl('oauth/public/connect', $params);
+        return $this->getSiteActionUrl('oauth/connect', $params);
     }
 
     public function getProvider($handle,  $configuredOnly = true)
@@ -228,6 +353,7 @@ class OauthService extends BaseApplicationComponent
 
     public function sessionClean()
     {
+        craft()->httpSession->remove('oauth.handle');
         craft()->httpSession->remove('oauth.referer');
         craft()->httpSession->remove('oauth.params');
         craft()->httpSession->remove('oauth.redirect');
