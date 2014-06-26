@@ -80,10 +80,17 @@ class OauthService extends BaseApplicationComponent
                 $token = Oauth_TokenModel::populateModel($record);
 
                 // will refresh token if needed
-                if($this->refreshToken($token))
+
+                try {
+                    if($this->refreshToken($token))
+                    {
+                        // save refreshed token
+                        $this->saveToken($token);
+                    }
+                }
+                catch(\Exception $e)
                 {
-                    // save refreshed token
-                    $this->saveToken($token);
+                    // todo: log
                 }
 
                 return $token;
@@ -195,7 +202,6 @@ class OauthService extends BaseApplicationComponent
                 {
                     if($token->getRefreshToken())
                     {
-
                         // generate new token
                         $newToken = $provider->source->service->refreshAccessToken($token);
 

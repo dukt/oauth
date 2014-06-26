@@ -38,6 +38,17 @@ class Oauth_ProviderModel extends BaseModel
         return $this->_source->getName();
     }
 
+    public function getAccount()
+    {
+        try {
+            return $this->_source->getAccount();
+        }
+        catch(\Exception $e)
+        {
+            // todo: log
+            return false;
+        }
+    }
     public function isConfigured()
     {
         if(!empty($this->clientId))
