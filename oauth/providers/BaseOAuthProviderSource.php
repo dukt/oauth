@@ -10,6 +10,7 @@
  * @link      https://dukt.net/craft/oauth/
  */
 
+
 namespace OAuthProviderSources;
 
 use \Craft\Craft;
@@ -83,7 +84,7 @@ abstract class BaseOAuthProviderSource {
     public function getHandle()
     {
         // from : \OAuthProviderSource\FacebookOAuthProviderSource
-        // to : Facebook
+        // to : facebook
 
         $handle = get_class($this);
 
@@ -123,14 +124,14 @@ abstract class BaseOAuthProviderSource {
         $this->getStorage();
 
         // try {
-
             $handle = $this->getHandle();
             $serviceFactory = new \OAuth\ServiceFactory();
+            $callbackUrl = \Craft\craft()->oauth->callbackUrl($handle);
 
             $credentials = new Credentials(
                 $this->clientId,
                 $this->clientSecret,
-                \Craft\craft()->oauth->callbackUrl($handle)
+                $callbackUrl
             );
 
             if(!$scopes)
@@ -145,41 +146,6 @@ abstract class BaseOAuthProviderSource {
 
         // }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     // public function request($path, $method = 'GET', $body = null, array $extraHeaders = array())
     // {
