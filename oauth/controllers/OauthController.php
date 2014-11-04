@@ -94,18 +94,24 @@ class OauthController extends BaseController
             $this->referer = craft()->httpSession->get('oauth.referer');
 
 
+            if(craft()->request->getParam('error'))
+            {
+                throw new Exception("An error occured: ".craft()->request->getParam('error'));
+            }
+
             // provider
 
             $provider = craft()->oauth->getProvider($this->handle);
 
             // init service
+
             $provider->source->initializeService($this->scopes);
+
             $classname = get_class($provider->source->service);
 
             switch($classname::OAUTH_VERSION)
             {
                 case 2:
-
                     // oauth 2
 
                     $code = craft()->request->getParam('code');
@@ -147,7 +153,7 @@ class OauthController extends BaseController
                         $token = $provider->source->storage->retrieveAccessToken($provider->source->getClass());
 
                         // This was a callback request, now get the token
-                        $token = @$provider->source->service->requestAccessToken(
+                        $token = $provider->source->service->requestAccessToken(
                             $oauth_token,
                             $oauth_verifier,
                             $token->getRequestTokenSecret()
@@ -163,8 +169,6 @@ class OauthController extends BaseController
 
                 default:
                     throw new Exception("Couldn't handle connect for this provider");
-
-
             }
 
             $success = true;
@@ -175,8 +179,14 @@ class OauthController extends BaseController
             $errorMsg = $e->getMessage();
         }
 
-
         // we now have $token, build up response
+        $tokenArray = null;
+
+        if($token)
+        {
+            $tokenArray = craft()->oauth->tokenToArray($token);
+        }
+
 
         $response = array(
             'error'         => $error,
@@ -184,13 +194,19 @@ class OauthController extends BaseController
             'errorRedirect' => $this->errorRedirect,
             'redirect'      => $this->redirect,
             'success'       => $success,
-            'token'         => $token
+            'token'         => $tokenArray
         );
+
+        // ($accessToken = null, $refreshToken = null, $lifetime = null, $extraParams = array())
+        // var_dump($token);
+        // echo '<hr />';
+        // var_dump($tokenArray);
+        // echo '<hr />';
+        // echo $this->referer;
 
         craft()->httpSession->add('oauth.response', $response);
 
         $this->redirect($this->referer);
-
     }
 
     /**
@@ -275,3 +291,17 @@ class OauthController extends BaseController
     }
 }
 
+
+
+// connect
+// google
+// connect
+// can refresh ? no
+// google
+// connect
+// can refresh ? yes
+// redirect
+
+// connect
+// can refresh ? yes
+// redirect
