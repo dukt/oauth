@@ -94,14 +94,26 @@ class OauthController extends BaseController
             $this->referer = craft()->httpSession->get('oauth.referer');
 
 
+            // google cancel
+
             if(craft()->request->getParam('error'))
             {
                 throw new Exception("An error occured: ".craft()->request->getParam('error'));
             }
 
+
+            // twitter cancel
+
+            if(craft()->request->getParam('denied'))
+            {
+                throw new Exception("An error occured: ".craft()->request->getParam('denied'));
+            }
+
+
             // provider
 
             $provider = craft()->oauth->getProvider($this->handle);
+
 
             // init service
 
@@ -179,14 +191,15 @@ class OauthController extends BaseController
             $errorMsg = $e->getMessage();
         }
 
+
         // we now have $token, build up response
+
         $tokenArray = null;
 
         if($token)
         {
             $tokenArray = craft()->oauth->tokenToArray($token);
         }
-
 
         $response = array(
             'error'         => $error,
@@ -197,15 +210,10 @@ class OauthController extends BaseController
             'token'         => $tokenArray
         );
 
-        // ($accessToken = null, $refreshToken = null, $lifetime = null, $extraParams = array())
-        // var_dump($token);
-        // echo '<hr />';
-        // var_dump($tokenArray);
-        // echo '<hr />';
-        // echo $this->referer;
-
         craft()->httpSession->add('oauth.response', $response);
 
+
+        // redirect
         $this->redirect($this->referer);
     }
 
@@ -290,18 +298,3 @@ class OauthController extends BaseController
         $this->redirect($redirect);
     }
 }
-
-
-
-// connect
-// google
-// connect
-// can refresh ? no
-// google
-// connect
-// can refresh ? yes
-// redirect
-
-// connect
-// can refresh ? yes
-// redirect
