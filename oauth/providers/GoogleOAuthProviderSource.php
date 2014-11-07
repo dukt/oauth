@@ -55,7 +55,6 @@ class GoogleOAuthProviderSource extends BaseOAuthProviderSource {
         else
         {
             throw new \Exception("Couldn’t get account");
-
         }
     }
 }

@@ -12,16 +12,65 @@
 
 namespace Craft;
 
-require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
-require_once(CRAFT_PLUGINS_PATH.'oauth/providers/BaseOAuthProviderSource.php');
-
 use ReflectionClass;
+use Guzzle\Http\Client;
 
 class OauthService extends BaseApplicationComponent
 {
     private $_configuredProviders = array();
     private $_allProviders = array();
     private $_providersLoaded = false;
+
+    public function tokenToArray($token)
+    {
+        $class = get_class($token);
+
+        $tokenArray = array(
+            'class' => $class,
+            'accessToken' => $token->getAccessToken(),
+            'endOfLife' => $token->getEndOfLife(),
+            'extraParams' => $token->getExtraParams(),
+        );
+
+        switch($class)
+        {
+            case 'OAuth\OAuth1\Token\StdOAuth1Token':
+            $tokenArray['requestToken'] = $token->getRequestToken();
+            $tokenArray['requestTokenSecret'] = $token->getRequestTokenSecret();
+            $tokenArray['accessTokenSecret'] = $token->getAccessTokenSecret();
+            break;
+
+            case 'OAuth\OAuth2\Token\StdOAuth2Token':
+            $tokenArray['refreshToken'] = $token->getRefreshToken();
+            break;
+        }
+
+        return $tokenArray;
+    }
+
+    public function arrayToToken(array $array)
+    {
+        $token = new $array['class'];
+
+        $token->setAccessToken($array['accessToken']);
+        $token->setEndOfLife($array['endOfLife']);
+        $token->setExtraParams($array['extraParams']);
+
+        switch($array['class'])
+        {
+            case 'OAuth\OAuth1\Token\StdOAuth1Token':
+            $token->setRequestToken($array['requestToken']);
+            $token->setRequestTokenSecret($array['requestTokenSecret']);
+            $token->setAccessTokenSecret($array['accessTokenSecret']);
+            break;
+
+            case 'OAuth\OAuth2\Token\StdOAuth2Token':
+            $token->setRefreshToken($array['refreshToken']);
+            break;
+        }
+
+        return $token;
+    }
 
     public function getTokensByProvider($providerHandle)
     {
@@ -36,7 +85,11 @@ class OauthService extends BaseApplicationComponent
         $conditions = 'encodedToken=:encodedToken';
         $params = array(':encodedToken' => $encodedToken);
         $record = Oauth_TokenRecord::model()->find($conditions, $params);
-        return Oauth_TokenModel::populateModel($record);
+
+        if($record)
+        {
+            return Oauth_TokenModel::populateModel($record);
+        }
     }
 
     /**
@@ -82,6 +135,7 @@ class OauthService extends BaseApplicationComponent
                 // will refresh token if needed
 
                 try {
+
                     if($this->refreshToken($token))
                     {
                         // save refreshed token
@@ -91,6 +145,46 @@ class OauthService extends BaseApplicationComponent
                 catch(\Exception $e)
                 {
                     // todo: log
+                    // throw $e;
+
+                    // return null;
+                }
+
+                return $token;
+            }
+        }
+    }
+
+    /**
+     * Get token by ID
+     */
+    public function getTokenByEncodedToken($encodedToken)
+    {
+        if ($encodedToken)
+        {
+            $conditions = 'encodedToken=:encodedToken';
+            $params = array(':encodedToken' => $encodedToken);
+
+            $record = Oauth_TokenRecord::model()->find($conditions, $params);
+
+            if ($record)
+            {
+                $token = Oauth_TokenModel::populateModel($record);
+
+                // will refresh token if needed
+
+                try {
+
+                    if($this->refreshToken($token))
+                    {
+                        // save refreshed token
+                        $this->saveToken($token);
+                    }
+                }
+                catch(\Exception $e)
+                {
+                    // todo: log
+                    // throw $e;
                 }
 
                 return $token;
@@ -184,8 +278,9 @@ class OauthService extends BaseApplicationComponent
         }
     }
 
-    public function refreshToken(Oauth_TokenModel &$model)
+    public function refreshToken(Oauth_TokenModel $model)
     {
+
         $token = $model->getToken();
 
         if(is_object($token))
@@ -195,23 +290,51 @@ class OauthService extends BaseApplicationComponent
 
             $token = $provider->source->retrieveAccessToken();
 
-            if(time() > 0)
+            $time = time();
+
+            // $time = time() + 3590; // google ttl
+            // $time = time() + 50400005089; // facebook ttl
+
+            if($time > $token->getEndOfLife())
             {
                 // refresh token
                 if(method_exists($provider->source->service, 'refreshAccessToken'))
                 {
                     if($token->getRefreshToken())
                     {
+
                         // generate new token
+
                         $newToken = $provider->source->service->refreshAccessToken($token);
 
                         // keep our refresh token as it always remains valid
-                        $newToken->setRefreshToken($token->getRefreshToken());
+                        $refreshToken = $token->getRefreshToken();
+
+                        $newToken->setRefreshToken($refreshToken);
 
                         // make new token current
                         $model->encodedToken = $this->encodeToken($newToken);
 
                         return true;
+                    }
+                    else
+                    {
+                        // if($provider->class == 'google')
+                        // {
+
+                        //     $accessToken = $token->getAccessToken();
+                        //     $client = new Client();
+
+                        //     try {
+                        //         $response = $client->get('https://accounts.google.com/o/oauth2/revoke?token='.$accessToken)->send();
+                        //     }
+                        //     catch(\Exception $e)
+                        //     {
+
+                        //     }
+
+                        //     // $this->deleteToken($model);
+                        // }
                     }
                 }
             }
@@ -226,7 +349,16 @@ class OauthService extends BaseApplicationComponent
         {
             craft()->oauth->sessionClean();
 
-            craft()->httpSession->add('oauth.referer', craft()->request->getUrl());
+            if(!empty($variables['referer']))
+            {
+                $referer = $variables['referer'];
+            }
+            else
+            {
+                $referer = craft()->request->getUrl();
+            }
+
+            craft()->httpSession->add('oauth.referer', $referer);
 
 
             // redirect
@@ -292,6 +424,11 @@ class OauthService extends BaseApplicationComponent
         else
         {
             $response = craft()->httpSession->get('oauth.response');
+
+            if(!empty($response['token']))
+            {
+                $response['token'] = craft()->oauth->arrayToToken($response['token']);
+            }
 
             craft()->oauth->sessionClean();
 

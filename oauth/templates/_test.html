@@ -32,6 +32,8 @@
 
             {# Not Connected #}
 
+            {# <pre>{{ dump(token) }}</pre> #}
+
             {% set void = provider.source.setToken(token) %}
             {% set account = provider.source.account %}
 
