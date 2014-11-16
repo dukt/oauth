@@ -27,10 +27,23 @@ class FacebookOAuthProviderSource extends BaseOAuthProviderSource {
         $response = json_decode($response, true);
 
         $account = array();
+
         $account['uid'] = $response['id'];
-        $account['name'] = $response['name'];
-        $account['username'] = $response['username'];
-        $account['email'] = $response['email'];
+
+        if(!empty($response['name']))
+        {
+            $account['name'] = $response['name'];
+        }
+
+        if(!empty($response['username']))
+        {
+            $account['username'] = $response['username'];
+        }
+
+        if(!empty($response['email']))
+        {
+            $account['email'] = $response['email'];
+        }
 
         return $account;
     }
