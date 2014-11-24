@@ -14,7 +14,7 @@ namespace OAuthProviderSources;
 
 class DribbbleOAuthProviderSource extends BaseOAuthProviderSource {
 
-    public $consoleUrl = 'https://developers.facebook.com/apps';
+    public $consoleUrl = 'https://dribbble.com/account/applications';
 
     public function getName()
     {
@@ -23,9 +23,10 @@ class DribbbleOAuthProviderSource extends BaseOAuthProviderSource {
 
     public function getAccount()
     {
-        $response = $this->service->request('/user');
-        var_dump($response);
-        die();
+        return array();
+
+        // $response = $this->service->request('/user');
+
         // $response = json_decode($response, true);
 
         // $account = array();
@@ -34,6 +35,6 @@ class DribbbleOAuthProviderSource extends BaseOAuthProviderSource {
         // $account['username'] = $response['username'];
         // $account['email'] = $response['email'];
 
-        return $account;
+        // return $account;
     }
 }
