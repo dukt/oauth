@@ -14,7 +14,7 @@ namespace OAuthProviderSources;
 
 class BitBucketOAuthProviderSource extends BaseOAuthProviderSource {
 
-    public $consoleUrl = 'https://dev.twitter.com/apps';
+    public $consoleUrl = 'https://bitbucket.org/account/';
 
     public function getName()
     {
