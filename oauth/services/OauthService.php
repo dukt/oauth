@@ -12,6 +12,9 @@
 
 namespace Craft;
 
+require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
+require_once(CRAFT_PLUGINS_PATH.'oauth/providers/BaseOAuthProviderSource.php');
+
 use ReflectionClass;
 use Guzzle\Http\Client;
 
