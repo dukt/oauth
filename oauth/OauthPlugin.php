@@ -62,7 +62,7 @@ class OauthPlugin extends BasePlugin
         return array(
             'oauth\/(?P<providerHandle>.*)/tokens' => 'oauth/_tokens',
             'oauth\/(?P<providerHandle>.*)/test' => 'oauth/_test',
-            'oauth\/(?P<providerHandle>.*)' => 'oauth/_provider',
+            'oauth\/(?P<providerHandle>.*)' => array('action' => "oauth/provider"),
         );
     }
 

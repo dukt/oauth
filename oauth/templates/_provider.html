@@ -1,19 +1,6 @@
 {% extends "_layouts/cp" %}
 {% import "_includes/forms" as forms %}
 
-{% if providerHandle is not defined %}{% set providerHandle = null %}{% endif %}
-
-{% if provider is not defined %}
-    {% if providerHandle %}
-        {% set provider = craft.oauth.getProvider(providerHandle, false) %}
-
-        {% if not provider %}{% exit 404 %}{% endif %}
-    {% else %}
-        {% set provider = null %}
-    {% endif %}
-{% endif %}
-
-
 {% set title = provider.name~" Settings"|t %}
 
 {% set crumbs = [
@@ -21,6 +8,14 @@
     { label: "Plugin"|t, url: url('settings/plugins') },
     { label: "OAuth"|t, url: url('settings/plugins/oauth') }
 ] %}
+
+{% macro configWarning(setting, file) -%}
+    {{ "This is being overridden by the {setting} config setting."|t({
+        setting: '<strong>'~setting~'</strong>'
+    })|raw }}
+{%- endmacro %}
+
+{% from _self import configWarning %}
 
 {% set content %}
 
@@ -63,16 +58,20 @@
             label: 'Client Id'|t,
             required: true,
             name: 'provider[clientId]',
+            placeholder: provider and provider.clientId is empty ? (craft.config.oauth[provider.handle].clientId is defined ? craft.config.oauth[provider.handle].clientId) : null,
             value: provider ? provider.clientId : null,
-            errors: provider ? provider.errors('clientId') : null
+            errors: provider ? provider.errors('clientId') : null,
+            warning: (provider and not provider.clientId is empty and craft.config.oauth[provider.handle].clientId is defined ? configWarning('oauth.'~provider.handle~'.clientId')),
         }) }}
 
         {{ forms.textField({
             label: 'Client Secret'|t,
             required: true,
             name: 'provider[clientSecret]',
+            placeholder: provider and provider.clientSecret is empty ? (craft.config.oauth[provider.handle].clientSecret is defined ? craft.config.oauth[provider.handle].clientSecret) : null,
             value: provider ? provider.clientSecret : null,
-            errors: provider ? provider.errors('clientSecret') : null
+            errors: provider ? provider.errors('clientSecret') : null,
+            warning: (provider and not provider.clientSecret is empty and craft.config.oauth[provider.handle].clientSecret is defined ? configWarning('oauth.'~provider.handle~'.clientSecret')),
         }) }}
 
         <div class="buttons">

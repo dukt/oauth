@@ -447,9 +447,9 @@ class OauthService extends BaseApplicationComponent
         return $this->getSiteActionUrl('oauth/connect', $params);
     }
 
-    public function getProvider($handle,  $configuredOnly = true)
+    public function getProvider($handle,  $configuredOnly = true, $fromRecord = false)
     {
-        $this->_loadProviders();
+        $this->_loadProviders($fromRecord);
 
         $lcHandle = strtolower($handle);
 
@@ -557,7 +557,7 @@ class OauthService extends BaseApplicationComponent
     /**
      * Loads the configured providers.
      */
-    private function _loadProviders()
+    private function _loadProviders($fromRecord = false)
     {
         if($this->_providersLoaded)
         {
@@ -576,34 +576,36 @@ class OauthService extends BaseApplicationComponent
             $provider = Oauth_ProviderModel::populateModel($record);
             $provider->class = $providerSource->getHandle();
 
+            // client id and secret
+
+            $clientId = false;
+            $clientSecret = false;
+
+            // ...from config
+
+            $oauthConfig = craft()->config->get('oauth');
+
+            if($oauthConfig && !$fromRecord)
+            {
+                if(!empty($oauthConfig[$providerSource->getHandle()]['clientId']))
+                {
+                    $clientId = $oauthConfig[$providerSource->getHandle()]['clientId'];
+                    $provider->clientId = $clientId;
+                }
+
+                if(!empty($oauthConfig[$providerSource->getHandle()]['clientSecret']))
+                {
+                    $clientSecret = $oauthConfig[$providerSource->getHandle()]['clientSecret'];
+                    $provider->clientSecret = $clientSecret;
+                }
+            }
+
+
 
             // source
 
             if($record && !empty($provider->clientId))
             {
-                // client id and secret
-
-                $clientId = false;
-                $clientSecret = false;
-
-                // ...from config
-
-                $oauthConfig = craft()->config->get('oauth');
-
-                if($oauthConfig)
-                {
-
-                    if(!empty($oauthConfig[$providerSource->getHandle()]['clientId']))
-                    {
-                        $clientId = $oauthConfig[$providerSource->getHandle()]['clientId'];
-                    }
-
-                    if(!empty($oauthConfig[$providerSource->getHandle()]['clientSecret']))
-                    {
-                        $clientSecret = $oauthConfig[$providerSource->getHandle()]['clientSecret'];
-                    }
-                }
-
                 // ...from provider
 
                 if(!$clientId)
@@ -616,8 +618,12 @@ class OauthService extends BaseApplicationComponent
                     $clientSecret = $provider->clientSecret;
                 }
 
+                $provider->clientId = $clientId;
+                $provider->clientSecret = $clientSecret;
+
                 // source
                 $providerSource->initProviderSource($clientId, $clientSecret);
+
                 $provider->setSource($providerSource);
                 $this->_configuredProviders[$lcHandle] = $provider;
             }

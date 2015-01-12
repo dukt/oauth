@@ -24,6 +24,21 @@ class OauthController extends BaseController
     private $referer;
     private $errorRedirect;
 
+    public function actionProvider(array $variables = array())
+    {
+        if(!empty($variables['providerHandle']))
+        {
+            $variables['provider'] = craft()->oauth->getProvider($variables['providerHandle'], false, true);
+
+            if(!$variables['provider'])
+            {
+                throw new HttpException(404, $exception->getMessage());
+            }
+        }
+
+        $this->renderTemplate('oauth/_provider', $variables);
+    }
+
     public function actionDeleteToken(array $variables = array())
     {
         $this->requirePostRequest();
