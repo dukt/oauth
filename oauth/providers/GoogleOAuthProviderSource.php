@@ -12,6 +12,8 @@
 
 namespace OAuthProviderSources;
 
+use Guzzle\Http\Client;
+
 class GoogleOAuthProviderSource extends BaseOAuthProviderSource {
 
 	public $consoleUrl = 'https://code.google.com/apis/console/';
@@ -37,24 +39,31 @@ class GoogleOAuthProviderSource extends BaseOAuthProviderSource {
         );
     }
 
-    public function getAccount()
+    public function getUserDetails()
     {
-        $response = $this->service->request('https://www.googleapis.com/oauth2/v1/userinfo');
-        $response = json_decode($response, true);
+        $url = 'https://www.googleapis.com/oauth2/v1/userinfo';
 
-        if(empty($response['error']))
-        {
-            $account = array();
+        $client = new Client();
 
-            $account['uid'] = $response['id'];
-            $account['name'] = $response['name'];
-            $account['email'] = $response['email'];
+        $query = array('access_token' => $this->token->getAccessToken());
 
-            return $account;
+        try {
+            $guzzleRequest = $client->get($url, null, array('query' => $query));
+            $response = $guzzleRequest->send();
+            $data = $response->json();
+
+            return array(
+                'uid' => $data['id'],
+                'name' => $data['name'],
+                'email' => $data['email'],
+            );
         }
-        else
+        catch(\Exception $e)
         {
-            throw new \Exception("Couldn’t get account");
+            $data = $e->getResponse()->json();
+
+            throw new \Exception("Couldn’t get account.");
         }
     }
+
 }

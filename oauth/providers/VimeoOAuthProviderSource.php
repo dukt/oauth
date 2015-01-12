@@ -12,6 +12,8 @@
 
 namespace OAuthProviderSources;
 
+use Guzzle\Http\Client;
+
 class VimeoOAuthProviderSource extends BaseOAuthProviderSource {
 
 	public $consoleUrl = 'https://developer.vimeo.com/apps';
@@ -21,25 +23,33 @@ class VimeoOAuthProviderSource extends BaseOAuthProviderSource {
 		return 'Vimeo';
 	}
 
-    public function getAccount()
+    public function getUserDetails()
     {
-        try {
+        $url = 'https://api.vimeo.com/me';
 
-            $response = $this->service->request('/me');
-            $response = json_decode($response, true);
+        $client = new Client();
+
+        $query = array('access_token' => $this->token->getAccessToken());
+
+        try {
+            $guzzleRequest = $client->get($url, null, array('query' => $query));
+            $response = $guzzleRequest->send();
+            $data = $response->json();
+
 
             $account = array();
 
-            $account['uid'] = substr($response['uri'], strrpos($response['uri'], "/") + 1);
-            $account['name'] = $response['name'];
+            $account['uid'] = substr($data['uri'], strrpos($data['uri'], "/") + 1);
+            $account['name'] = $data['name'];
 
             return $account;
         }
         catch(\Exception $e)
         {
-            // todo
-            throw new \Exception($e, 1);
+            $data = $e->getResponse()->json();
 
+            throw new \Exception("Couldn’t get account.");
         }
     }
+
 }

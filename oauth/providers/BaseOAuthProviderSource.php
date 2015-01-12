@@ -17,6 +17,8 @@ use \Craft\Craft;
 use \Craft\LogLevel;
 use \Craft\Oauth_TokenRecord;
 use \Craft\Oauth_ProviderRecord;
+use \Craft\Oauth_ProviderModel;
+use \Craft\Oauth_TokenModel;
 use \Craft\UrlHelper;
 
 use OAuth\Common\Storage\Session;
@@ -33,6 +35,18 @@ abstract class BaseOAuthProviderSource {
 
     public $service = null;
     public $storage = null;
+    public $token = null;
+    public $provider = null;
+
+    public function __construct()
+    {
+        $this->storage = new Session();
+    }
+
+    public function setProvider(Oauth_ProviderModel $provider)
+    {
+        $this->provider = $provider;
+    }
 
     public function getScopes()
     {
@@ -72,13 +86,25 @@ abstract class BaseOAuthProviderSource {
         return $this->service->client_secret;
     }
 
-    public function setToken($token)
+    // public function setToken($token)
+    // {
+    //     $this->getStorage();
+
+    //     $this->storage->storeAccessToken($this->getClass(), $token);
+
+    //     // $this->initializeService();
+
+    //     $this->token = $token;
+    // }
+
+    public function setToken(Oauth_TokenModel $token)
     {
-        $this->getStorage();
+        $this->token = $token;
+    }
 
-        $this->storage->storeAccessToken($this->getClass(), $token);
-
-        $this->initializeService();
+    public function getToken()
+    {
+        return $this->token;
     }
 
     public function getHandle()
@@ -145,6 +171,17 @@ abstract class BaseOAuthProviderSource {
         // {
 
         // }
+    }
+
+    // deprecated for 4.0
+
+    public function getAccount()
+    {
+        if(method_exists($this, 'getUserDetails'))
+        {
+            return $this->getUserDetails();
+        }
+
     }
 
     // public function request($path, $method = 'GET', $body = null, array $extraHeaders = array())

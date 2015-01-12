@@ -289,9 +289,12 @@ class OauthService extends BaseApplicationComponent
         if(is_object($token))
         {
             $provider = craft()->oauth->getProvider($model->providerHandle);
-            $provider->source->setToken($token);
 
-            $token = $provider->source->retrieveAccessToken();
+            $providerSource = craft()->oauth->getProviderSource($model->providerHandle);
+            $providerSource->setProvider($provider);
+            $providerSource->setToken($model);
+
+            $token = $providerSource->retrieveAccessToken();
 
             $time = time();
 
@@ -301,14 +304,14 @@ class OauthService extends BaseApplicationComponent
             if($time > $token->getEndOfLife())
             {
                 // refresh token
-                if(method_exists($provider->source->service, 'refreshAccessToken'))
+                if(method_exists($providerSource->service, 'refreshAccessToken'))
                 {
                     if($token->getRefreshToken())
                     {
 
                         // generate new token
 
-                        $newToken = $provider->source->service->refreshAccessToken($token);
+                        $newToken = $providerSource->service->refreshAccessToken($token);
 
                         // keep our refresh token as it always remains valid
                         $refreshToken = $token->getRefreshToken();
@@ -598,6 +601,7 @@ class OauthService extends BaseApplicationComponent
                     $clientSecret = $oauthConfig[$providerSource->getHandle()]['clientSecret'];
                     $provider->clientSecret = $clientSecret;
                 }
+
             }
 
 

@@ -16,6 +16,8 @@ class Oauth_ProviderModel extends BaseModel
 {
     private $_source;
 
+
+
     public function defineAttributes()
     {
         $attributes = array(
@@ -26,6 +28,36 @@ class Oauth_ProviderModel extends BaseModel
             );
 
         return $attributes;
+    }
+
+    public function initSource()
+    {
+        $this->_source = craft()->oauth->getProviderSource($this->class);
+    }
+
+    public function getSource()
+    {
+        return $this->_source;
+    }
+    // public function getSource()
+    // {
+    //     if(!$this->_source)
+    //     {
+    //         $this->_source = craft()->oauth->getProviderSource($this->class);
+    //         // $this->_source->setToken()
+    //     }
+
+    //     return $this->_source;
+    // }
+
+    public function getUserDetails()
+    {
+        $source = $this->getSource();
+
+        if($source)
+        {
+            return $this->_source->getUserDetails();
+        }
     }
 
     public function getHandle()
@@ -59,15 +91,20 @@ class Oauth_ProviderModel extends BaseModel
         return false;
     }
 
-    public function getSource()
-    {
-        return $this->_source;
-    }
+    // public function getSource()
+    // {
+    //     return $this->_source;
+    // }
 
     public function setSource($source)
     {
         $this->_source = $source;
     }
+
+    // public function setToken(Oauth_TokenModel $token)
+    // {
+    //     $this->token = $token;
+    // }
 
     public function setToken(Oauth_TokenModel $model)
     {
