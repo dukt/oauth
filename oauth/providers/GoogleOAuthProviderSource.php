@@ -18,18 +18,15 @@ class GoogleOAuthProviderSource extends BaseOAuthProviderSource {
 
 	public $consoleUrl = 'https://code.google.com/apis/console/';
 
+    protected $scopes = array(
+        'userinfo_profile',
+        'userinfo_email'
+    );
+
 	public function getName()
 	{
 		return 'Google';
 	}
-
-    public function getScopes()
-    {
-        return  array(
-            'userinfo_profile',
-            'userinfo_email'
-        );
-    }
 
     public function getParams()
     {

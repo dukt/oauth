@@ -24,23 +24,23 @@ class OauthController extends BaseController
     private $referer;
     private $errorRedirect;
 
-    public function actionTest()
-    {
-        $token = craft()->oauth->getTokenById(288);
+    // public function actionTest()
+    // {
+    //     $token = craft()->oauth->getTokenById(288);
 
-        $provider = new Oauth_ProviderModel;
-        $provider->clientId = '895951883865-87h36t3842qbvhcjthrvc7vaav4mfn27.apps.googleusercontent.com';
-        $provider->clientSecret = 'FvoCtJzFd80Je0h2Pz_T6KU5';
-        $provider->class = 'google';
+    //     $provider = new Oauth_ProviderModel;
+    //     $provider->clientId = '895951883865-87h36t3842qbvhcjthrvc7vaav4mfn27.apps.googleusercontent.com';
+    //     $provider->clientSecret = 'FvoCtJzFd80Je0h2Pz_T6KU5';
+    //     $provider->class = 'google';
 
-        $providerSource = craft()->oauth->getProviderSource($provider->class);
-        $providerSource->setToken($token->token);
+    //     $providerSource = craft()->oauth->getProviderSource($provider->class);
+    //     $providerSource->setToken($token->token);
 
-        $userDetails = $providerSource->getUserDetails();
+    //     $userDetails = $providerSource->getUserDetails();
 
-        var_dump($userDetails);
-        die('hello');
-    }
+    //     var_dump($userDetails);
+    //     die('hello');
+    // }
     public function actionProvider(array $variables = array())
     {
         if(!empty($variables['providerHandle']))
@@ -147,11 +147,17 @@ class OauthController extends BaseController
             $provider = craft()->oauth->getProvider($this->handle);
 
 
+            $providerSource = craft()->oauth->getProviderSource($this->handle);
+            $providerSource->setScopes($this->scopes);
+            $providerSource->setProvider($provider);
+
             // init service
 
-            $provider->source->initializeService($this->scopes);
+            // $provider->source->initializeService($this->scopes);
 
-            $classname = get_class($provider->source->service);
+            // $classname = get_class($provider->source->service);
+
+            $classname = get_class($providerSource->service);
 
             switch($classname::OAUTH_VERSION)
             {
@@ -164,7 +170,7 @@ class OauthController extends BaseController
                     {
                         // redirect to authorization url if we don't have a code yet
 
-                        $authorizationUrl = $provider->source->service->getAuthorizationUri($this->params);
+                        $authorizationUrl = $providerSource->service->getAuthorizationUri($this->params);
 
                         $this->redirect($authorizationUrl);
                     }
@@ -273,6 +279,25 @@ class OauthController extends BaseController
         }
     }
 
+    public function actionTest(array $variables = array())
+    {
+        require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
+
+        $handle = $variables['providerHandle'];
+
+        $token = craft()->httpSession->get('oauth.test.token.'.$handle);
+        var_dump($token);
+        die();
+        $provider = craft()->oauth->getProvider($handle);
+        $providerSource = craft()->oauth->getProviderSource($handle);
+        $providerSource->setProvider($provider);
+
+        $variables['providerSource'] = $providerSource;
+        $variables['token'] = $token;
+
+        $this->renderTemplate('oauth/_test', $variables);
+    }
+
     /**
      * Test Connect
      */
@@ -280,10 +305,15 @@ class OauthController extends BaseController
     {
         $handle = craft()->request->getParam('provider');
 
+        craft()->httpSession->remove('oauth.test.token.'.$handle);
+
         $provider = craft()->oauth->getProvider($handle);
 
-        $scopes = $provider->source->getScopes();
-        $params = $provider->source->getParams();
+        $providerSource = craft()->oauth->getProviderSource($handle);
+        $providerSource->setProvider($provider);
+
+        $scopes = $providerSource->getScopes();
+        $params = $providerSource->getParams();
 
         if($response = craft()->oauth->connect(array(
             'plugin' => 'oauth',
@@ -298,7 +328,8 @@ class OauthController extends BaseController
                 $token = $response['token'];
 
                 // save token
-                craft()->oauth->saveToken($handle, $token);
+                // craft()->oauth->saveToken($handle, $token);
+                craft()->httpSession->add('oauth.test.token.'.$handle, $token);
 
                 // session notice
                 craft()->userSession->setNotice(Craft::t("Connected."));

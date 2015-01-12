@@ -27,7 +27,9 @@ use OAuth\Common\Consumer\Credentials;
 abstract class BaseOAuthProviderSource {
 
     public $class;
-    public $isConfigured = false;
+
+    // public $isConfigured = false;
+
     public $isConnected = false;
 
     public $clientId = false;
@@ -38,19 +40,63 @@ abstract class BaseOAuthProviderSource {
     public $token = null;
     public $provider = null;
 
+    protected $scopes = array();
+
     public function __construct()
     {
+        // storage
         $this->storage = new Session();
+
+    }
+
+    public function initService()
+    {
+        $handle = $this->getHandle();
+        $serviceFactory = new \OAuth\ServiceFactory();
+        $callbackUrl = \Craft\craft()->oauth->callbackUrl($handle);
+
+        if($this->provider)
+        {
+            $credentials = new Credentials(
+                $this->provider->clientId,
+                $this->provider->clientSecret,
+                $callbackUrl
+            );
+        }
+        else
+        {
+            $credentials = new Credentials(
+                'client id not provided',
+                'client secret not provided',
+                $callbackUrl
+            );
+        }
+
+        $this->service = $serviceFactory->createService($handle, $credentials, $this->storage, $this->scopes);
     }
 
     public function setProvider(Oauth_ProviderModel $provider)
     {
+        // set provider
         $this->provider = $provider;
+
+        // re-initialize service with new scope
+        $this->initService();
+
+    }
+
+    public function setScopes(array $scopes)
+    {
+        // set scope
+        $this->scopes = $scopes;
+
+        // re-initialize service with new scope
+        $this->initService();
     }
 
     public function getScopes()
     {
-        return array();
+        return $this->scopes;
     }
 
     public function getParams()
@@ -78,24 +124,13 @@ abstract class BaseOAuthProviderSource {
 
     public function getClientId()
     {
-        return $this->service->client_id;
+        return $this->provider->clientId;
     }
 
     public function getClientSecret()
     {
-        return $this->service->client_secret;
+        return $this->provider->clientSecret;
     }
-
-    // public function setToken($token)
-    // {
-    //     $this->getStorage();
-
-    //     $this->storage->storeAccessToken($this->getClass(), $token);
-
-    //     // $this->initializeService();
-
-    //     $this->token = $token;
-    // }
 
     public function setToken(Oauth_TokenModel $token)
     {
@@ -139,38 +174,20 @@ abstract class BaseOAuthProviderSource {
         return $handle;
     }
 
+    public function isConfigured()
+    {
+        if(!empty($this->provider->clientId))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public function initProviderSource($clientId = null, $clientSecret = null)
     {
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
-    }
-
-    public function initializeService($scopes = array())
-    {
-        $this->getStorage();
-
-        // try {
-            $handle = $this->getHandle();
-            $serviceFactory = new \OAuth\ServiceFactory();
-            $callbackUrl = \Craft\craft()->oauth->callbackUrl($handle);
-
-            $credentials = new Credentials(
-                $this->clientId,
-                $this->clientSecret,
-                $callbackUrl
-            );
-
-            if(!$scopes)
-            {
-                $scopes = array();
-            }
-
-            $this->service = $serviceFactory->createService($handle, $credentials, $this->storage, $scopes);
-        // }
-        // catch(\Exception $e)
-        // {
-
-        // }
     }
 
     // deprecated for 4.0
@@ -183,10 +200,4 @@ abstract class BaseOAuthProviderSource {
         }
 
     }
-
-    // public function request($path, $method = 'GET', $body = null, array $extraHeaders = array())
-    // {
-    //     return $this->service->request('https://www.googleapis.com/oauth2/v1/userinfo');
-    // }
-
 }

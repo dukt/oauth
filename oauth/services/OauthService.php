@@ -626,7 +626,8 @@ class OauthService extends BaseApplicationComponent
                 $provider->clientSecret = $clientSecret;
 
                 // source
-                $providerSource->initProviderSource($clientId, $clientSecret);
+                // $providerSource->initProviderSource($clientId, $clientSecret);
+                $providerSource->setProvider($provider);
 
                 $provider->setSource($providerSource);
                 $this->_configuredProviders[$lcHandle] = $provider;

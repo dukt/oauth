@@ -1,20 +1,7 @@
 {% extends "_layouts/cp" %}
 {% import "_includes/forms" as forms %}
 
-{% if providerHandle is not defined %}{% set providerHandle = null %}{% endif %}
-
-{% if provider is not defined %}
-    {% if providerHandle %}
-        {% set provider = craft.oauth.getProvider(providerHandle, false) %}
-
-        {% if not provider %}{% exit 404 %}{% endif %}
-    {% else %}
-        {% set provider = null %}
-    {% endif %}
-{% endif %}
-
-
-{% set title = provider.name~" Testing"|t %}
+{% set title = providerSource.name~" Testing"|t %}
 
 {% set crumbs = [
     { label: "Settings"|t, url: url('settings') },
@@ -24,18 +11,14 @@
 
 {% set content %}
 
-    {% if provider.isConfigured %}
+    {% if providerSource.isConfigured %}
 
-        {% set token = craft.oauth.token(provider.handle) %}
+        {# {% set token = craft.oauth.token(providerSource.handle) %} #}
 
         {% if token %}
 
-            {# Not Connected #}
-
-            {# <pre>{{ dump(token) }}</pre> #}
-
-            {% set void = provider.source.setToken(token) %}
-            {% set account = provider.source.account %}
+            {% set void = providerSource.setToken(token) %}
+            {% set account = providerSource.getUserDetails() %}
 
             <input type="hidden" name="token" value="{{ craft.oauth.encodeToken(token) }}" />
 
@@ -56,19 +39,18 @@
                 {% endif %}
             </ul>
 
-            <p><a class="btn small" href="{{ actionUrl('oauth/testDisconnect', {provider:provider.handle}) }}">{{'Disconnect'|t}}</a></p>
+            <p><a class="btn small" href="{{ actionUrl('oauth/testDisconnect', {provider:providerSource.handle}) }}">{{'Disconnect'|t}}</a></p>
 
         {% else %}
 
-            {# Not Connected #}
-
             <h2 class="first">{{'Not connected'|t}}</h2>
             <p>{{'Test that the connection with this provider can be made.'|t}}</p>
-            <p><a class="btn submit" href="{{ actionUrl('oauth/testConnect', {provider:provider.handle}) }}">{{"Connect"|t}}</a></p>
+            <p><a class="btn submit" href="{{ actionUrl('oauth/testConnect', {provider:providerSource.handle}) }}">{{"Connect"|t}}</a></p>
 
         {% endif %}
     {% else %}
         {{ "Not configured"|t }}
     {% endif %}
+
 
 {% endset %}

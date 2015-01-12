@@ -108,7 +108,7 @@ class Oauth_ProviderModel extends BaseModel
 
     public function setToken(Oauth_TokenModel $model)
     {
-        $this->_source->setToken($model->token);
+        $this->_source->setToken($model);
     }
 
     public function getTokens()
