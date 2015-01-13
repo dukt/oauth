@@ -446,6 +446,13 @@ class OauthService extends BaseApplicationComponent
 
             if(!empty($response['token']))
             {
+                $token = new Oauth_TokenModel;
+                $token->accessToken = $response['token']['accessToken'];
+                $token->endOfLife = $response['token']['endOfLife'];
+                $token->refreshToken = $response['token']['refreshToken'];
+
+                $response['token'] = $token;
+
                 // $response['token'] = craft()->oauth->arrayToToken($response['token']);
                 // $response['token'];
                 // var_dump($response['token']);
