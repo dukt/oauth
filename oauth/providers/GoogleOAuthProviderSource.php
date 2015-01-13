@@ -15,6 +15,7 @@ namespace OAuthProviderSources;
 class GoogleOAuthProviderSource extends BaseOAuthProviderSource {
 
 	public $consoleUrl = 'https://code.google.com/apis/console/';
+    public $oauthVersion = 2;
 
 	public function getName()
 	{

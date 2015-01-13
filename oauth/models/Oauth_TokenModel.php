@@ -17,10 +17,16 @@ class Oauth_TokenModel extends BaseModel
     public function defineAttributes()
     {
         $attributes = array(
-                'id'    => AttributeType::Number,
-                'providerHandle'    => AttributeType::String,
-                'pluginHandle'    => AttributeType::String,
-                'encodedToken'    => AttributeType::String,
+
+                'id' => AttributeType::Number,
+                'providerHandle' => AttributeType::String,
+                'pluginHandle' => AttributeType::String,
+                'encodedToken' => AttributeType::String,
+
+                'accessToken' => AttributeType::String,
+                'secret' => AttributeType::String,
+                'endOfLife' => AttributeType::String,
+                'refreshToken' => AttributeType::String,
             );
 
         return $attributes;
@@ -31,7 +37,7 @@ class Oauth_TokenModel extends BaseModel
         return md5($this->encodedToken);
     }
 
-    public function getToken()
+    public function getDecodedToken()
     {
         return craft()->oauth->decodeToken($this->encodedToken);
     }

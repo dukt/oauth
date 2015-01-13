@@ -16,7 +16,9 @@ namespace OAuthProviderSources;
 use \Craft\Craft;
 use \Craft\LogLevel;
 use \Craft\Oauth_TokenRecord;
+use \Craft\Oauth_TokenModel;
 use \Craft\Oauth_ProviderRecord;
+use \Craft\Oauth_ProviderModel;
 use \Craft\UrlHelper;
 
 use OAuth\Common\Storage\Session;
@@ -33,6 +35,19 @@ abstract class BaseOAuthProviderSource {
 
     public $service = null;
     public $storage = null;
+    public $token = null;
+
+    private $provider;
+
+    public function getProvider()
+    {
+        return $this->provider;
+    }
+
+    public function setProvider(Oauth_ProviderModel $provider)
+    {
+        $this->provider = $provider;
+    }
 
     public function getScopes()
     {
@@ -64,21 +79,53 @@ abstract class BaseOAuthProviderSource {
 
     public function getClientId()
     {
-        return $this->service->client_id;
+        return $this->clientId;
     }
 
     public function getClientSecret()
     {
-        return $this->service->client_secret;
+        return $this->clientSecret;
     }
 
     public function setToken($token)
     {
+        $this->token = $token;
+
         $this->getStorage();
 
-        $this->storage->storeAccessToken($this->getClass(), $token);
+        $realToken = $this->getRealToken();
+
+        $this->storage->storeAccessToken($this->getClass(), $realToken);
 
         $this->initializeService();
+    }
+
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    public function getRealToken()
+    {
+        switch($this->oauthVersion)
+        {
+            case 1:
+                $realToken = new \OAuth\OAuth1\Token\StdOAuth1Token;
+                // $realToken->setRequestToken($this->token->requestToken);
+                // $realToken->setRequestTokenSecret($this->token->requestTokenSecret);
+                $realToken->setAccessToken($this->token->accessToken);
+                $realToken->setAccessTokenSecret($this->token->secret);
+                return $realToken;
+                break;
+
+            case 2:
+                $realToken = new \OAuth\OAuth2\Token\StdOAuth2Token;
+                $realToken->setAccessToken($this->token->accessToken);
+                $realToken->setEndOfLife($this->token->endOfLife);
+                $realToken->setRefreshToken($this->token->refreshToken);
+                return $realToken;
+                break;
+        }
     }
 
     public function getHandle()
