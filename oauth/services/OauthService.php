@@ -448,8 +448,18 @@ class OauthService extends BaseApplicationComponent
             {
                 $token = new Oauth_TokenModel;
                 $token->accessToken = $response['token']['accessToken'];
+
+                if(!empty($response['token']['accessTokenSecret']))
+                {
+                    $token->secret = $response['token']['accessTokenSecret'];
+                }
+
                 $token->endOfLife = $response['token']['endOfLife'];
-                $token->refreshToken = $response['token']['refreshToken'];
+
+                if(!empty($response['token']['refreshToken']))
+                {
+                    $token->refreshToken = $response['token']['refreshToken'];
+                }
 
                 $response['token'] = $token;
 
