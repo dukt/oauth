@@ -53,6 +53,11 @@ class OauthVariable
         return craft()->oauth->getProvider($handle, $configuredOnly);
     }
 
+    public function getProviderSource($handle)
+    {
+        return craft()->oauth->getProviderSource($handle);
+    }
+
     public function getProviders($configuredOnly = true)
     {
         return craft()->oauth->getProviders($configuredOnly);
