@@ -176,8 +176,8 @@ abstract class BaseOAuthProviderSource {
             $callbackUrl = \Craft\craft()->oauth->callbackUrl($handle);
 
             $credentials = new Credentials(
-                $this->clientId,
-                $this->clientSecret,
+                $this->provider->clientId,
+                $this->provider->clientSecret,
                 $callbackUrl
             );
 
