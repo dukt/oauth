@@ -13,6 +13,20 @@ $token
 $providerSource
     $provider
     $token
+    $service
+
+
+###############
+
+    $providerSource = craft()->oauth->getProviderSource('google');
+
+    $provider = craft()->oauth->getProvider('google');
+    $providerSource->setProvider($provider);
+
+    $token = craft()->oauth->getToken();
+    $providerSource->setToken($token);
+    $providerSource->refreshAccessToken();
+                            $service->refreshAccessToken($token);
 
 # getUserDetails
 
@@ -23,6 +37,10 @@ $providerSource
     $providerSource->setProvider($provider);
     $providerSource->setToken($token);
     $providerSource->getUserDetails();
+
+# refresh token
+
+    $service->refreshAccessToken($token)
 
 #rest
 

@@ -207,6 +207,10 @@ class OauthService extends BaseApplicationComponent
         $record = $this->getTokenRecordById($model->id);
         $record->providerHandle = strtolower($model->providerHandle);
         $record->pluginHandle = strtolower($model->pluginHandle);
+        $record->accessToken = $model->accessToken;
+        $record->secret = $model->secret;
+        $record->endOfLife = $model->endOfLife;
+        $record->refreshToken = $model->refreshToken;
         $record->encodedToken = $model->encodedToken;
 
         // save record
@@ -442,7 +446,10 @@ class OauthService extends BaseApplicationComponent
 
             if(!empty($response['token']))
             {
-                $response['token'] = craft()->oauth->arrayToToken($response['token']);
+                // $response['token'] = craft()->oauth->arrayToToken($response['token']);
+                // $response['token'];
+                // var_dump($response['token']);
+                // die();
             }
 
             craft()->oauth->sessionClean();

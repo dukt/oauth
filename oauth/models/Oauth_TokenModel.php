@@ -58,24 +58,4 @@ class Oauth_TokenModel extends BaseModel
             return false;
         }
     }
-
-    public function getAccessToken()
-    {
-        $token = $this->getToken();
-
-        if($token)
-        {
-            return $token->getAccessToken();
-        }
-    }
-
-    public function getEndOfLife()
-    {
-        $token = $this->getToken();
-
-        if($token)
-        {
-            return $token->getEndOfLife();
-        }
-    }
 }
