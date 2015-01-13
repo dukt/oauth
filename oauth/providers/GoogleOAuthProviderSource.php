@@ -43,7 +43,7 @@ class GoogleOAuthProviderSource extends BaseOAuthProviderSource {
 
         $client = new Client();
 
-        $query = array('access_token' => $this->token->getAccessToken());
+        $query = array('access_token' => $this->token->accessToken);
 
         try {
             $guzzleRequest = $client->get($url, null, array('query' => $query));
@@ -60,7 +60,9 @@ class GoogleOAuthProviderSource extends BaseOAuthProviderSource {
         {
             $data = $e->getResponse()->json();
 
-            throw new \Exception("Couldn’t get account.");
+            // throw new \Exception("Couldn’t get account.");
+
+            return false;
         }
     }
 

@@ -127,6 +127,7 @@ class OauthService extends BaseApplicationComponent
      */
     public function getTokenById($id)
     {
+
         if ($id)
         {
             $record = Oauth_TokenRecord::model()->findById($id);
@@ -138,7 +139,6 @@ class OauthService extends BaseApplicationComponent
                 // will refresh token if needed
 
                 try {
-
                     if($this->refreshToken($token))
                     {
                         // save refreshed token
@@ -301,7 +301,6 @@ class OauthService extends BaseApplicationComponent
 
             // $time = time() + 3590; // google ttl
             // $time = time() + 50400005089; // facebook ttl
-
 
             if($time > $token->getEndOfLife())
             {
