@@ -272,4 +272,11 @@ abstract class BaseOAuthProviderSource {
         $this->clientSecret = $clientSecret;
     }
 
+    // deprecated for 1.0
+
+    public function getAccount()
+    {
+        return $this->getUserDetails();
+    }
+
 }
