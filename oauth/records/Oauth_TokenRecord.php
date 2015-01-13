@@ -30,7 +30,6 @@ class Oauth_TokenRecord extends BaseRecord
         return array(
             'providerHandle' => array(AttributeType::String, 'required' => true),
             'pluginHandle' => array(AttributeType::String, 'required' => true),
-            'encodedToken' => array(AttributeType::String, 'column' => ColumnType::Text),
 
             'accessToken' => AttributeType::String,
             'secret' => AttributeType::String,

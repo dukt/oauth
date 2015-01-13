@@ -21,7 +21,6 @@ class Oauth_TokenModel extends BaseModel
                 'id' => AttributeType::Number,
                 'providerHandle' => AttributeType::String,
                 'pluginHandle' => AttributeType::String,
-                'encodedToken' => AttributeType::String,
 
                 'accessToken' => AttributeType::String,
                 'secret' => AttributeType::String,
@@ -34,7 +33,12 @@ class Oauth_TokenModel extends BaseModel
 
     public function getHash()
     {
-        return md5($this->encodedToken);
+        return md5(array(
+                $this->accessToken,
+                $this->secret,
+                $this->endOfLife,
+                $this->refreshToken
+            ));
     }
 
     public function getDecodedToken()

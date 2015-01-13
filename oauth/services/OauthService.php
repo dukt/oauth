@@ -211,7 +211,6 @@ class OauthService extends BaseApplicationComponent
         $record->secret = $model->secret;
         $record->endOfLife = $model->endOfLife;
         $record->refreshToken = $model->refreshToken;
-        $record->encodedToken = $model->encodedToken;
 
         // save record
         if($record->save(false))
