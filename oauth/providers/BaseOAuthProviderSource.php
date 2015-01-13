@@ -50,6 +50,50 @@ abstract class BaseOAuthProviderSource {
 
     }
 
+
+    public function getAuthorizationMethod()
+    {
+        return null;
+    }
+
+    public function getSubscriber()
+    {
+        $headers = array();
+        $query = array();
+
+        $provider = $this->getProvider();
+        $realToken = $this->getRealToken();
+
+        switch($this->oauthVersion)
+        {
+            case 1:
+                $oauth = new \Guzzle\Plugin\Oauth\OauthPlugin(array(
+                    'consumer_key'    => $provider->clientId,
+                    'consumer_secret' => $provider->clientSecret,
+                    'token'           => $realToken->getAccessToken(),
+                    'token_secret'    => $realToken->getAccessTokenSecret()
+                ));
+
+                return $oauth;
+
+                break;
+
+            case 2:
+                $config = array(
+                    'consumer_key' => $provider->clientId,
+                    'consumer_secret' => $provider->clientSecret,
+                    'authorization_method' => $this->getAuthorizationMethod(),
+                    'access_token' => $realToken->getAccessToken(),
+                );
+
+                $oauth = new \Dukt\Rest\Guzzle\Plugin\Oauth2Plugin($config);
+
+                return $oauth;
+
+                break;
+        }
+    }
+
     public function initService()
     {
         $handle = $this->getHandle();
