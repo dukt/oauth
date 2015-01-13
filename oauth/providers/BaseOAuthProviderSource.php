@@ -16,9 +16,9 @@ namespace OAuthProviderSources;
 use \Craft\Craft;
 use \Craft\LogLevel;
 use \Craft\Oauth_TokenRecord;
+use \Craft\Oauth_TokenModel;
 use \Craft\Oauth_ProviderRecord;
 use \Craft\Oauth_ProviderModel;
-use \Craft\Oauth_TokenModel;
 use \Craft\UrlHelper;
 
 use OAuth\Common\Storage\Session;
@@ -38,6 +38,7 @@ abstract class BaseOAuthProviderSource {
     public $service = null;
     public $storage = null;
     public $token = null;
+
     public $provider = null;
 
     protected $scopes = array();
@@ -73,6 +74,11 @@ abstract class BaseOAuthProviderSource {
         }
 
         $this->service = $serviceFactory->createService($handle, $credentials, $this->storage, $this->scopes);
+    }
+
+    public function getProvider()
+    {
+        return $this->provider;
     }
 
     public function setProvider(Oauth_ProviderModel $provider)
@@ -135,11 +141,43 @@ abstract class BaseOAuthProviderSource {
     public function setToken(Oauth_TokenModel $token)
     {
         $this->token = $token;
+
     }
+
+
+        // $this->getStorage();
+
+        // $realToken = $this->getRealToken();
+
+        // $this->storage->storeAccessToken($this->getClass(), $realToken);
+
 
     public function getToken()
     {
         return $this->token;
+    }
+
+    public function getRealToken()
+    {
+        switch($this->oauthVersion)
+        {
+            case 1:
+                $realToken = new \OAuth\OAuth1\Token\StdOAuth1Token;
+                // $realToken->setRequestToken($this->token->requestToken);
+                // $realToken->setRequestTokenSecret($this->token->requestTokenSecret);
+                $realToken->setAccessToken($this->token->accessToken);
+                $realToken->setAccessTokenSecret($this->token->secret);
+                return $realToken;
+                break;
+
+            case 2:
+                $realToken = new \OAuth\OAuth2\Token\StdOAuth2Token;
+                $realToken->setAccessToken($this->token->accessToken);
+                $realToken->setEndOfLife($this->token->endOfLife);
+                $realToken->setRefreshToken($this->token->refreshToken);
+                return $realToken;
+                break;
+        }
     }
 
     public function getHandle()
@@ -190,14 +228,4 @@ abstract class BaseOAuthProviderSource {
         $this->clientSecret = $clientSecret;
     }
 
-    // deprecated for 4.0
-
-    public function getAccount()
-    {
-        if(method_exists($this, 'getUserDetails'))
-        {
-            return $this->getUserDetails();
-        }
-
-    }
 }

@@ -17,6 +17,7 @@ use Guzzle\Http\Client;
 class GoogleOAuthProviderSource extends BaseOAuthProviderSource {
 
 	public $consoleUrl = 'https://code.google.com/apis/console/';
+    public $oauthVersion = 2;
 
     protected $scopes = array(
         'userinfo_profile',

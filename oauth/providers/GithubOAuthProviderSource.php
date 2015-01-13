@@ -15,6 +15,7 @@ namespace OAuthProviderSources;
 class GithubOAuthProviderSource extends BaseOAuthProviderSource {
 
 	public $consoleUrl = 'https://github.com/settings/applications/';
+    public $oauthVersion = 2;
 
 	public function getName()
 	{

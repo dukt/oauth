@@ -284,9 +284,7 @@ class OauthService extends BaseApplicationComponent
     public function refreshToken(Oauth_TokenModel $model)
     {
 
-        $token = $model->getToken();
-
-        if(is_object($token))
+        if(is_object($model))
         {
             $provider = craft()->oauth->getProvider($model->providerHandle);
 
@@ -301,14 +299,16 @@ class OauthService extends BaseApplicationComponent
             // $time = time() + 3590; // google ttl
             // $time = time() + 50400005089; // facebook ttl
 
+
             if($time > $token->getEndOfLife())
             {
+
                 // refresh token
                 if(method_exists($providerSource->service, 'refreshAccessToken'))
                 {
+
                     if($token->getRefreshToken())
                     {
-
                         // generate new token
 
                         $newToken = $providerSource->service->refreshAccessToken($token);
@@ -319,7 +319,16 @@ class OauthService extends BaseApplicationComponent
                         $newToken->setRefreshToken($refreshToken);
 
                         // make new token current
-                        $model->encodedToken = $this->encodeToken($newToken);
+
+                        $model->accessToken = $newToken->getAccessToken();
+
+                        if(method_exists($newToken, 'getAccessTokenSecret'))
+                        {
+                            $model->secret = $newToken->getAccessTokenSecret();
+                        }
+
+                        $model->endOfLife = $newToken->getEndOfLife();
+                        $model->refreshToken = $newToken->getRefreshToken();
 
                         return true;
                     }
