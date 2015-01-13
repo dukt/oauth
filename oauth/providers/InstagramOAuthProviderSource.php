@@ -26,7 +26,7 @@ class InstagramOAuthProviderSource extends BaseOAuthProviderSource {
         return array('basic');
     }
 
-    public function getAccount()
+    public function getUserDetails()
     {
         try {
 

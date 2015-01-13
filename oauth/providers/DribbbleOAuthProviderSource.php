@@ -21,7 +21,7 @@ class DribbbleOAuthProviderSource extends BaseOAuthProviderSource {
         return 'Dribbble';
     }
 
-    public function getAccount()
+    public function getUserDetails()
     {
         return array();
 

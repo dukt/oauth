@@ -21,7 +21,7 @@ class LinkedinOAuthProviderSource extends BaseOAuthProviderSource {
         return 'Linkedin';
     }
 
-    public function getAccount()
+    public function getUserDetails()
     {
         return array();
         // $response = $this->service->request('/people/~?format=json');

@@ -21,7 +21,7 @@ class RunKeeperOAuthProviderSource extends BaseOAuthProviderSource {
         return 'RunKeeper';
     }
 
-    public function getAccount()
+    public function getUserDetails()
     {
         return array();
         // $response = $this->service->request('/user');

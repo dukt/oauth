@@ -22,7 +22,7 @@ class GithubOAuthProviderSource extends BaseOAuthProviderSource {
 		return 'GitHub';
 	}
 
-    public function getAccount()
+    public function getUserDetails()
     {
         $response = $this->service->request('user');
         $response = json_decode($response, true);

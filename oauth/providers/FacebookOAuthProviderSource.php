@@ -21,7 +21,7 @@ class FacebookOAuthProviderSource extends BaseOAuthProviderSource {
 		return 'Facebook';
 	}
 
-    public function getAccount()
+    public function getUserDetails()
     {
         $response = $this->service->request('/me');
         $response = json_decode($response, true);

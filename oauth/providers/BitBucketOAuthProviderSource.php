@@ -22,7 +22,7 @@ class BitBucketOAuthProviderSource extends BaseOAuthProviderSource {
         return 'BitBucket';
     }
 
-    public function getAccount()
+    public function getUserDetails()
     {
         try {
 

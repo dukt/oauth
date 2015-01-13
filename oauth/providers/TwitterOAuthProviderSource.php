@@ -22,7 +22,7 @@ class TwitterOAuthProviderSource extends BaseOAuthProviderSource {
 		return 'Twitter';
 	}
 
-    public function getAccount()
+    public function getUserDetails()
     {
         try {
 
