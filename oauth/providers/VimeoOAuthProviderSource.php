@@ -29,7 +29,7 @@ class VimeoOAuthProviderSource extends BaseOAuthProviderSource {
 
         $client = new Client();
 
-        $query = array('access_token' => $this->token->getAccessToken());
+        $query = array('access_token' => $this->token->accessToken);
 
         try {
             $guzzleRequest = $client->get($url, null, array('query' => $query));
