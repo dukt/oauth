@@ -28,11 +28,6 @@ class Oauth_ProviderModel extends BaseModel
         return $attributes;
     }
 
-    public function initSource()
-    {
-        $this->source = craft()->oauth->getProviderSource($this->class);
-    }
-
     public function getSource()
     {
         return $this->source;
