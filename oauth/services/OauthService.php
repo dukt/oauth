@@ -592,16 +592,14 @@ class OauthService extends BaseApplicationComponent
     /**
      * Loads the configured providers.
      */
-    private function _loadProvidersNew()
+    private function _loadProviders($fromRecord = false)
     {
         if($this->_providersLoaded)
         {
             return;
         }
 
-        $useConfig = false;
-
-        $providerSource = $this->getProviderSources();
+        $providerSources = $this->getProviderSources();
 
         foreach($providerSources as $providerSource)
         {
@@ -614,11 +612,24 @@ class OauthService extends BaseApplicationComponent
             // create provider (from record if any)
             $provider = Oauth_ProviderModel::populateModel($record);
 
-            // override infos from config
-            if($useConfig)
+            // override provider infos from config
+
+            $oauthConfig = craft()->config->get('oauth');
+
+            if($oauthConfig && !$fromRecord)
             {
-                $provider->clientId = '1234';
-                $provider->clientSecret = '1234';
+                if(!empty($oauthConfig[$providerSource->getHandle()]['clientId']))
+                {
+                    $clientId = $oauthConfig[$providerSource->getHandle()]['clientId'];
+                    $provider->clientId = $clientId;
+                }
+
+                if(!empty($oauthConfig[$providerSource->getHandle()]['clientSecret']))
+                {
+                    $clientSecret = $oauthConfig[$providerSource->getHandle()]['clientSecret'];
+                    $provider->clientSecret = $clientSecret;
+                }
+
             }
 
             // set class
@@ -628,16 +639,16 @@ class OauthService extends BaseApplicationComponent
             $providerSource->setProvider($provider);
 
             // set source (with infos) to provider
-            $provider->setSource($providerSource);
+            $provider->source = $providerSource;
 
             // if configured, add to _configuredProviders array
             if($providerSource->isConfigured())
             {
-                $this->_configuredProviders[$lcHandle] = $provider;
+                $this->_configuredProviders[$handle] = $provider;
             }
 
             // add to _allProviders array
-            $this->_allProviders[$lcHandle] = $provider;
+            $this->_allProviders[$handle] = $provider;
         }
 
         // providers are now loaded
@@ -648,7 +659,7 @@ class OauthService extends BaseApplicationComponent
     /**
      * Loads the configured providers.
      */
-    private function _loadProviders($fromRecord = false)
+    private function _loadProvidersDeprecated($fromRecord = false)
     {
         if($this->_providersLoaded)
         {

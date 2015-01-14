@@ -14,7 +14,7 @@ namespace Craft;
 
 class Oauth_ProviderModel extends BaseModel
 {
-    private $_source;
+    public $source;
 
     public function defineAttributes()
     {
@@ -30,17 +30,17 @@ class Oauth_ProviderModel extends BaseModel
 
     public function initSource()
     {
-        $this->_source = craft()->oauth->getProviderSource($this->class);
+        $this->source = craft()->oauth->getProviderSource($this->class);
     }
 
     public function getSource()
     {
-        return $this->_source;
+        return $this->source;
     }
 
     public function setSource($source)
     {
-        $this->_source = $source;
+        $this->source = $source;
     }
 
     public function getUserDetails()
@@ -49,7 +49,7 @@ class Oauth_ProviderModel extends BaseModel
 
         if($source)
         {
-            return $this->_source->getUserDetails();
+            return $this->source->getUserDetails();
         }
     }
 
@@ -60,13 +60,13 @@ class Oauth_ProviderModel extends BaseModel
 
     public function getName()
     {
-        return $this->_source->getName();
+        return $this->source->getName();
     }
 
     public function getAccount()
     {
         try {
-            return $this->_source->getAccount();
+            return $this->source->getAccount();
         }
         catch(\Exception $e)
         {
@@ -87,7 +87,7 @@ class Oauth_ProviderModel extends BaseModel
 
     public function setToken(Oauth_TokenModel $model)
     {
-        $this->_source->setToken($model);
+        $this->source->setToken($model);
     }
 
     public function getTokens()
