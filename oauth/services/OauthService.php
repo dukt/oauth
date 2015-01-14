@@ -306,7 +306,7 @@ class OauthService extends BaseApplicationComponent
             {
 
                 // refresh token
-                if(method_exists($providerSource->service, 'refreshAccessToken'))
+                if($providerSource->hasRefreshToken())
                 {
 
                     if($token->getRefreshToken())

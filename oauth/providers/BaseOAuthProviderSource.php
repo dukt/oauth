@@ -47,13 +47,26 @@ abstract class BaseOAuthProviderSource {
     {
         // storage
         $this->storage = new Session();
-
     }
-
 
     public function getAuthorizationMethod()
     {
         return null;
+    }
+
+    public function getAuthorizationUri($params)
+    {
+        return $this->service->getAuthorizationUri($params);
+    }
+
+    public function hasRefreshToken()
+    {
+        return method_exists($this->service, 'refreshAccessToken');
+    }
+
+    public function requestAccessToken($code)
+    {
+        return $this->service->requestAccessToken($code);
     }
 
     public function getSubscriber()
@@ -183,14 +196,6 @@ abstract class BaseOAuthProviderSource {
 
     }
 
-
-        // $this->getStorage();
-
-        // $realToken = $this->getRealToken();
-
-        // $this->storage->storeAccessToken($this->getClass(), $realToken);
-
-
     public function getToken()
     {
         return $this->token;
@@ -202,8 +207,6 @@ abstract class BaseOAuthProviderSource {
         {
             case 1:
                 $realToken = new \OAuth\OAuth1\Token\StdOAuth1Token;
-                // $realToken->setRequestToken($this->token->requestToken);
-                // $realToken->setRequestTokenSecret($this->token->requestTokenSecret);
                 $realToken->setAccessToken($this->token->accessToken);
                 $realToken->setAccessTokenSecret($this->token->secret);
                 return $realToken;
@@ -266,6 +269,7 @@ abstract class BaseOAuthProviderSource {
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
     }
+
 
     // deprecated for 1.0
 

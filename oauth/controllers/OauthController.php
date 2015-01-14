@@ -157,9 +157,7 @@ class OauthController extends BaseController
 
             // $classname = get_class($provider->source->service);
 
-            $classname = get_class($providerSource->service);
-
-            switch($classname::OAUTH_VERSION)
+            switch($providerSource->oauthVersion)
             {
                 case 2:
                     // oauth 2
@@ -170,14 +168,15 @@ class OauthController extends BaseController
                     {
                         // redirect to authorization url if we don't have a code yet
 
-                        $authorizationUrl = $providerSource->service->getAuthorizationUri($this->params);
+                        $authorizationUrl = $providerSource->getAuthorizationUri($this->params);
 
                         $this->redirect($authorizationUrl);
                     }
                     else
                     {
                         // get token from code
-                        $token = $provider->source->service->requestAccessToken($code);
+                        // $token = $provider->source->service->requestAccessToken($code);
+                        $token = $providerSource->requestAccessToken($code);
                     }
 
                     break;

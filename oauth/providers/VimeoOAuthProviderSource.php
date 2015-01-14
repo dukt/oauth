@@ -17,6 +17,7 @@ use Guzzle\Http\Client;
 class VimeoOAuthProviderSource extends BaseOAuthProviderSource {
 
 	public $consoleUrl = 'https://developer.vimeo.com/apps';
+    public $oauthVersion = 2;
 
 	public function getName()
 	{
