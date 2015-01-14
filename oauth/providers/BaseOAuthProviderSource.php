@@ -32,9 +32,6 @@ abstract class BaseOAuthProviderSource {
 
     public $isConnected = false;
 
-    public $clientId = false;
-    public $clientSecret = false;
-
     protected $service = null;
     public $storage = null;
 
@@ -178,16 +175,6 @@ abstract class BaseOAuthProviderSource {
     public function retrieveAccessToken()
     {
         return $this->storage->retrieveAccessToken($this->getClass());
-    }
-
-    public function getClientId()
-    {
-        return $this->provider->clientId;
-    }
-
-    public function getClientSecret()
-    {
-        return $this->provider->clientSecret;
     }
 
     public function setToken(Oauth_TokenModel $token)
