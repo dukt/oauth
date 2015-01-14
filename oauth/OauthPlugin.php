@@ -66,6 +66,9 @@ class OauthPlugin extends BasePlugin
         );
     }
 
+    /**
+     * HTML Settings
+     */
     public function getSettingsHtml()
     {
         if(craft()->request->getPath() == 'settings/plugins') {
