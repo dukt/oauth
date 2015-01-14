@@ -12,7 +12,7 @@
 
 namespace Craft;
 
-class Oauth_ProviderModel extends BaseModel
+class Oauth_ProviderInfosModel extends BaseModel
 {
     public $source;
 
@@ -28,24 +28,9 @@ class Oauth_ProviderModel extends BaseModel
         return $attributes;
     }
 
-    public function getSource()
-    {
-        return $this->source;
-    }
-
     public function setSource($source)
     {
         $this->source = $source;
-    }
-
-    public function getUserDetails()
-    {
-        $source = $this->getSource();
-
-        if($source)
-        {
-            return $this->source->getUserDetails();
-        }
     }
 
     public function getHandle()
@@ -78,11 +63,6 @@ class Oauth_ProviderModel extends BaseModel
         }
 
         return false;
-    }
-
-    public function setToken(Oauth_TokenModel $model)
-    {
-        $this->source->setToken($model);
     }
 
     public function getTokens()

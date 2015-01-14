@@ -12,7 +12,7 @@
 
 namespace Craft;
 
-class Oauth_ProviderRecord extends BaseRecord
+class Oauth_ProviderInfosRecord extends BaseRecord
 {
     /**
      * Get Table Name
