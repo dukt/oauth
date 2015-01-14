@@ -7,4 +7,4 @@ Helps Craft developers get their plugin connected to Facebook, Twitter, Google, 
 - [OAuth License](https://dukt.net/craft/oauth/docs/license)
 
 
-[Dukt.net](https://dukt.net/) © 2013 - All rights reserved
+[Dukt.net](https://dukt.net/) © 2015 - All rights reserved

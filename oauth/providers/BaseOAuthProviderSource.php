@@ -5,9 +5,9 @@
  *
  * @package   Craft OAuth
  * @author    Benjamin David
- * @copyright Copyright (c) 2014, Dukt
- * @license   https://dukt.net/craft/oauth/docs/license
+ * @copyright Copyright (c) 2015, Dukt
  * @link      https://dukt.net/craft/oauth/
+ * @license   https://dukt.net/craft/oauth/docs/license
  */
 
 
