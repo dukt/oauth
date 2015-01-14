@@ -35,10 +35,10 @@ abstract class BaseOAuthProviderSource {
     public $clientId = false;
     public $clientSecret = false;
 
-    public $service = null;
+    protected $service = null;
     public $storage = null;
-    public $token = null;
 
+    public $token = null;
     public $provider = null;
 
     protected $scopes = array();
