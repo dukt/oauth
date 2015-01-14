@@ -46,64 +46,6 @@ abstract class BaseOAuthProviderSource {
         $this->storage = new Session();
     }
 
-    public function getAuthorizationMethod()
-    {
-        return null;
-    }
-
-    public function getAuthorizationUri($params)
-    {
-        return $this->service->getAuthorizationUri($params);
-    }
-
-    public function hasRefreshToken()
-    {
-        return method_exists($this->service, 'refreshAccessToken');
-    }
-
-    public function requestAccessToken($code)
-    {
-        return $this->service->requestAccessToken($code);
-    }
-
-    public function getSubscriber()
-    {
-        $headers = array();
-        $query = array();
-
-        $provider = $this->getProvider();
-        $realToken = $this->getRealToken();
-
-        switch($this->oauthVersion)
-        {
-            case 1:
-                $oauth = new \Guzzle\Plugin\Oauth\OauthPlugin(array(
-                    'consumer_key'    => $provider->clientId,
-                    'consumer_secret' => $provider->clientSecret,
-                    'token'           => $realToken->getAccessToken(),
-                    'token_secret'    => $realToken->getAccessTokenSecret()
-                ));
-
-                return $oauth;
-
-                break;
-
-            case 2:
-                $config = array(
-                    'consumer_key' => $provider->clientId,
-                    'consumer_secret' => $provider->clientSecret,
-                    'authorization_method' => $this->getAuthorizationMethod(),
-                    'access_token' => $realToken->getAccessToken(),
-                );
-
-                $oauth = new \Dukt\Rest\Guzzle\Plugin\Oauth2Plugin($config);
-
-                return $oauth;
-
-                break;
-        }
-    }
-
     public function initService()
     {
         $handle = $this->getHandle();
@@ -128,6 +70,32 @@ abstract class BaseOAuthProviderSource {
         }
 
         $this->service = $serviceFactory->createService($handle, $credentials, $this->storage, $this->scopes);
+    }
+
+    public function initProviderSource($clientId = null, $clientSecret = null)
+    {
+        $this->clientId = $clientId;
+        $this->clientSecret = $clientSecret;
+    }
+
+    public function getAuthorizationMethod()
+    {
+        return null;
+    }
+
+    public function getAuthorizationUri($params)
+    {
+        return $this->service->getAuthorizationUri($params);
+    }
+
+    public function hasRefreshToken()
+    {
+        return method_exists($this->service, 'refreshAccessToken');
+    }
+
+    public function requestAccessToken($code)
+    {
+        return $this->service->requestAccessToken($code);
     }
 
     public function getProvider()
@@ -251,15 +219,54 @@ abstract class BaseOAuthProviderSource {
         return false;
     }
 
-    public function initProviderSource($clientId = null, $clientSecret = null)
+    /**
+     * Get Guzzle Subscriber
+     */
+    public function getSubscriber()
     {
-        $this->clientId = $clientId;
-        $this->clientSecret = $clientSecret;
+        $headers = array();
+        $query = array();
+
+        $provider = $this->getProvider();
+        $realToken = $this->getRealToken();
+
+        switch($this->oauthVersion)
+        {
+            case 1:
+                $oauth = new \Guzzle\Plugin\Oauth\OauthPlugin(array(
+                    'consumer_key'    => $provider->clientId,
+                    'consumer_secret' => $provider->clientSecret,
+                    'token'           => $realToken->getAccessToken(),
+                    'token_secret'    => $realToken->getAccessTokenSecret()
+                ));
+
+                return $oauth;
+
+                break;
+
+            case 2:
+                $config = array(
+                    'consumer_key' => $provider->clientId,
+                    'consumer_secret' => $provider->clientSecret,
+                    'authorization_method' => $this->getAuthorizationMethod(),
+                    'access_token' => $realToken->getAccessToken(),
+                );
+
+                $oauth = new \Dukt\Rest\Guzzle\Plugin\Oauth2Plugin($config);
+
+                return $oauth;
+
+                break;
+        }
     }
 
 
-    // deprecated for 1.0
-
+    /**
+     * Get Account (alias)
+     *
+     * @deprecated Deprecated in 1.0.
+     * @return array
+     */
     public function getAccount()
     {
         return $this->getUserDetails();
