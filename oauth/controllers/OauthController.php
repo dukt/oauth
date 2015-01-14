@@ -24,23 +24,6 @@ class OauthController extends BaseController
     private $referer;
     private $errorRedirect;
 
-    // public function actionTest()
-    // {
-    //     $token = craft()->oauth->getTokenById(288);
-
-    //     $provider = new Oauth_ProviderModel;
-    //     $provider->clientId = '895951883865-87h36t3842qbvhcjthrvc7vaav4mfn27.apps.googleusercontent.com';
-    //     $provider->clientSecret = 'FvoCtJzFd80Je0h2Pz_T6KU5';
-    //     $provider->class = 'google';
-
-    //     $providerSource = craft()->oauth->getProviderSource($provider->class);
-    //     $providerSource->setToken($token->token);
-
-    //     $userDetails = $providerSource->getUserDetails();
-
-    //     var_dump($userDetails);
-    //     die('hello');
-    // }
     public function actionProvider(array $variables = array())
     {
         if(!empty($variables['providerHandle']))
