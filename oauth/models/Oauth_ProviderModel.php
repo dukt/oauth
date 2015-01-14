@@ -38,6 +38,11 @@ class Oauth_ProviderModel extends BaseModel
         return $this->_source;
     }
 
+    public function setSource($source)
+    {
+        $this->_source = $source;
+    }
+
     public function getUserDetails()
     {
         $source = $this->getSource();
