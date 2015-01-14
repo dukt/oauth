@@ -129,10 +129,8 @@ class OauthController extends BaseController
 
             $provider = craft()->oauth->getProvider($this->handle);
 
+            $provider->setScopes($this->scopes);
 
-            $providerSource = craft()->oauth->getProviderSource($this->handle);
-            $providerSource->setScopes($this->scopes);
-            $providerSource->setProvider($provider);
 
             // init service
 
@@ -140,7 +138,7 @@ class OauthController extends BaseController
 
             // $classname = get_class($provider->source->service);
 
-            switch($providerSource->oauthVersion)
+            switch($provider->oauthVersion)
             {
                 case 2:
                     // oauth 2
@@ -151,7 +149,7 @@ class OauthController extends BaseController
                     {
                         // redirect to authorization url if we don't have a code yet
 
-                        $authorizationUrl = $providerSource->getAuthorizationUri($this->params);
+                        $authorizationUrl = $provider->getAuthorizationUri($this->params);
 
                         $this->redirect($authorizationUrl);
                     }
@@ -159,7 +157,7 @@ class OauthController extends BaseController
                     {
                         // get token from code
                         // $token = $provider->source->service->requestAccessToken($code);
-                        $token = $providerSource->requestAccessToken($code);
+                        $token = $provider->requestAccessToken($code);
                     }
 
                     break;
@@ -175,17 +173,17 @@ class OauthController extends BaseController
                     {
                         // redirect to authorization url if we don't have a oauth_token yet
 
-                        $token = $provider->source->service->requestRequestToken();
-                        $authorizationUrl = $provider->source->service->getAuthorizationUri(array('oauth_token' => $token->getRequestToken()));
+                        $token = $provider->service->requestRequestToken();
+                        $authorizationUrl = $provider->service->getAuthorizationUri(array('oauth_token' => $token->getRequestToken()));
                         $this->redirect($authorizationUrl);
                     }
                     else
                     {
                         // get token from oauth_token
-                        $token = $provider->source->storage->retrieveAccessToken($provider->source->getClass());
+                        $token = $provider->storage->retrieveAccessToken($provider->getClass());
 
                         // This was a callback request, now get the token
-                        $token = $provider->source->service->requestAccessToken(
+                        $token = $provider->service->requestAccessToken(
                             $oauth_token,
                             $oauth_verifier,
                             $token->getRequestTokenSecret()

@@ -291,11 +291,9 @@ class OauthService extends BaseApplicationComponent
         {
             $provider = craft()->oauth->getProvider($model->providerHandle);
 
-            $providerSource = craft()->oauth->getProviderSource($model->providerHandle);
-            $providerSource->setProvider($provider);
-            $providerSource->setToken($model);
+            $provider->setToken($model);
 
-            $token = $providerSource->retrieveAccessToken();
+            $token = $provider->retrieveAccessToken();
 
             $time = time();
 
@@ -306,14 +304,14 @@ class OauthService extends BaseApplicationComponent
             {
 
                 // refresh token
-                if($providerSource->hasRefreshToken())
+                if($provider->hasRefreshToken())
                 {
 
                     if($token->getRefreshToken())
                     {
                         // generate new token
 
-                        $newToken = $providerSource->refreshAccessToken($token);
+                        $newToken = $provider->refreshAccessToken($token);
 
                         // keep our refresh token as it always remains valid
                         $refreshToken = $token->getRefreshToken();
@@ -519,7 +517,7 @@ class OauthService extends BaseApplicationComponent
         }
     }
 
-    public function providerSave(Oauth_ProviderModel $model)
+    public function providerSave(Oauth_ProviderInfosModel $model)
     {
         // save record
 
@@ -543,7 +541,7 @@ class OauthService extends BaseApplicationComponent
 
     private function _getProviderRecordByHandle($handle)
     {
-        $providerRecord = Oauth_ProviderRecord::model()->find(
+        $providerRecord = Oauth_ProviderInfosRecord::model()->find(
 
             // conditions
             'class=:provider',
@@ -566,7 +564,7 @@ class OauthService extends BaseApplicationComponent
     {
         if ($providerId)
         {
-            $providerRecord = Oauth_ProviderRecord::model()->findById($providerId);
+            $providerRecord = Oauth_ProviderInfosRecord::model()->findById($providerId);
 
             if (!$providerRecord)
             {
@@ -575,7 +573,7 @@ class OauthService extends BaseApplicationComponent
         }
         else
         {
-            $providerRecord = new Oauth_ProviderRecord();
+            $providerRecord = new Oauth_ProviderInfosRecord();
         }
 
         return $providerRecord;
@@ -583,7 +581,7 @@ class OauthService extends BaseApplicationComponent
 
     private function _getProviderRecords()
     {
-        $records = Oauth_ProviderRecord::model()->findAll();
+        $records = Oauth_ProviderInfosRecord::model()->findAll();
 
         return $records;
     }
@@ -610,7 +608,7 @@ class OauthService extends BaseApplicationComponent
             $record = $this->_getProviderRecordByHandle($providerSource->getHandle());
 
             // create provider (from record if any)
-            $provider = Oauth_ProviderModel::populateModel($record);
+            $providerInfos = Oauth_ProviderInfosModel::populateModel($record);
 
             // override provider infos from config
 
@@ -620,35 +618,34 @@ class OauthService extends BaseApplicationComponent
             {
                 if(!empty($oauthConfig[$providerSource->getHandle()]['clientId']))
                 {
-                    $clientId = $oauthConfig[$providerSource->getHandle()]['clientId'];
-                    $provider->clientId = $clientId;
+                    $providerInfos->clientId = $oauthConfig[$providerSource->getHandle()]['clientId'];
                 }
 
                 if(!empty($oauthConfig[$providerSource->getHandle()]['clientSecret']))
                 {
-                    $clientSecret = $oauthConfig[$providerSource->getHandle()]['clientSecret'];
-                    $provider->clientSecret = $clientSecret;
+                    $providerInfos->clientSecret = $oauthConfig[$providerSource->getHandle()]['clientSecret'];
                 }
-
             }
 
-            // set class
-            $provider->class = $handle;
+            $providerSource->setInfos($providerInfos);
 
-            // pass provider infos to source
-            $providerSource->setProvider($provider);
+            // // set class
+            // $providerInfos->class = $handle;
 
-            // set source (with infos) to provider
-            $provider->source = $providerSource;
+            // // pass provider infos to source
+            // $providerSource->setProvider($provider);
+
+            // // set source (with infos) to provider
+            // $providerInfos->source = $providerSource;
 
             // if configured, add to _configuredProviders array
             if($providerSource->isConfigured())
             {
-                $this->_configuredProviders[$handle] = $provider;
+                $this->_configuredProviders[$handle] = $providerSource;
             }
 
             // add to _allProviders array
-            $this->_allProviders[$handle] = $provider;
+            $this->_allProviders[$handle] = $providerSource;
         }
 
         // providers are now loaded
@@ -675,7 +672,7 @@ class OauthService extends BaseApplicationComponent
 
             $record = $this->_getProviderRecordByHandle($providerSource->getHandle());
 
-            $provider = Oauth_ProviderModel::populateModel($record);
+            $provider = Oauth_ProviderInfosModel::populateModel($record);
             $provider->class = $providerSource->getHandle();
 
             // client id and secret

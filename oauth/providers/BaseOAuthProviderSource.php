@@ -17,8 +17,8 @@ use \Craft\Craft;
 use \Craft\LogLevel;
 use \Craft\Oauth_TokenRecord;
 use \Craft\Oauth_TokenModel;
-use \Craft\Oauth_ProviderRecord;
-use \Craft\Oauth_ProviderModel;
+use \Craft\Oauth_ProviderInfosRecord;
+use \Craft\Oauth_ProviderInfosModel;
 use \Craft\UrlHelper;
 
 use OAuth\Common\Storage\Session;
@@ -108,7 +108,7 @@ abstract class BaseOAuthProviderSource {
         return $this->provider;
     }
 
-    public function setProvider(Oauth_ProviderModel $provider)
+    public function setInfos(Oauth_ProviderInfosModel $provider)
     {
         // set provider
         $this->provider = $provider;
