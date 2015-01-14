@@ -23,15 +23,15 @@
     <form method="post" action="" accept-charset="UTF-8">
         <input type="hidden" name="action" value="oauth/providerSave">
         <input type="hidden" name="redirect" value="settings/plugins/oauth" />
-        {% if provider %}<input type="hidden" name="providerId" value="{{ provider.id }}" />{% endif %}
+        {% if provider %}<input type="hidden" name="providerId" value="{{ provider.infos.id }}" />{% endif %}
         <input type="hidden" name="providerHandle" value="{{ provider.handle }}" />
 
         <h2 class="first">{{ "Create an OAuth application"|t }}</h2>
 
         <p>
-            {% if provider.source.consoleUrl %}
+            {% if provider.consoleUrl %}
                 {{ "Create an OAuth 2.0 application and enable associated providers in the {console}"|t({
-                    console:           '<a href=\"'~provider.source.consoleUrl~'\">'~'{provider} API Management Console'|t({provider:provider.name})~'</a>'
+                    console:           '<a href=\"'~provider.consoleUrl~'\">'~'{provider} API Management Console'|t({provider:provider.name})~'</a>'
                 })|raw }}
             {% else %}
                 {{ "Create an OAuth 2.0 application and enable associated providers in the API management Console."|t }}
@@ -58,20 +58,20 @@
             label: 'Client Id'|t,
             required: true,
             name: 'provider[clientId]',
-            placeholder: provider and provider.clientId is empty ? (craft.config.oauth[provider.handle].clientId is defined ? craft.config.oauth[provider.handle].clientId) : null,
-            value: provider ? provider.clientId : null,
-            errors: provider ? provider.errors('clientId') : null,
-            warning: (provider and not provider.clientId is empty and craft.config.oauth[provider.handle].clientId is defined ? configWarning('oauth.'~provider.handle~'.clientId')),
+            placeholder: provider and provider.infos.clientId is empty ? (craft.config.oauth[provider.handle].clientId is defined ? craft.config.oauth[provider.handle].clientId) : null,
+            value: provider ? provider.infos.clientId : null,
+            errors: provider ? provider.infos.errors('clientId') : null,
+            warning: (provider and not provider.infos.clientId is empty and craft.config.oauth[provider.handle].clientId is defined ? configWarning('oauth.'~provider.handle~'.clientId')),
         }) }}
 
         {{ forms.textField({
             label: 'Client Secret'|t,
             required: true,
             name: 'provider[clientSecret]',
-            placeholder: provider and provider.clientSecret is empty ? (craft.config.oauth[provider.handle].clientSecret is defined ? craft.config.oauth[provider.handle].clientSecret) : null,
-            value: provider ? provider.clientSecret : null,
-            errors: provider ? provider.errors('clientSecret') : null,
-            warning: (provider and not provider.clientSecret is empty and craft.config.oauth[provider.handle].clientSecret is defined ? configWarning('oauth.'~provider.handle~'.clientSecret')),
+            placeholder: provider and provider.infos.clientSecret is empty ? (craft.config.oauth[provider.handle].clientSecret is defined ? craft.config.oauth[provider.handle].clientSecret) : null,
+            value: provider ? provider.infos.clientSecret : null,
+            errors: provider ? provider.infos.errors('clientSecret') : null,
+            warning: (provider and not provider.infos.clientSecret is empty and craft.config.oauth[provider.handle].clientSecret is defined ? configWarning('oauth.'~provider.handle~'.clientSecret')),
         }) }}
 
         <div class="buttons">

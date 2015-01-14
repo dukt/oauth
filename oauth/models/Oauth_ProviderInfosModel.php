@@ -64,9 +64,4 @@ class Oauth_ProviderInfosModel extends BaseModel
 
         return false;
     }
-
-    public function getTokens()
-    {
-        return craft()->oauth->getTokensByProvider($this->getHandle());
-    }
 }

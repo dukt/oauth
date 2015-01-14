@@ -46,6 +46,11 @@ abstract class BaseOAuthProviderSource {
         $this->storage = new Session();
     }
 
+    public function getTokens()
+    {
+        return \Craft\craft()->oauth->getTokensByProvider($this->getHandle());
+    }
+
     public function initService()
     {
         $handle = $this->getHandle();
@@ -115,7 +120,11 @@ abstract class BaseOAuthProviderSource {
 
         // re-initialize service with new scope
         $this->initService();
+    }
 
+    public function getInfos()
+    {
+        return $this->provider;
     }
 
     public function setScopes(array $scopes)

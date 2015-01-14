@@ -244,9 +244,12 @@ class OauthController extends BaseController
         $attributes = craft()->request->getPost('provider');
 
         $provider = craft()->oauth->getProvider($handle, false);
-        $provider->setAttributes($attributes);
 
-        if (craft()->oauth->providerSave($provider))
+        $providerInfos = new Oauth_ProviderInfosModel($attributes);
+        $providerInfos->id = craft()->request->getParam('providerId');
+        $providerInfos->class = $handle;
+
+        if (craft()->oauth->providerSave($providerInfos))
         {
             craft()->userSession->setNotice(Craft::t('Service saved.'));
             $redirect = craft()->request->getPost('redirect');
