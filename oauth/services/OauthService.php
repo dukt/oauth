@@ -313,7 +313,7 @@ class OauthService extends BaseApplicationComponent
                     {
                         // generate new token
 
-                        $newToken = $providerSource->service->refreshAccessToken($token);
+                        $newToken = $providerSource->refreshAccessToken($token);
 
                         // keep our refresh token as it always remains valid
                         $refreshToken = $token->getRefreshToken();

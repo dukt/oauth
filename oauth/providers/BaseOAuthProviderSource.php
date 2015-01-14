@@ -98,6 +98,11 @@ abstract class BaseOAuthProviderSource {
         return $this->service->requestAccessToken($code);
     }
 
+    public function refreshAccessToken($token)
+    {
+        return $this->service->refreshAccessToken($token);
+    }
+
     public function getProvider()
     {
         return $this->provider;
