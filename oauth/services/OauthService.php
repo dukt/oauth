@@ -588,6 +588,63 @@ class OauthService extends BaseApplicationComponent
         return $records;
     }
 
+
+    /**
+     * Loads the configured providers.
+     */
+    private function _loadProvidersNew()
+    {
+        if($this->_providersLoaded)
+        {
+            return;
+        }
+
+        $useConfig = false;
+
+        $providerSource = $this->getProviderSources();
+
+        foreach($providerSources as $providerSource)
+        {
+            // handle
+            $handle = $providerSource->getHandle();
+
+            // get provider record
+            $record = $this->_getProviderRecordByHandle($providerSource->getHandle());
+
+            // create provider (from record if any)
+            $provider = Oauth_ProviderModel::populateModel($record);
+
+            // override infos from config
+            if($useConfig)
+            {
+                $provider->clientId = '1234';
+                $provider->clientSecret = '1234';
+            }
+
+            // set class
+            $provider->class = $handle;
+
+            // pass provider infos to source
+            $providerSource->setProvider($provider);
+
+            // set source (with infos) to provider
+            $provider->setSource($providerSource);
+
+            // if configured, add to _configuredProviders array
+            if($providerSource->isConfigured())
+            {
+                $this->_configuredProviders[$lcHandle] = $provider;
+            }
+
+            // add to _allProviders array
+            $this->_allProviders[$lcHandle] = $provider;
+        }
+
+        // providers are now loaded
+        $this->_providersLoaded = true;
+    }
+
+
     /**
      * Loads the configured providers.
      */

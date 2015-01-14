@@ -80,11 +80,6 @@ class Oauth_ProviderModel extends BaseModel
         return false;
     }
 
-    public function setSource($source)
-    {
-        $this->_source = $source;
-    }
-
     public function setToken(Oauth_TokenModel $model)
     {
         $this->_source->setToken($model);
