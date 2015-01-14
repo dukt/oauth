@@ -16,8 +16,6 @@ class Oauth_ProviderModel extends BaseModel
 {
     private $_source;
 
-
-
     public function defineAttributes()
     {
         $attributes = array(
@@ -39,16 +37,6 @@ class Oauth_ProviderModel extends BaseModel
     {
         return $this->_source;
     }
-    // public function getSource()
-    // {
-    //     if(!$this->_source)
-    //     {
-    //         $this->_source = craft()->oauth->getProviderSource($this->class);
-    //         // $this->_source->setToken()
-    //     }
-
-    //     return $this->_source;
-    // }
 
     public function getUserDetails()
     {
@@ -81,6 +69,7 @@ class Oauth_ProviderModel extends BaseModel
             return false;
         }
     }
+
     public function isConfigured()
     {
         if(!empty($this->clientId))
@@ -91,20 +80,10 @@ class Oauth_ProviderModel extends BaseModel
         return false;
     }
 
-    // public function getSource()
-    // {
-    //     return $this->_source;
-    // }
-
     public function setSource($source)
     {
         $this->_source = $source;
     }
-
-    // public function setToken(Oauth_TokenModel $token)
-    // {
-    //     $this->token = $token;
-    // }
 
     public function setToken(Oauth_TokenModel $model)
     {
@@ -115,81 +94,4 @@ class Oauth_ProviderModel extends BaseModel
     {
         return craft()->oauth->getTokensByProvider($this->getHandle());
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // public function __construct($self = null)
-    // {
-    //     if($self)
-    //     {
-    //         $this->id = $self->id;
-    //         $this->class = $self->class;
-
-
-    //         // client id and secret
-
-    //         $clientId = false;
-    //         $clientSecret = false;
-
-    //         // from config
-
-    //         $oauthConfig = craft()->config->get('oauth');
-
-    //         if($oauthConfig)
-    //         {
-
-    //             if(!empty($oauthConfig[$this->getHandle()]['clientId']))
-    //             {
-    //                 $clientId = $oauthConfig[$this->getHandle()]['clientId'];
-    //             }
-
-    //             if(!empty($oauthConfig[$this->getHandle()]['clientSecret']))
-    //             {
-    //                 $clientSecret = $oauthConfig[$this->getHandle()]['clientSecret'];
-    //             }
-    //         }
-
-    //         if(!$clientId)
-    //         {
-    //             $clientId = $self->clientId;
-    //         }
-
-    //         if(!$clientSecret)
-    //         {
-    //             $clientSecret = $self->clientSecret;
-    //         }
-
-    //         $this->clientId = $clientId;
-    //         $this->clientSecret = $clientSecret;
-    //     }
-    // }
-
 }
