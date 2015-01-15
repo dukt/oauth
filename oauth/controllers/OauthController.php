@@ -24,21 +24,71 @@ class OauthController extends BaseController
     private $referer;
     private $errorRedirect;
 
-    public function actionProvider(array $variables = array())
+    /**
+     * Edit Provider
+     *
+     * @return null
+     */
+    public function actionProviderInfos(array $variables = array())
     {
-        if(!empty($variables['providerHandle']))
+        if(!empty($variables['handle']))
         {
-            $variables['provider'] = craft()->oauth->getProvider($variables['providerHandle'], false, true);
+            $provider = craft()->oauth->getProvider($variables['handle'], false, true);
 
-            if(!$variables['provider'])
+            if($provider)
+            {
+                $variables['infos'] = craft()->oauth->getProviderInfos($variables['handle']);;
+                $variables['provider'] = $provider;
+                $variables['configInfos'] = craft()->config->get('oauth');
+                $variables['configInfos'] = $variables['configInfos'][$variables['handle']];
+
+                $this->renderTemplate('oauth/_provider', $variables);
+            }
+            else
             {
                 throw new HttpException(404, $exception->getMessage());
             }
         }
-
-        $this->renderTemplate('oauth/_provider', $variables);
+        else
+        {
+            throw new HttpException(404, $exception->getMessage());
+        }
     }
 
+    /**
+     * Save provider.
+     *
+     * @return null
+     */
+    public function actionProviderSave()
+    {
+        $handle = craft()->request->getParam('handle');
+        $attributes = craft()->request->getPost('provider');
+
+        $provider = craft()->oauth->getProvider($handle, false);
+
+        $providerInfos = new Oauth_ProviderInfosModel($attributes);
+        $providerInfos->id = craft()->request->getParam('providerId');
+        $providerInfos->class = $handle;
+
+        if (craft()->oauth->providerSave($providerInfos))
+        {
+            craft()->userSession->setNotice(Craft::t('Service saved.'));
+            $redirect = craft()->request->getPost('redirect');
+            $this->redirect($redirect);
+        }
+        else
+        {
+            craft()->userSession->setError(Craft::t("Couldn't save service."));
+            craft()->urlManager->setRouteVariables(array('infos' => $providerInfos));
+        }
+    }
+
+    /**
+     * Delete token.
+     *
+     * @return null
+     */
     public function actionDeleteToken(array $variables = array())
     {
         $this->requirePostRequest();
@@ -78,7 +128,9 @@ class OauthController extends BaseController
     }
 
     /**
-     * Save Provider
+     * Connect
+     *
+     * @return null
      */
     public function actionConnect()
     {
@@ -97,7 +149,6 @@ class OauthController extends BaseController
                 $this->handle = craft()->request->getParam('provider');
                 craft()->httpSession->add('oauth.handle', $this->handle);
             }
-
 
 
             // session vars
@@ -128,15 +179,10 @@ class OauthController extends BaseController
             // provider
 
             $provider = craft()->oauth->getProvider($this->handle);
-
             $provider->setScopes($this->scopes);
 
 
             // init service
-
-            // $provider->source->initializeService($this->scopes);
-
-            // $classname = get_class($provider->source->service);
 
             switch($provider->oauthVersion)
             {
@@ -235,33 +281,14 @@ class OauthController extends BaseController
         $this->redirect($this->referer);
     }
 
+    // Testing
+    // -------------------------------------------------------------------------
+
     /**
-     * Save Provider
+     * Test
+     *
+     * @return null
      */
-    public function actionProviderSave()
-    {
-        $handle = craft()->request->getParam('providerHandle');
-        $attributes = craft()->request->getPost('provider');
-
-        $provider = craft()->oauth->getProvider($handle, false);
-
-        $providerInfos = new Oauth_ProviderInfosModel($attributes);
-        $providerInfos->id = craft()->request->getParam('providerId');
-        $providerInfos->class = $handle;
-
-        if (craft()->oauth->providerSave($providerInfos))
-        {
-            craft()->userSession->setNotice(Craft::t('Service saved.'));
-            $redirect = craft()->request->getPost('redirect');
-            $this->redirect($redirect);
-        }
-        else
-        {
-            craft()->userSession->setError(Craft::t("Couldn't save service."));
-            craft()->urlManager->setRouteVariables(array('service' => $provider));
-        }
-    }
-
     public function actionTest(array $variables = array())
     {
         require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
@@ -282,7 +309,9 @@ class OauthController extends BaseController
     }
 
     /**
-     * Test Connect
+     * Test connect
+     *
+     * @return null
      */
     public function actionTestConnect()
     {
@@ -327,7 +356,9 @@ class OauthController extends BaseController
     }
 
     /**
-     * Test Disconnect
+     * Test disconnect
+     *
+     * @return null
      */
     public function actionTestDisconnect()
     {

@@ -574,6 +574,16 @@ class OauthService extends BaseApplicationComponent
         return $providerRecord;
     }
 
+    public function getProviderInfos($handle)
+    {
+        $record = $this->_getProviderRecordByHandle($handle);
+
+        if($record)
+        {
+            return Oauth_ProviderInfosModel::populateModel($record);
+        }
+    }
+
     private function _getProviderRecords()
     {
         $records = Oauth_ProviderInfosRecord::model()->findAll();

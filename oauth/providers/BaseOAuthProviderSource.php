@@ -43,7 +43,7 @@ abstract class BaseOAuthProviderSource {
     {
         $class = $this->getClass();
 
-        $handle = strtolower($handle);
+        $handle = strtolower($class);
 
         return $handle;
     }
