@@ -458,11 +458,6 @@ class OauthService extends BaseApplicationComponent
                 }
 
                 $response['token'] = $token;
-
-                // $response['token'] = craft()->oauth->arrayToToken($response['token']);
-                // $response['token'];
-                // var_dump($response['token']);
-                // die();
             }
 
             craft()->oauth->sessionClean();
@@ -610,6 +605,7 @@ class OauthService extends BaseApplicationComponent
             // create provider (from record if any)
             $providerInfos = Oauth_ProviderInfosModel::populateModel($record);
 
+
             // override provider infos from config
 
             $oauthConfig = craft()->config->get('oauth');
@@ -629,16 +625,6 @@ class OauthService extends BaseApplicationComponent
 
             $providerSource->setInfos($providerInfos);
 
-            // // set class
-            // $providerInfos->class = $handle;
-
-            // // pass provider infos to source
-            // $providerSource->setProvider($provider);
-
-            // // set source (with infos) to provider
-            // $providerInfos->source = $providerSource;
-
-            // if configured, add to _configuredProviders array
             if($providerSource->isConfigured())
             {
                 $this->_configuredProviders[$handle] = $providerSource;
@@ -649,93 +635,6 @@ class OauthService extends BaseApplicationComponent
         }
 
         // providers are now loaded
-        $this->_providersLoaded = true;
-    }
-
-
-    /**
-     * Loads the configured providers.
-     */
-    private function _loadProvidersDeprecated($fromRecord = false)
-    {
-        if($this->_providersLoaded)
-        {
-            return;
-        }
-
-
-        // providers
-
-        foreach($this->getProviderSources() as $providerSource)
-        {
-            $lcHandle = strtolower($providerSource->getHandle());
-
-            $record = $this->_getProviderRecordByHandle($providerSource->getHandle());
-
-            $provider = Oauth_ProviderInfosModel::populateModel($record);
-            $provider->class = $providerSource->getHandle();
-
-            // client id and secret
-
-            $clientId = false;
-            $clientSecret = false;
-
-            // ...from config
-
-            $oauthConfig = craft()->config->get('oauth');
-
-            if($oauthConfig && !$fromRecord)
-            {
-                if(!empty($oauthConfig[$providerSource->getHandle()]['clientId']))
-                {
-                    $clientId = $oauthConfig[$providerSource->getHandle()]['clientId'];
-                    $provider->clientId = $clientId;
-                }
-
-                if(!empty($oauthConfig[$providerSource->getHandle()]['clientSecret']))
-                {
-                    $clientSecret = $oauthConfig[$providerSource->getHandle()]['clientSecret'];
-                    $provider->clientSecret = $clientSecret;
-                }
-
-            }
-
-
-
-            // source
-
-            if($record && !empty($provider->clientId))
-            {
-                // ...from provider
-
-                if(!$clientId)
-                {
-                    $clientId = $provider->clientId;
-                }
-
-                if(!$clientSecret)
-                {
-                    $clientSecret = $provider->clientSecret;
-                }
-
-                $provider->clientId = $clientId;
-                $provider->clientSecret = $clientSecret;
-
-                // source
-                // $providerSource->initProviderSource($clientId, $clientSecret);
-                $providerSource->setProvider($provider);
-
-                $provider->setSource($providerSource);
-                $this->_configuredProviders[$lcHandle] = $provider;
-            }
-            else
-            {
-                $provider->setSource($providerSource);
-            }
-
-            $this->_allProviders[$lcHandle] = $provider;
-        }
-
         $this->_providersLoaded = true;
     }
 
@@ -804,143 +703,6 @@ class OauthService extends BaseApplicationComponent
 
         return $providerSource;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

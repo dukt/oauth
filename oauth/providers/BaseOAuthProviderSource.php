@@ -27,23 +27,40 @@ use OAuth\Common\Consumer\Credentials;
 abstract class BaseOAuthProviderSource {
 
     public $class;
-
-    // public $isConfigured = false;
-
-    public $isConnected = false;
-
-    protected $service = null;
     public $storage = null;
-
     public $token = null;
     public $provider = null;
-
+    protected $service = null;
     protected $scopes = array();
 
     public function __construct()
     {
         // storage
         $this->storage = new Session();
+    }
+
+    public function getHandle()
+    {
+        $class = $this->getClass();
+
+        $handle = strtolower($handle);
+
+        return $handle;
+    }
+
+    public function getClass()
+    {
+        // from : \OAuthProviderSource\FacebookOAuthProviderSource
+        // to : Facebook
+
+        $handle = get_class($this);
+
+        $start = strlen("\\OAuthProviderSource\\");
+        $end = - strlen('OAuthProviderSource');
+
+        $handle = substr($handle, $start, $end);
+
+        return $handle;
     }
 
     public function getTokens()
@@ -108,11 +125,6 @@ abstract class BaseOAuthProviderSource {
         return $this->service->refreshAccessToken($token);
     }
 
-    public function getProvider()
-    {
-        return $this->provider;
-    }
-
     public function setInfos(Oauth_ProviderInfosModel $provider)
     {
         // set provider
@@ -170,59 +182,9 @@ abstract class BaseOAuthProviderSource {
         return $this->token;
     }
 
-    public function getRealToken()
-    {
-        switch($this->oauthVersion)
-        {
-            case 1:
-                $realToken = new \OAuth\OAuth1\Token\StdOAuth1Token;
-                $realToken->setAccessToken($this->token->accessToken);
-                $realToken->setAccessTokenSecret($this->token->secret);
-                return $realToken;
-                break;
-
-            case 2:
-                $realToken = new \OAuth\OAuth2\Token\StdOAuth2Token;
-                $realToken->setAccessToken($this->token->accessToken);
-                $realToken->setEndOfLife($this->token->endOfLife);
-                $realToken->setRefreshToken($this->token->refreshToken);
-                return $realToken;
-                break;
-        }
-    }
-
-    public function getHandle()
-    {
-        // from : \OAuthProviderSource\FacebookOAuthProviderSource
-        // to : facebook
-
-        $handle = get_class($this);
-
-        $start = strlen("\\OAuthProviderSource\\");
-        $end = - strlen('OAuthProviderSource');
-
-        $handle = substr($handle, $start, $end);
-
-        $handle = strtolower($handle);
-
-        return $handle;
-    }
-
-    public function getClass()
-    {
-        // from : \OAuthProviderSource\FacebookOAuthProviderSource
-        // to : Facebook
-
-        $handle = get_class($this);
-
-        $start = strlen("\\OAuthProviderSource\\");
-        $end = - strlen('OAuthProviderSource');
-
-        $handle = substr($handle, $start, $end);
-
-        return $handle;
-    }
-
+    /**
+     * Is Configured ?
+     */
     public function isConfigured()
     {
         if(!empty($this->provider->clientId))
@@ -241,17 +203,17 @@ abstract class BaseOAuthProviderSource {
         $headers = array();
         $query = array();
 
-        $provider = $this->getProvider();
-        $realToken = $this->getRealToken();
+        $infos = $this->getInfos();
+        $token = $this->token;
 
         switch($this->oauthVersion)
         {
             case 1:
                 $oauth = new \Guzzle\Plugin\Oauth\OauthPlugin(array(
-                    'consumer_key'    => $provider->clientId,
-                    'consumer_secret' => $provider->clientSecret,
-                    'token'           => $realToken->getAccessToken(),
-                    'token_secret'    => $realToken->getAccessTokenSecret()
+                    'consumer_key' => $infos->clientId,
+                    'consumer_secret' => $infos->clientSecret,
+                    'token' => $token->accessToken,
+                    'token_secret' => $token->secret
                 ));
 
                 return $oauth;
@@ -260,10 +222,10 @@ abstract class BaseOAuthProviderSource {
 
             case 2:
                 $config = array(
-                    'consumer_key' => $provider->clientId,
-                    'consumer_secret' => $provider->clientSecret,
+                    'consumer_key' => $infos->clientId,
+                    'consumer_secret' => $infos->clientSecret,
                     'authorization_method' => $this->getAuthorizationMethod(),
-                    'access_token' => $realToken->getAccessToken(),
+                    'access_token' => $token->accessToken,
                 );
 
                 $oauth = new \Dukt\Rest\Guzzle\Plugin\Oauth2Plugin($config);
@@ -273,7 +235,6 @@ abstract class BaseOAuthProviderSource {
                 break;
         }
     }
-
 
     /**
      * Get Account (alias)
@@ -285,5 +246,4 @@ abstract class BaseOAuthProviderSource {
     {
         return $this->getUserDetails();
     }
-
 }
