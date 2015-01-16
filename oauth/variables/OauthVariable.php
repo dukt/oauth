@@ -19,15 +19,6 @@ class OauthVariable
         return craft()->oauth->getToken($providerHandle);
     }
 
-    public function encodeToken($token)
-    {
-        return craft()->oauth->encodeToken($token);
-    }
-    public function decodeToken($token)
-    {
-        return craft()->oauth->decodeToken($token);
-    }
-
     public function callbackUrl($handle)
     {
         return craft()->oauth->callbackUrl($handle);
