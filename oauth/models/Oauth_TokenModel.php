@@ -41,11 +41,6 @@ class Oauth_TokenModel extends BaseModel
             ));
     }
 
-    public function getDecodedToken()
-    {
-        return craft()->oauth->decodeToken($this->encodedToken);
-    }
-
     public function getPlugin()
     {
         return craft()->plugins->getPlugin($this->pluginHandle);
