@@ -251,40 +251,67 @@ class OauthService extends BaseApplicationComponent
         return $record;
     }
 
-    public function getTestToken($providerHandle)
-    {
-        $token = craft()->httpSession->get('oauth.test.'.$providerHandle);
-
-        if($token)
-        {
-            return craft()->oauth->decodeToken($token);
-        }
-    }
-
-    public function saveTestToken($providerHandle, $token)
-    {
-        $token = craft()->oauth->encodeToken($token);
-
-        craft()->httpSession->add('oauth.test.'.$providerHandle, $token);
-    }
-
-    public function encodeToken($token)
-    {
-        if($token)
-        {
-            return base64_encode(serialize($token));
-        }
-    }
-
-    public function decodeToken($token)
-    {
-        if($token)
-        {
-            return unserialize(base64_decode($token));
-        }
-    }
-
     public function refreshToken(Oauth_TokenModel $model)
+    {
+        if(is_object($model))
+        {
+            $time = time();
+
+            // $time = time() + 3590; // google ttl
+            // $time = time() + 50400005089; // facebook ttl
+
+            // has token expired ?
+
+            if($time > $model->endOfLife)
+            {
+                $realToken = $this->getRealToken($model);
+                $provider = craft()->oauth->getProvider($model->providerHandle);
+                $infos = $provider->getInfos();
+                $newToken = $provider->refreshAccessToken($realToken);
+
+
+                // make new token current
+
+                $model->accessToken = $newToken->getAccessToken();
+
+                if(method_exists($newToken, 'getAccessTokenSecret'))
+                {
+                    $model->secret = $newToken->getAccessTokenSecret();
+                }
+
+                $model->endOfLife = $newToken->getEndOfLife();
+                $model->refreshToken = $newToken->getRefreshToken();
+            }
+        }
+
+        return false;
+    }
+
+    public function getRealToken(Oauth_TokenModel $token)
+    {
+        $provider = $this->getProvider($token->providerHandle);
+
+        switch($provider->oauthVersion)
+        {
+            case 1:
+            $realToken = new \OAuth\OAuth1\Token\StdOAuth1Token();
+            $realToken->setAccessTokenSecret($token->secret);
+            break;
+
+
+            case 2:
+            $realToken = new \OAuth\OAuth2\Token\StdOAuth2Token();
+            break;
+        }
+
+        $realToken->setAccessToken($token->accessToken);
+        $realToken->setEndOfLife($token->endOfLife);
+        $realToken->setRefreshToken($token->refreshToken);
+
+        return $realToken;
+    }
+
+    public function refreshTokenDeprecated(Oauth_TokenModel $model)
     {
 
         if(is_object($model))
@@ -293,28 +320,27 @@ class OauthService extends BaseApplicationComponent
 
             $provider->setToken($model);
 
-            $token = $provider->retrieveAccessToken();
+            $realToken = $provider->retrieveAccessToken();
 
             $time = time();
 
             // $time = time() + 3590; // google ttl
             // $time = time() + 50400005089; // facebook ttl
 
-            if($time > $token->getEndOfLife())
+            if($time > $realToken->getEndOfLife())
             {
-
                 // refresh token
                 if($provider->hasRefreshToken())
                 {
 
-                    if($token->getRefreshToken())
+                    if($realToken->getRefreshToken())
                     {
                         // generate new token
 
-                        $newToken = $provider->refreshAccessToken($token);
+                        $newToken = $provider->refreshAccessToken($realToken);
 
                         // keep our refresh token as it always remains valid
-                        $refreshToken = $token->getRefreshToken();
+                        $refreshToken = $realToken->getRefreshToken();
 
                         $newToken->setRefreshToken($refreshToken);
 
@@ -331,25 +357,6 @@ class OauthService extends BaseApplicationComponent
                         $model->refreshToken = $newToken->getRefreshToken();
 
                         return true;
-                    }
-                    else
-                    {
-                        // if($provider->class == 'google')
-                        // {
-
-                        //     $accessToken = $token->getAccessToken();
-                        //     $client = new Client();
-
-                        //     try {
-                        //         $response = $client->get('https://accounts.google.com/o/oauth2/revoke?token='.$accessToken)->send();
-                        //     }
-                        //     catch(\Exception $e)
-                        //     {
-
-                        //     }
-
-                        //     // $this->deleteToken($model);
-                        // }
                     }
                 }
             }
@@ -713,6 +720,42 @@ class OauthService extends BaseApplicationComponent
 
         return $providerSource;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function getTestToken($providerHandle)
+    {
+        $token = craft()->httpSession->get('oauth.test.'.$providerHandle);
+    }
+
+    public function saveTestToken($providerHandle, $token)
+    {
+        craft()->httpSession->add('oauth.test.'.$providerHandle, $token);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
