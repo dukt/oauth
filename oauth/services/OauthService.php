@@ -311,60 +311,6 @@ class OauthService extends BaseApplicationComponent
         return $realToken;
     }
 
-    public function refreshTokenDeprecated(Oauth_TokenModel $model)
-    {
-
-        if(is_object($model))
-        {
-            $provider = craft()->oauth->getProvider($model->providerHandle);
-
-            $provider->setToken($model);
-
-            $realToken = $provider->retrieveAccessToken();
-
-            $time = time();
-
-            // $time = time() + 3590; // google ttl
-            // $time = time() + 50400005089; // facebook ttl
-
-            if($time > $realToken->getEndOfLife())
-            {
-                // refresh token
-                if($provider->hasRefreshToken())
-                {
-
-                    if($realToken->getRefreshToken())
-                    {
-                        // generate new token
-
-                        $newToken = $provider->refreshAccessToken($realToken);
-
-                        // keep our refresh token as it always remains valid
-                        $refreshToken = $realToken->getRefreshToken();
-
-                        $newToken->setRefreshToken($refreshToken);
-
-                        // make new token current
-
-                        $model->accessToken = $newToken->getAccessToken();
-
-                        if(method_exists($newToken, 'getAccessTokenSecret'))
-                        {
-                            $model->secret = $newToken->getAccessTokenSecret();
-                        }
-
-                        $model->endOfLife = $newToken->getEndOfLife();
-                        $model->refreshToken = $newToken->getRefreshToken();
-
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
     public function connect($variables)
     {
         if(!craft()->httpSession->get('oauth.response'))
