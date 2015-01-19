@@ -500,14 +500,6 @@ class OauthService extends BaseApplicationComponent
         }
     }
 
-    private function _getProviderRecords()
-    {
-        $records = Oauth_ProviderInfosRecord::model()->findAll();
-
-        return $records;
-    }
-
-
     /**
      * Loads the configured providers.
      */
