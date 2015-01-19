@@ -83,18 +83,6 @@ class OauthService extends BaseApplicationComponent
         return Oauth_TokenModel::populateModels($records);
     }
 
-    public function getToken($encodedToken)
-    {
-        $conditions = 'encodedToken=:encodedToken';
-        $params = array(':encodedToken' => $encodedToken);
-        $record = Oauth_TokenRecord::model()->find($conditions, $params);
-
-        if($record)
-        {
-            return Oauth_TokenModel::populateModel($record);
-        }
-    }
-
     /**
      * Delete token ID
      */

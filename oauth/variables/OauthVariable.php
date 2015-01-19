@@ -14,11 +14,6 @@ namespace Craft;
 
 class OauthVariable
 {
-    public function getToken($providerHandle)
-    {
-        return craft()->oauth->getToken($providerHandle);
-    }
-
     public function callbackUrl($handle)
     {
         return craft()->oauth->callbackUrl($handle);
