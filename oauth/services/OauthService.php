@@ -159,43 +159,6 @@ class OauthService extends BaseApplicationComponent
     }
 
     /**
-     * Get token by ID
-     */
-    public function getTokenByEncodedToken($encodedToken)
-    {
-        if ($encodedToken)
-        {
-            $conditions = 'encodedToken=:encodedToken';
-            $params = array(':encodedToken' => $encodedToken);
-
-            $record = Oauth_TokenRecord::model()->find($conditions, $params);
-
-            if ($record)
-            {
-                $token = Oauth_TokenModel::populateModel($record);
-
-                // will refresh token if needed
-
-                try {
-
-                    if($this->refreshToken($token))
-                    {
-                        // save refreshed token
-                        $this->saveToken($token);
-                    }
-                }
-                catch(\Exception $e)
-                {
-                    // todo: log
-                    // throw $e;
-                }
-
-                return $token;
-            }
-        }
-    }
-
-    /**
      * Save token
      */
     public function saveToken(Oauth_TokenModel &$model)
