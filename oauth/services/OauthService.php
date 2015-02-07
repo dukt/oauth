@@ -218,20 +218,21 @@ class OauthService extends BaseApplicationComponent
                 $realToken = $this->getRealToken($model);
                 $provider = craft()->oauth->getProvider($model->providerHandle);
                 $infos = $provider->getInfos();
-                $newToken = $provider->refreshAccessToken($realToken);
 
-
-                // make new token current
-
-                $model->accessToken = $newToken->getAccessToken();
-
-                if(method_exists($newToken, 'getAccessTokenSecret'))
+                if($newToken = $provider->refreshAccessToken($realToken))
                 {
-                    $model->secret = $newToken->getAccessTokenSecret();
-                }
+                    // make new token current
 
-                $model->endOfLife = $newToken->getEndOfLife();
-                $model->refreshToken = $newToken->getRefreshToken();
+                    $model->accessToken = $newToken->getAccessToken();
+
+                    if(method_exists($newToken, 'getAccessTokenSecret'))
+                    {
+                        $model->secret = $newToken->getAccessTokenSecret();
+                    }
+
+                    $model->endOfLife = $newToken->getEndOfLife();
+                    $model->refreshToken = $newToken->getRefreshToken();
+                }
             }
         }
 

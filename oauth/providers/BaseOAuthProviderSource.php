@@ -30,7 +30,7 @@ abstract class BaseOAuthProviderSource {
     public $storage = null;
     public $token = null;
     public $provider = null;
-    protected $service = null;
+    public $service = null;
     protected $scopes = array();
 
     public function __construct()
@@ -110,6 +110,11 @@ abstract class BaseOAuthProviderSource {
         return $this->service->getAuthorizationUri($params);
     }
 
+    public function requestRequestToken()
+    {
+        return $this->service->requestRequestToken();
+    }
+
     public function hasRefreshToken()
     {
         return method_exists($this->service, 'refreshAccessToken');
@@ -122,7 +127,17 @@ abstract class BaseOAuthProviderSource {
 
     public function refreshAccessToken($token)
     {
-        return $this->service->refreshAccessToken($token);
+        if(method_exists($this->service, 'refreshAccessToken'))
+        {
+            // $realToken = \Craft\craft()->oauth->getRealToken($token);
+
+            // return $this->service->refreshAccessToken($realToken);
+            return $this->service->refreshAccessToken($token);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public function setInfos(Oauth_ProviderInfosModel $provider)
