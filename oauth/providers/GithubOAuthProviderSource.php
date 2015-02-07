@@ -12,6 +12,8 @@
 
 namespace OAuthProviderSources;
 
+use Guzzle\Http\Client;
+
 class GithubOAuthProviderSource extends BaseOAuthProviderSource {
 
 	public $consoleUrl = 'https://github.com/settings/applications/';
@@ -24,16 +26,44 @@ class GithubOAuthProviderSource extends BaseOAuthProviderSource {
 
     public function getUserDetails()
     {
-        $response = $this->service->request('user');
-        $response = json_decode($response, true);
+        // $response = $this->service->request('user');
+        // $response = json_decode($response, true);
 
-        $account = array();
+        // $account = array();
 
-        $account['uid'] = $response['id'];
-        $account['name'] = $response['name'];
-        $account['username'] = $response['login'];
-        $account['email'] = $response['email'];
+        // $account['uid'] = $response['id'];
+        // $account['name'] = $response['name'];
+        // $account['username'] = $response['login'];
+        // $account['email'] = $response['email'];
 
-        return $account;
+        // return $account;
+
+
+        $url = 'https://api.github.com/user';
+
+        $client = new Client();
+
+        $query = array('access_token' => $this->token->accessToken);
+
+        try {
+            $guzzleRequest = $client->get($url, null, array('query' => $query));
+            $response = $guzzleRequest->send();
+            $data = $response->json();
+
+            return array(
+                'uid' => $data['id'],
+                'name' => $data['name'],
+                'username' => $data['login'],
+                'email' => $data['email'],
+            );
+        }
+        catch(\Exception $e)
+        {
+            $data = $e->getResponse()->json();
+
+            // throw new \Exception("Couldn’t get account.");
+
+            return false;
+        }
     }
 }
