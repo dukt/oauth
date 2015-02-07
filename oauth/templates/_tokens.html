@@ -37,7 +37,6 @@
                 <tr>
                     <th class="col">ID</th>
                     <th class="col">Plugin</th>
-                    <th class="col">Token Hash</th>
                     <th class="col"></th>
                 </tr>
             </thead>
@@ -48,7 +47,6 @@
                     <tr data-id="{{ token.id }}" data-name="Token #{{ token.id|t }}">
                         <td>{{ token.id }}</td>
                         <td>{{ token.plugin.name }}</td>
-                        <td class="light">{{ token.hash }}</td>
                         <td class="thin"><a class="delete icon" title="{{ 'Delete'|t }}" role="button"></a></td>
                     </tr>
                 {% endfor %}
