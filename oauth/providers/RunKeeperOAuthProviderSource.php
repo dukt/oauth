@@ -15,6 +15,7 @@ namespace OAuthProviderSources;
 class RunKeeperOAuthProviderSource extends BaseOAuthProviderSource {
 
     public $consoleUrl = 'http://runkeeper.com/partner/applications';
+    public $oauthVersion = 2;
 
     public function getName()
     {

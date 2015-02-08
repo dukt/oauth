@@ -15,10 +15,16 @@ namespace OAuthProviderSources;
 class LinkedinOAuthProviderSource extends BaseOAuthProviderSource {
 
     public $consoleUrl = 'https://www.linkedin.com/secure/developer';
+    public $oauthVersion = 2;
 
     public function getName()
     {
-        return 'Linkedin';
+        return 'LinkedIn';
+    }
+
+    public function getAuthorizationMethod()
+    {
+        return 'oauth2_access_token';
     }
 
     public function getUserDetails()

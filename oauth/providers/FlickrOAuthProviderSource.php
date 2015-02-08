@@ -15,6 +15,7 @@ namespace OAuthProviderSources;
 class FlickrOAuthProviderSource extends BaseOAuthProviderSource {
 
 	public $consoleUrl = 'http://www.flickr.com/services/apps/';
+    public $oauthVersion = 1;
 
 	public function getName()
 	{
