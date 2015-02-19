@@ -30,7 +30,7 @@ abstract class BaseOAuthProviderSource {
     public $storage = null;
     public $token = null;
     public $provider = null;
-    public $service = null;
+    protected $service = null;
     protected $scopes = array();
 
     public function __construct()

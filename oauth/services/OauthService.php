@@ -24,7 +24,20 @@ class OauthService extends BaseApplicationComponent
     private $_allProviders = array();
     private $_providersLoaded = false;
 
-    public function tokenToArray($token)
+    public function tokenToArray(Oauth_TokenModel $token)
+    {
+        return $token->getAttributes();
+    }
+
+    public function arrayToToken(array $array)
+    {
+        $token = new Oauth_TokenModel;
+        $token->setAttributes($array);
+
+        return $token;
+    }
+
+    public function realTokenToArray($token)
     {
         $class = get_class($token);
 
@@ -49,30 +62,6 @@ class OauthService extends BaseApplicationComponent
         }
 
         return $tokenArray;
-    }
-
-    public function arrayToToken(array $array)
-    {
-        $token = new $array['class'];
-
-        $token->setAccessToken($array['accessToken']);
-        $token->setEndOfLife($array['endOfLife']);
-        $token->setExtraParams($array['extraParams']);
-
-        switch($array['class'])
-        {
-            case 'OAuth\OAuth1\Token\StdOAuth1Token':
-            $token->setRequestToken($array['requestToken']);
-            $token->setRequestTokenSecret($array['requestTokenSecret']);
-            $token->setAccessTokenSecret($array['accessTokenSecret']);
-            break;
-
-            case 'OAuth\OAuth2\Token\StdOAuth2Token':
-            $token->setRefreshToken($array['refreshToken']);
-            break;
-        }
-
-        return $token;
     }
 
     public function getTokensByProvider($providerHandle)
@@ -126,7 +115,8 @@ class OauthService extends BaseApplicationComponent
 
                 // will refresh token if needed
 
-                try {
+                try
+                {
                     if($this->refreshToken($token))
                     {
                         // save refreshed token
@@ -208,7 +198,8 @@ class OauthService extends BaseApplicationComponent
         {
             $time = time();
 
-            // $time = time() + 3590; // google ttl
+            // force refresh for testing
+            // $time = time() + 3595; // google ttl
             // $time = time() + 50400005089; // facebook ttl
 
             // has token expired ?
@@ -231,7 +222,15 @@ class OauthService extends BaseApplicationComponent
                     }
 
                     $model->endOfLife = $newToken->getEndOfLife();
-                    $model->refreshToken = $newToken->getRefreshToken();
+
+                    $newRefreshToken = $newToken->getRefreshToken();
+
+                    if(!empty($newRefreshToken))
+                    {
+                        $model->refreshToken = $newToken->getRefreshToken();
+                    }
+
+                    return true;
                 }
             }
         }
@@ -267,7 +266,14 @@ class OauthService extends BaseApplicationComponent
     {
         if(!craft()->httpSession->get('oauth.response'))
         {
+            // we don't have any response yet, get ready to connect
+
+            // clean session
+
             craft()->oauth->sessionClean();
+
+
+            // referer
 
             if(!empty($variables['referer']))
             {
@@ -279,34 +285,6 @@ class OauthService extends BaseApplicationComponent
             }
 
             craft()->httpSession->add('oauth.referer', $referer);
-
-
-            // redirect
-
-            if(!empty($variables['redirect']))
-            {
-                $redirect = $variables['redirect'];
-            }
-            else
-            {
-                $redirect = craft()->request->getUrlReferrer();
-            }
-
-            craft()->httpSession->add('oauth.redirect', $redirect);
-
-
-            // error redirect
-
-            if(!empty($variables['errorRedirect']))
-            {
-                $errorRedirect = $variables['errorRedirect'];
-            }
-            else
-            {
-                $errorRedirect = craft()->request->getUrlReferrer();
-            }
-
-            craft()->httpSession->add('oauth.errorRedirect', $errorRedirect);
 
 
             // scopes
@@ -343,11 +321,16 @@ class OauthService extends BaseApplicationComponent
         }
         else
         {
+            // populate token object from response
+
             $response = craft()->httpSession->get('oauth.response');
 
             if(!empty($response['token']))
             {
+                // response token to token model
+
                 $token = new Oauth_TokenModel;
+
                 $token->accessToken = $response['token']['accessToken'];
 
                 if(!empty($response['token']['accessTokenSecret']))
@@ -361,6 +344,9 @@ class OauthService extends BaseApplicationComponent
                 {
                     $token->refreshToken = $response['token']['refreshToken'];
                 }
+
+                $token->providerHandle = $variables['provider'];
+                $token->pluginHandle = $variables['plugin'];
 
                 $response['token'] = $token;
             }

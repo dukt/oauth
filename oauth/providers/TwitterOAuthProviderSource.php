@@ -22,6 +22,11 @@ class TwitterOAuthProviderSource extends BaseOAuthProviderSource {
 		return 'Twitter';
 	}
 
+    public function requestAccessToken($token, $verifier, $secret)
+    {
+        return $this->service->requestAccessToken($token, $verifier, $secret);
+    }
+
     public function getUserDetails()
     {
         try {

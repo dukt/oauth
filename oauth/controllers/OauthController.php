@@ -22,7 +22,6 @@ class OauthController extends BaseController
     private $params;
     private $redirect;
     private $referer;
-    private $errorRedirect;
 
     /**
      * Edit Provider
@@ -127,6 +126,26 @@ class OauthController extends BaseController
         }
     }
 
+
+/*
+    handle
+    referer
+    params
+    response
+    scopes
+*/
+
+/*
+    requestUri
+    social
+    socialToken
+    socialUser
+    socialUid
+    socialProviderHandle
+    socialRedirect
+*/
+
+
     /**
      * Connect
      *
@@ -153,8 +172,6 @@ class OauthController extends BaseController
 
             // session vars
 
-            $this->redirect = craft()->httpSession->get('oauth.redirect');
-            $this->errorRedirect = craft()->httpSession->get('oauth.errorRedirect');
             $this->scopes = craft()->httpSession->get('oauth.scopes');
             $this->params = craft()->httpSession->get('oauth.params');
             $this->referer = craft()->httpSession->get('oauth.referer');
@@ -219,8 +236,8 @@ class OauthController extends BaseController
                     {
                         // redirect to authorization url if we don't have a oauth_token yet
 
-                        $token = $provider->service->requestRequestToken();
-                        $authorizationUrl = $provider->service->getAuthorizationUri(array('oauth_token' => $token->getRequestToken()));
+                        $token = $provider->requestRequestToken();
+                        $authorizationUrl = $provider->getAuthorizationUri(array('oauth_token' => $token->getRequestToken()));
                         $this->redirect($authorizationUrl);
                     }
                     else
@@ -229,7 +246,7 @@ class OauthController extends BaseController
                         $token = $provider->storage->retrieveAccessToken($provider->getClass());
 
                         // This was a callback request, now get the token
-                        $token = $provider->service->requestAccessToken(
+                        $token = $provider->requestAccessToken(
                             $oauth_token,
                             $oauth_verifier,
                             $token->getRequestTokenSecret()
@@ -262,14 +279,12 @@ class OauthController extends BaseController
 
         if($token)
         {
-            $tokenArray = craft()->oauth->tokenToArray($token);
+            $tokenArray = craft()->oauth->realTokenToArray($token);
         }
 
         $response = array(
             'error'         => $error,
             'errorMsg'      => $errorMsg,
-            'errorRedirect' => $this->errorRedirect,
-            'redirect'      => $this->redirect,
             'success'       => $success,
             'token'         => $tokenArray
         );
