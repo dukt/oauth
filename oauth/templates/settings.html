@@ -8,7 +8,6 @@
             <th scope="col">{{ "Provider"|t }}</th>
             <th scope="col">{{ "Status"|t }}</th>
             <th scope="col">{{ "Tokens"|t }}</th>
-            {# <th></th> #}
         </tr>
     </thead>
 
@@ -41,11 +40,6 @@
                         </a>
                     {% endif %}
                 </td>
-
- {#                <td class="thin">
-                    <a class="btn small" href="{{ url('oauth/provider/'~provider.handle) }}">{{ "API Settings"|t }}</a>
-                </td>
- #}
             </tr>
 
         {% endfor %}
