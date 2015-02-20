@@ -219,7 +219,6 @@ class OauthController extends BaseController
                     else
                     {
                         // get token from code
-                        // $token = $provider->source->service->requestAccessToken($code);
                         $token = $provider->requestAccessToken($code);
                     }
 
@@ -243,7 +242,7 @@ class OauthController extends BaseController
                     else
                     {
                         // get token from oauth_token
-                        $token = $provider->storage->retrieveAccessToken($provider->getClass());
+                        $token = $provider->retrieveAccessToken();
 
                         // This was a callback request, now get the token
                         $token = $provider->requestAccessToken(
