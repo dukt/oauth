@@ -186,7 +186,6 @@ abstract class AbstractProvider {
     public function setToken(Oauth_TokenModel $token)
     {
         $this->token = $token;
-
     }
 
     public function getToken()
