@@ -10,23 +10,36 @@
  * @license   https://dukt.net/craft/oauth/docs/license
  */
 
-namespace OAuthProviderSources;
+namespace Dukt\OAuth\Providers;
 
 use Guzzle\Http\Client;
 
-class VimeoOAuthProviderSource extends BaseOAuthProviderSource {
+class Google extends AbstractProvider {
 
-	public $consoleUrl = 'https://developer.vimeo.com/apps';
+	public $consoleUrl = 'https://code.google.com/apis/console/';
     public $oauthVersion = 2;
+
+    protected $scopes = array(
+        'userinfo_profile',
+        'userinfo_email'
+    );
 
 	public function getName()
 	{
-		return 'Vimeo';
+		return 'Google';
 	}
+
+    public function getParams()
+    {
+        return  array(
+            'access_type' => 'offline',
+            'approval_prompt' => 'force'
+        );
+    }
 
     public function getUserDetails()
     {
-        $url = 'https://api.vimeo.com/me';
+        $url = 'https://www.googleapis.com/oauth2/v1/userinfo';
 
         $client = new Client();
 
@@ -37,19 +50,19 @@ class VimeoOAuthProviderSource extends BaseOAuthProviderSource {
             $response = $guzzleRequest->send();
             $data = $response->json();
 
-
-            $account = array();
-
-            $account['uid'] = substr($data['uri'], strrpos($data['uri'], "/") + 1);
-            $account['name'] = $data['name'];
-
-            return $account;
+            return array(
+                'uid' => $data['id'],
+                'name' => $data['name'],
+                'email' => $data['email'],
+            );
         }
         catch(\Exception $e)
         {
             $data = $e->getResponse()->json();
 
-            throw new \Exception("Couldn’t get account.");
+            // throw new \Exception("Couldn’t get account.");
+
+            return false;
         }
     }
 

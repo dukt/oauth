@@ -10,11 +10,11 @@
  * @license   https://dukt.net/craft/oauth/docs/license
  */
 
-namespace OAuthProviderSources;
+namespace Dukt\OAuth\Providers;
 
 use Guzzle\Http\Client;
 
-class GithubOAuthProviderSource extends BaseOAuthProviderSource {
+class Github extends AbstractProvider {
 
 	public $consoleUrl = 'https://github.com/settings/applications/';
     public $oauthVersion = 2;

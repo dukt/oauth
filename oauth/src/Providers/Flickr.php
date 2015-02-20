@@ -10,9 +10,9 @@
  * @license   https://dukt.net/craft/oauth/docs/license
  */
 
-namespace OAuthProviderSources;
+namespace Dukt\OAuth\Providers;
 
-class FlickrOAuthProviderSource extends BaseOAuthProviderSource {
+class Flickr extends AbstractProvider {
 
 	public $consoleUrl = 'http://www.flickr.com/services/apps/';
     public $oauthVersion = 1;

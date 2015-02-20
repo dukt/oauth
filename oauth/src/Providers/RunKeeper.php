@@ -10,9 +10,9 @@
  * @license   https://dukt.net/craft/oauth/docs/license
  */
 
-namespace OAuthProviderSources;
+namespace Dukt\OAuth\Providers;
 
-class RunKeeperOAuthProviderSource extends BaseOAuthProviderSource {
+class RunKeeper extends AbstractProvider {
 
     public $consoleUrl = 'http://runkeeper.com/partner/applications';
     public $oauthVersion = 2;

@@ -10,9 +10,9 @@
  * @license   https://dukt.net/craft/oauth/docs/license
  */
 
-namespace OAuthProviderSources;
+namespace Dukt\OAuth\Providers;
 
-class TwitterOAuthProviderSource extends BaseOAuthProviderSource {
+class Twitter extends AbstractProvider {
 
 	public $consoleUrl = 'https://dev.twitter.com/apps';
     public $oauthVersion = 1;

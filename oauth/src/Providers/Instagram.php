@@ -10,9 +10,9 @@
  * @license   https://dukt.net/craft/oauth/docs/license
  */
 
-namespace OAuthProviderSources;
+namespace Dukt\OAuth\Providers;
 
-class InstagramOAuthProviderSource extends BaseOAuthProviderSource {
+class Instagram extends AbstractProvider {
 
     public $consoleUrl = 'http://instagram.com/developer/clients/';
 

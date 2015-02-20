@@ -10,9 +10,9 @@
  * @license   https://dukt.net/craft/oauth/docs/license
  */
 
-namespace OAuthProviderSources;
+namespace Dukt\OAuth\Providers;
 
-class BitBucketOAuthProviderSource extends BaseOAuthProviderSource {
+class BitBucket extends AbstractProvider {
 
     public $consoleUrl = 'https://bitbucket.org/account/';
     public $oauthVersion = 2;

@@ -10,29 +10,34 @@
  * @license   https://dukt.net/craft/oauth/docs/license
  */
 
-namespace OAuthProviderSources;
+namespace Dukt\OAuth\Providers;
 
-class DribbbleOAuthProviderSource extends BaseOAuthProviderSource {
+class Linkedin extends AbstractProvider {
 
-    public $consoleUrl = 'https://dribbble.com/account/applications';
+    public $consoleUrl = 'https://www.linkedin.com/secure/developer';
+    public $oauthVersion = 2;
 
     public function getName()
     {
-        return 'Dribbble';
+        return 'LinkedIn';
+    }
+
+    public function getAuthorizationMethod()
+    {
+        return 'oauth2_access_token';
     }
 
     public function getUserDetails()
     {
         return array();
-
-        // $response = $this->service->request('/user');
-
+        // $response = $this->service->request('/people/~?format=json');
         // $response = json_decode($response, true);
 
         // $account = array();
+
         // $account['uid'] = $response['id'];
         // $account['name'] = $response['name'];
-        // $account['username'] = $response['username'];
+        // $account['username'] = $response['login'];
         // $account['email'] = $response['email'];
 
         // return $account;

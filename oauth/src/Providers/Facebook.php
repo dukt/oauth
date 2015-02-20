@@ -10,11 +10,11 @@
  * @license   https://dukt.net/craft/oauth/docs/license
  */
 
-namespace OAuthProviderSources;
+namespace Dukt\OAuth\Providers;
 
 use Guzzle\Http\Client;
 
-class FacebookOAuthProviderSource extends BaseOAuthProviderSource {
+class Facebook extends AbstractProvider {
 
 	public $consoleUrl = 'https://developers.facebook.com/apps';
     public $oauthVersion = 2;

@@ -11,7 +11,7 @@
  */
 
 
-namespace OAuthProviderSources;
+namespace Dukt\OAuth\Providers;
 
 use \Craft\Craft;
 use \Craft\LogLevel;
@@ -24,7 +24,7 @@ use \Craft\UrlHelper;
 use OAuth\Common\Storage\Session;
 use OAuth\Common\Consumer\Credentials;
 
-abstract class BaseOAuthProviderSource {
+abstract class AbstractProvider {
 
     public $class;
     public $storage = null;
@@ -50,17 +50,14 @@ abstract class BaseOAuthProviderSource {
 
     public function getClass()
     {
-        // from : \OAuthProviderSource\FacebookOAuthProviderSource
-        // to : Facebook
+        // from : Dukt\OAuth\Providers\Dribbble
+        // to : Dribbble
 
-        $handle = get_class($this);
+        $nsClass = get_class($this);
 
-        $start = strlen("\\OAuthProviderSource\\");
-        $end = - strlen('OAuthProviderSource');
+        $class = substr($nsClass, strrpos($nsClass, "\\") + 1);
 
-        $handle = substr($handle, $start, $end);
-
-        return $handle;
+        return $class;
     }
 
     public function getTokens()
