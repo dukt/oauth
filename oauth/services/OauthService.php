@@ -13,7 +13,6 @@
 namespace Craft;
 
 require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
-require_once(CRAFT_PLUGINS_PATH.'oauth/providers/BaseOAuthProviderSource.php');
 
 use ReflectionClass;
 use Guzzle\Http\Client;
@@ -535,7 +534,7 @@ class OauthService extends BaseApplicationComponent
     {
         $providerSources = array();
 
-        $providersPath = CRAFT_PLUGINS_PATH.'oauth/providers/';
+        $providersPath = CRAFT_PLUGINS_PATH.'oauth/src/Providers/';
         $providersFolderContents = IOHelper::getFolderContents($providersPath, false);
 
         if($providersFolderContents)
@@ -545,10 +544,9 @@ class OauthService extends BaseApplicationComponent
                 $path = IOHelper::normalizePathSeparators($path);
                 $fileName = IOHelper::getFileName($path, false);
 
-                if($fileName == 'BaseOAuthProviderSource') continue;
+                if($fileName == 'AbstractProvider') continue;
 
-                // Chop off the "OAuthProviderSource" suffix
-                $handle = substr($fileName, 0, strlen($fileName) - 19);
+                $handle = $fileName;
 
                 $providerSources[] = $this->getProviderSource($handle);
             }
@@ -557,41 +555,20 @@ class OauthService extends BaseApplicationComponent
         return $providerSources;
     }
 
+
     public function getProviderSource($providerClass)
     {
         // Get the full class name
 
-        $class = $providerClass.'OAuthProviderSource';
+        $class = $providerClass;
 
-        $nsClass = 'OAuthProviderSources\\'.$class;
-
-
-        // Skip the autoloader
-
-        if (!class_exists($nsClass, false))
-        {
-            $path = CRAFT_PLUGINS_PATH.'oauth/providers/'.$class.'.php';
-
-            if (($path = IOHelper::fileExists($path, false)) !== false)
-            {
-                require_once $path;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        if (!class_exists($nsClass, false))
-        {
-            return null;
-        }
+        $nsClass = 'Dukt\\OAuth\\Providers\\'.$class;
 
         $providerSource = new $nsClass;
 
-        if (!$providerSource instanceof \OAuthProviderSources\BaseOAuthProviderSource)
+        if (!$providerSource instanceof \Dukt\OAuth\Providers\AbstractProvider)
         {
-            die("this provider doesn't implement BaseOAuthProviderSource abstract class");
+            die("this provider doesn't implement AbstractProvider abstract class");
         }
 
         return $providerSource;
