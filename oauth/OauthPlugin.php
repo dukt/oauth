@@ -61,7 +61,6 @@ class OauthPlugin extends BasePlugin
     {
         return array(
             'oauth\/(?P<providerHandle>.*)/tokens' => 'oauth/_tokens',
-            'oauth\/(?P<providerHandle>.*)/test' => array('action' => "oauth/test"),
             'oauth\/(?P<handle>.*)' => array('action' => "oauth/providerInfos"),
         );
     }
@@ -75,7 +74,7 @@ class OauthPlugin extends BasePlugin
             return true;
         }
 
-        return craft()->templates->render('oauth/settings', array(
+        return craft()->templates->render('oauth/_redirect', array(
             'settings' => $this->getSettings()
         ));
     }

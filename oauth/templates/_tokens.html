@@ -46,7 +46,13 @@
                 {% for token in tokens %}
                     <tr data-id="{{ token.id }}" data-name="Token #{{ token.id|t }}">
                         <td>{{ token.id }}</td>
-                        <td>{{ token.plugin.name }}</td>
+                        <td>
+                            {% if token.plugin %}
+                                {{ token.plugin.name }}
+                            {% else %}
+                                {{ token.pluginHandle }} (Plugin not found)
+                            {% endif %}
+                        </td>
                         <td class="thin"><a class="delete icon" title="{{ 'Delete'|t }}" role="button"></a></td>
                     </tr>
                 {% endfor %}

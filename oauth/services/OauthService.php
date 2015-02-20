@@ -586,30 +586,6 @@ class OauthService extends BaseApplicationComponent
 
 
 
-    public function getTestToken($providerHandle)
-    {
-        $token = craft()->httpSession->get('oauth.test.'.$providerHandle);
-    }
-
-    public function saveTestToken($providerHandle, $token)
-    {
-        craft()->httpSession->add('oauth.test.'.$providerHandle, $token);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
