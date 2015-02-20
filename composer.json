@@ -3,7 +3,9 @@
         "vendor-dir": "oauth/vendor/"
     },
     "autoload": {
-        "psr-0": {"OAuthProviders\\": "providers/"}
+        "psr-4": {
+            "Dukt\\OAuth\\": "oauth/src/"
+        }
     },
     "repositories": [
         {
