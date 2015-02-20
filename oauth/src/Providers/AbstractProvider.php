@@ -240,7 +240,7 @@ abstract class AbstractProvider {
                     'access_token' => $token->accessToken,
                 );
 
-                $oauth = new \Dukt\Rest\Guzzle\Plugin\Oauth2Plugin($config);
+                $oauth = new \Dukt\OAuth\Guzzle\Plugin\Oauth2Plugin($config);
 
                 return $oauth;
 
