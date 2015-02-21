@@ -15,6 +15,7 @@ namespace Dukt\OAuth\Providers;
 class Instagram extends AbstractProvider {
 
     public $consoleUrl = 'http://instagram.com/developer/clients/';
+    public $oauthVersion = 2;
 
     public function getName()
     {
@@ -28,8 +29,8 @@ class Instagram extends AbstractProvider {
 
     public function getUserDetails()
     {
-        try {
-
+        try
+        {
             $response = $this->service->request('users/self');
             $response = json_decode($response, true);
 
@@ -43,7 +44,7 @@ class Instagram extends AbstractProvider {
         }
         catch(\Exception $e)
         {
-            // todo
+            return false;
         }
     }
 }

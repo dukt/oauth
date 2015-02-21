@@ -15,7 +15,7 @@ namespace Dukt\OAuth\Providers;
 class BitBucket extends AbstractProvider {
 
     public $consoleUrl = 'https://bitbucket.org/account/';
-    public $oauthVersion = 2;
+    public $oauthVersion = 1;
 
     public function getName()
     {
@@ -24,8 +24,8 @@ class BitBucket extends AbstractProvider {
 
     public function getUserDetails()
     {
-        try {
-
+        try
+        {
             $userResponse = $this->service->request('user');
             $userResponse = json_decode($userResponse, true);
 
@@ -38,7 +38,6 @@ class BitBucket extends AbstractProvider {
 
             $account = array();
 
-            //$account['uid'] = $user['username'];
             $account['name'] = $user['display_name'];
             $account['username'] = $user['username'];
             $account['email'] = $email;
@@ -47,7 +46,12 @@ class BitBucket extends AbstractProvider {
         }
         catch(\Exception $e)
         {
-            // todo
+            return false;
         }
+    }
+
+    public function requestAccessToken($token, $verifier, $secret)
+    {
+        return $this->service->requestAccessToken($token, $verifier, $secret);
     }
 }

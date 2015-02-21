@@ -1,0 +1,56 @@
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% set title = provider.name~" Console"|t %}
+
+{% set crumbs = [
+    { label: "Settings"|t, url: url('settings') },
+    { label: "Plugins"|t, url: url('settings/plugins') },
+    { label: "OAuth"|t, url: url('settings/plugins/oauth') },
+    { label: "Console"|t, url: url('oauth/console') }
+] %}
+
+{% set content %}
+
+    {% if provider.isConfigured %}
+
+        {% if token %}
+
+            {% set void = provider.setToken(token) %}
+            {% set account = provider.getUserDetails() %}
+
+            <h2 class="first">{{'Connected'|t}}</h2>
+            <p>{{'You are authenticated to {provider} with the following account'|t({provider:provider.name})}} :</p>
+
+
+            <pre>{{ dump(account) }}</pre>
+
+{#             <ul>
+                {% if account.uid is defined %}
+                    <li><strong>{{'UID'|t}} : </strong> {{account.uid}}</li>
+                {% endif %}
+
+                {% if account.name is defined %}
+                    <li><strong>{{'Name'|t}} : </strong> {{account.name}}</li>
+                {% endif %}
+
+                {% if account.email is defined %}
+                    <li><strong>{{'Email'|t}} : </strong> {{account.email}}</li>
+                {% endif %}
+            </ul>
+ #}
+            <p><a class="btn small" href="{{ actionUrl('oauth/consoleDisconnect', {provider:provider.handle}) }}">{{'Disconnect'|t}}</a></p>
+
+        {% else %}
+
+            <h2 class="first">{{'Not connected'|t}}</h2>
+            <p>{{'Test that the connection with this provider can be made.'|t}}</p>
+            <p><a class="btn submit" href="{{ actionUrl('oauth/consoleConnect', {provider:provider.handle}) }}">{{"Connect"|t}}</a></p>
+
+        {% endif %}
+    {% else %}
+        {{ "Not configured"|t }}
+    {% endif %}
+
+
+{% endset %}

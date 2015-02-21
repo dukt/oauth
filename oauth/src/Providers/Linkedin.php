@@ -22,24 +22,28 @@ class Linkedin extends AbstractProvider {
         return 'LinkedIn';
     }
 
+    public function getUserDetails()
+    {
+        try
+        {
+            $response = $this->service->request('/people/~?format=json');
+            $response = json_decode($response, true);
+
+            $account = array();
+
+            $account['uid'] = $response['id'];
+            $account['name'] = trim($response['firstName']." ".$response['lastName']);
+
+            return $account;
+        }
+        catch(\Exception $e)
+        {
+            return false;
+        }
+    }
+
     public function getAuthorizationMethod()
     {
         return 'oauth2_access_token';
-    }
-
-    public function getUserDetails()
-    {
-        return array();
-        // $response = $this->service->request('/people/~?format=json');
-        // $response = json_decode($response, true);
-
-        // $account = array();
-
-        // $account['uid'] = $response['id'];
-        // $account['name'] = $response['name'];
-        // $account['username'] = $response['login'];
-        // $account['email'] = $response['email'];
-
-        // return $account;
     }
 }

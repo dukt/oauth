@@ -29,14 +29,13 @@ class Twitter extends AbstractProvider {
 
     public function getUserDetails()
     {
-        try {
-
+        try
+        {
             $response = @$this->service->request('account/verify_credentials.json');
 
             if(!$response)
             {
-                throw new \Exception("Request error", 1);
-
+                throw new \Exception("Request error");
             }
 
             $response = json_decode($response, true);
@@ -56,7 +55,7 @@ class Twitter extends AbstractProvider {
         }
         catch(\Exception $e)
         {
-            // todo
+            return false;
         }
     }
 }

@@ -24,17 +24,24 @@ class RunKeeper extends AbstractProvider {
 
     public function getUserDetails()
     {
-        return array();
-        // $response = $this->service->request('/user');
-        // $response = json_decode($response, true);
+        try
+        {
+            $response = $this->service->request('/user');
+            $response = json_decode($response, true);
 
-        // $account = array();
+            $profile = $this->service->request('/profile');
+            $profile = json_decode($profile, true);
 
-        // $account['uid'] = $response['id'];
-        // $account['name'] = $response['name'];
-        // $account['username'] = $response['login'];
-        // $account['email'] = $response['email'];
+            $account = array();
 
-        // return $account;
+            $account['uid'] = $response['userID'];
+            $account['name'] = $profile['name'];
+
+            return $account;
+        }
+        catch(\Exception $e)
+        {
+            return false;
+        }
     }
 }

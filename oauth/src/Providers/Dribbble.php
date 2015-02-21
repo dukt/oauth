@@ -15,6 +15,7 @@ namespace Dukt\OAuth\Providers;
 class Dribbble extends AbstractProvider {
 
     public $consoleUrl = 'https://dribbble.com/account/applications';
+    public $oauthVersion = 2;
 
     public function getName()
     {
@@ -23,18 +24,21 @@ class Dribbble extends AbstractProvider {
 
     public function getUserDetails()
     {
-        return array();
+        try
+        {
+            $response = $this->service->request('/user');
+            $response = json_decode($response, true);
 
-        // $response = $this->service->request('/user');
+            $account = array();
+            $account['uid'] = $response['id'];
+            $account['name'] = $response['name'];
+            $account['username'] = $response['username'];
 
-        // $response = json_decode($response, true);
-
-        // $account = array();
-        // $account['uid'] = $response['id'];
-        // $account['name'] = $response['name'];
-        // $account['username'] = $response['username'];
-        // $account['email'] = $response['email'];
-
-        // return $account;
+            return $account;
+        }
+        catch(\Exception $e)
+        {
+            return false;
+        }
     }
 }

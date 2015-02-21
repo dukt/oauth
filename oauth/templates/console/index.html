@@ -1,0 +1,54 @@
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% set title = "Console"|t %}
+
+{% set crumbs = [
+    { label: "Settings"|t, url: url('settings') },
+    { label: "Plugins"|t, url: url('settings/plugins') },
+    { label: "OAuth"|t, url: url('settings/plugins/oauth') }
+] %}
+
+{% set content %}
+
+{% import "_includes/forms" as forms %}
+
+{% includeCssResource 'oauth/css/disableSave.css' %}
+
+<table id="fields" class="data fullwidth collapsible">
+    <thead>
+        <tr>
+            <th scope="col">{{ "Provider"|t }}</th>
+            <th scope="col">{{ "Status"|t }}</th>
+            <th scope="col">{{ "Provider Settings"|t }}</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for provider in providers %}
+
+            <tr>
+                <td><a href="{{ url('oauth/console/'~provider.handle) }}">{{provider.name}}</a></td>
+
+                <td>
+                    {% if tokens[provider.handle] is defined %}
+                        <span class="status on"></span> {{ "Connected"|t }}
+                    {% else %}
+                        <span class="status"></span><span class="light">{{ "Not connected"|t }}</span>
+                    {% endif %}
+                </td>
+
+                <td class="nowrap">
+                    {% if provider.isConfigured %}
+                        <span class="status on"></span> {{ "Configured"|t }}
+                    {% else %}
+                        <span class="status"></span><span class="light">{{ "Not Configured"|t }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endset %}

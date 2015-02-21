@@ -32,7 +32,8 @@ class Vimeo extends AbstractProvider {
 
         $query = array('access_token' => $this->token->accessToken);
 
-        try {
+        try
+        {
             $guzzleRequest = $client->get($url, null, array('query' => $query));
             $response = $guzzleRequest->send();
             $data = $response->json();
@@ -47,9 +48,7 @@ class Vimeo extends AbstractProvider {
         }
         catch(\Exception $e)
         {
-            $data = $e->getResponse()->json();
-
-            throw new \Exception("Couldn’t get account.");
+            return false;
         }
     }
 

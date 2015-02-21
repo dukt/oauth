@@ -26,34 +26,6 @@ class Facebook extends AbstractProvider {
 
     public function getUserDetails()
     {
-        // $response = $this->service->request('/me');
-        // $response = json_decode($response, true);
-
-        // $account = array();
-
-        // $account['uid'] = $response['id'];
-
-        // if(!empty($response['name']))
-        // {
-        //     $account['name'] = $response['name'];
-        // }
-
-        // if(!empty($response['username']))
-        // {
-        //     $account['username'] = $response['username'];
-        // }
-
-        // if(!empty($response['email']))
-        // {
-        //     $account['email'] = $response['email'];
-        // }
-
-        // return $account;
-
-
-
-
-
         $url = 'https://graph.facebook.com/me';
 
         $client = new Client();
@@ -88,10 +60,6 @@ class Facebook extends AbstractProvider {
         }
         catch(\Exception $e)
         {
-            $data = $e->getResponse()->json();
-
-            // throw new \Exception("Couldn’t get account.");
-
             return false;
         }
     }
