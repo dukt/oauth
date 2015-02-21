@@ -91,12 +91,6 @@ abstract class AbstractProvider {
         $this->service = $serviceFactory->createService($handle, $credentials, $this->storage, $this->scopes);
     }
 
-    public function initProviderSource($clientId = null, $clientSecret = null)
-    {
-        $this->clientId = $clientId;
-        $this->clientSecret = $clientSecret;
-    }
-
     public function getAuthorizationMethod()
     {
         return null;
