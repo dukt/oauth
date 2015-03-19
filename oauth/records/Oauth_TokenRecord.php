@@ -33,7 +33,7 @@ class Oauth_TokenRecord extends BaseRecord
 
             'accessToken' => AttributeType::String,
             'secret' => AttributeType::String,
-            'expires' => AttributeType::String,
+            'endOfLife' => AttributeType::String,
             'refreshToken' => AttributeType::String,
         );
     }
