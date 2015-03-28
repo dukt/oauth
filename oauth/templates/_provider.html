@@ -21,6 +21,9 @@
 
 
     <form method="post" action="" accept-charset="UTF-8">
+
+        {{ getCsrfInput() }}
+
         <input type="hidden" name="action" value="oauth/providerSave">
         <input type="hidden" name="redirect" value="settings/plugins/oauth" />
         {% if infos %}<input type="hidden" name="providerId" value="{{ infos.id }}" />{% endif %}
