@@ -25,9 +25,9 @@
         {{ getCsrfInput() }}
 
         <input type="hidden" name="action" value="oauth/providerSave">
-        <input type="hidden" name="redirect" value="settings/plugins/oauth" />
+        <input type="hidden" name="redirect" value="oauth" />
         {% if infos %}<input type="hidden" name="providerId" value="{{ infos.id }}" />{% endif %}
-        <input type="hidden" name="handle" value="{{ provider.handle }}" />
+        <input type="hidden" name="handle" value="{{ provider.handle }}" />        
 
         <h2 class="first">{{ "Create an OAuth application"|t }}</h2>
 
