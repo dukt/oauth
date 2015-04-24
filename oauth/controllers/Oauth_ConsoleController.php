@@ -19,7 +19,7 @@ class Oauth_ConsoleController extends BaseController
      *
      * @return null
      */
-    public function actionConsole(array $variables = array())
+    public function actionIndex(array $variables = array())
     {
         $providers = craft()->oauth->getProviders(false);
 
@@ -44,7 +44,7 @@ class Oauth_ConsoleController extends BaseController
      *
      * @return null
      */
-    public function actionConsoleProvider(array $variables = array())
+    public function actionProvider(array $variables = array())
     {
         // require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
 
@@ -82,7 +82,7 @@ class Oauth_ConsoleController extends BaseController
      *
      * @return null
      */
-    public function actionConsoleConnect()
+    public function actionConnect()
     {
         $referer = craft()->request->getUrlReferrer();
         $providerHandle = craft()->request->getParam('provider');
@@ -91,7 +91,7 @@ class Oauth_ConsoleController extends BaseController
         craft()->httpSession->add('oauth.console.providerHandle', $providerHandle);
         craft()->httpSession->remove('oauth.console.token.'.$providerHandle);
 
-        $this->redirect(UrlHelper::getActionUrl('oauth/consoleConnectStep2'));
+        $this->redirect(UrlHelper::getActionUrl('oauth/console/connectStep2'));
     }
 
     /**
@@ -99,7 +99,7 @@ class Oauth_ConsoleController extends BaseController
      *
      * @return null
      */
-    public function actionConsoleConnectStep2()
+    public function actionConnectStep2()
     {
         $providerHandle = craft()->httpSession->get('oauth.console.providerHandle');
         $referer = craft()->httpSession->get('oauth.console.referer');
@@ -154,7 +154,7 @@ class Oauth_ConsoleController extends BaseController
      *
      * @return null
      */
-    public function actionConsoleDisconnect()
+    public function actionDisconnect()
     {
         $providerHandle = craft()->request->getParam('provider');
 
