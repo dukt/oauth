@@ -23,244 +23,9 @@ class OauthService extends BaseApplicationComponent
     private $_allProviders = array();
     private $_providersLoaded = false;
 
-    public function tokenToArray(Oauth_TokenModel $token)
-    {
-        return $token->getAttributes();
-    }
-
-    public function arrayToToken(array $array)
-    {
-        $token = new Oauth_TokenModel;
-        $token->setAttributes($array);
-
-        return $token;
-    }
-
-    public function realTokenToArray($token)
-    {
-        $class = get_class($token);
-
-        $tokenArray = array(
-            'class' => $class,
-            'accessToken' => $token->getAccessToken(),
-            'endOfLife' => $token->getEndOfLife(),
-            'extraParams' => $token->getExtraParams(),
-        );
-
-        switch($class)
-        {
-            case 'OAuth\OAuth1\Token\StdOAuth1Token':
-            $tokenArray['requestToken'] = $token->getRequestToken();
-            $tokenArray['requestTokenSecret'] = $token->getRequestTokenSecret();
-            $tokenArray['accessTokenSecret'] = $token->getAccessTokenSecret();
-            break;
-
-            case 'OAuth\OAuth2\Token\StdOAuth2Token':
-            $tokenArray['refreshToken'] = $token->getRefreshToken();
-            break;
-        }
-
-        return $tokenArray;
-    }
-
-    public function getTokensByProvider($providerHandle)
-    {
-        $conditions = 'providerHandle=:providerHandle';
-        $params = array(':providerHandle' => $providerHandle);
-        $records = Oauth_TokenRecord::model()->findAll($conditions, $params);
-        return Oauth_TokenModel::populateModels($records);
-    }
-
     /**
-     * Delete token ID
+     * Connect
      */
-    public function deleteToken(Oauth_TokenModel $token)
-    {
-        if (!$token->id)
-        {
-            return false;
-        }
-
-        $record = Oauth_TokenRecord::model()->findById($token->id);
-
-        if($record)
-        {
-            return $record->delete();
-        }
-
-        return false;
-    }
-
-    public function deleteTokensByPlugin($pluginHandle)
-    {
-        $conditions = 'pluginHandle=:pluginHandle';
-        $params = array(':pluginHandle' => $pluginHandle);
-        return Oauth_TokenRecord::model()->deleteAll($conditions, $params);
-    }
-
-    /**
-     * Get token by ID
-     */
-    public function getTokenById($id)
-    {
-
-        if ($id)
-        {
-            $record = Oauth_TokenRecord::model()->findById($id);
-
-            if ($record)
-            {
-                $token = Oauth_TokenModel::populateModel($record);
-
-                // will refresh token if needed
-
-                try
-                {
-                    if($this->refreshToken($token))
-                    {
-                        // save refreshed token
-                        $this->saveToken($token);
-                    }
-                }
-                catch(\Exception $e)
-                {
-                    // todo: log
-                    // throw $e;
-
-                    // return null;
-                }
-
-                return $token;
-            }
-        }
-    }
-
-    /**
-     * Save token
-     */
-    public function saveToken(Oauth_TokenModel &$model)
-    {
-        // is new ?
-        $isNewToken = !$model->id;
-
-        // populate record
-        $record = $this->getTokenRecordById($model->id);
-        $record->providerHandle = strtolower($model->providerHandle);
-        $record->pluginHandle = strtolower($model->pluginHandle);
-        $record->accessToken = $model->accessToken;
-        $record->secret = $model->secret;
-        $record->endOfLife = $model->endOfLife;
-        $record->refreshToken = $model->refreshToken;
-
-        // save record
-        if($record->save(false))
-        {
-            // populate id
-            if($isNewToken)
-            {
-                $model->id = $record->id;
-            }
-
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    /**
-     * Get token record by ID
-     */
-    private function getTokenRecordById($id = null)
-    {
-        if ($id)
-        {
-            $record = Oauth_TokenRecord::model()->findById($id);
-
-            if (!$record)
-            {
-                throw new Exception(Craft::t('No oauth token exists with the ID “{id}”', array('id' => $id)));
-            }
-        }
-        else
-        {
-            $record = new Oauth_TokenRecord();
-        }
-
-        return $record;
-    }
-
-    public function refreshToken(Oauth_TokenModel $model)
-    {
-        if(is_object($model))
-        {
-            $time = time();
-
-            // force refresh for testing
-            // $time = time() + 3595; // google ttl
-            // $time = time() + 50400005089; // facebook ttl
-
-            // has token expired ?
-
-            if($time > $model->endOfLife)
-            {
-                $realToken = $this->getRealToken($model);
-                $provider = craft()->oauth->getProvider($model->providerHandle);
-                $infos = $provider->getInfos();
-
-                if($newToken = $provider->refreshAccessToken($realToken))
-                {
-                    // make new token current
-
-                    $model->accessToken = $newToken->getAccessToken();
-
-                    if(method_exists($newToken, 'getAccessTokenSecret'))
-                    {
-                        $model->secret = $newToken->getAccessTokenSecret();
-                    }
-
-                    $model->endOfLife = $newToken->getEndOfLife();
-
-                    $newRefreshToken = $newToken->getRefreshToken();
-
-                    if(!empty($newRefreshToken))
-                    {
-                        $model->refreshToken = $newToken->getRefreshToken();
-                    }
-
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    public function getRealToken(Oauth_TokenModel $token)
-    {
-        $provider = $this->getProvider($token->providerHandle);
-
-        switch($provider->oauthVersion)
-        {
-            case 1:
-            $realToken = new \OAuth\OAuth1\Token\StdOAuth1Token();
-            $realToken->setAccessTokenSecret($token->secret);
-            break;
-
-
-            case 2:
-            $realToken = new \OAuth\OAuth2\Token\StdOAuth2Token();
-            break;
-        }
-
-        $realToken->setAccessToken($token->accessToken);
-        $realToken->setEndOfLife($token->endOfLife);
-        $realToken->setRefreshToken($token->refreshToken);
-
-        return $realToken;
-    }
-
     public function connect($variables)
     {
         if(!craft()->httpSession->get('oauth.response'))
@@ -269,7 +34,7 @@ class OauthService extends BaseApplicationComponent
 
             // clean session
 
-            craft()->oauth->sessionClean();
+            $this->_sessionClean();
 
 
             // referer
@@ -330,18 +95,44 @@ class OauthService extends BaseApplicationComponent
 
                 $token = new Oauth_TokenModel;
 
-                $token->accessToken = $response['token']['accessToken'];
+                $provider = $this->getProvider($variables['provider']);
 
-                if(!empty($response['token']['accessTokenSecret']))
+                if($provider)
                 {
-                    $token->secret = $response['token']['accessTokenSecret'];
-                }
+                    switch ($provider->oauthVersion) {
+                        case 1:
 
-                $token->endOfLife = $response['token']['endOfLife'];
+                            if(!empty($response['token']['identifier']))
+                            {
+                                $token->accessToken = $response['token']['identifier'];
+                            }
 
-                if(!empty($response['token']['refreshToken']))
-                {
-                    $token->refreshToken = $response['token']['refreshToken'];
+                            if(!empty($response['token']['secret']))
+                            {
+                                $token->secret = $response['token']['secret'];
+                            }
+
+                            break;
+
+                        case 2:
+
+                            if(!empty($response['token']['accessToken']))
+                            {
+                                $token->accessToken = $response['token']['accessToken'];
+                            }
+
+                            if(!empty($response['token']['expires']))
+                            {
+                                $token->endOfLife = $response['token']['expires'];
+                            }
+
+                            if(!empty($response['token']['refreshToken']))
+                            {
+                                $token->refreshToken = $response['token']['refreshToken'];
+                            }
+
+                            break;
+                    }
                 }
 
                 $token->providerHandle = $variables['provider'];
@@ -350,20 +141,15 @@ class OauthService extends BaseApplicationComponent
                 $response['token'] = $token;
             }
 
-            craft()->oauth->sessionClean();
+            $this->_sessionClean();
 
             return $response;
         }
     }
 
-    public function callbackUrl($handle)
-    {
-        $params = array('provider' => $handle);
-        $params = array();
-
-        return $this->getSiteActionUrl('oauth/connect', $params);
-    }
-
+    /**
+     * Get provider
+     */
     public function getProvider($handle,  $configuredOnly = true, $fromRecord = false)
     {
         $this->_loadProviders($fromRecord);
@@ -388,6 +174,9 @@ class OauthService extends BaseApplicationComponent
         return null;
     }
 
+    /**
+     * Get providers
+     */
     public function getProviders($configuredOnly = true)
     {
         $this->_loadProviders();
@@ -402,11 +191,14 @@ class OauthService extends BaseApplicationComponent
         }
     }
 
+    /**
+     * Save provider
+     */
     public function providerSave(Oauth_ProviderInfosModel $model)
     {
         // save record
 
-        $record = $this->_getProviderRecordById($model->id);
+        $record = $this->_getProviderInfosRecordById($model->id);
         $record->class = $model->class;
         $record->clientId = $model->clientId;
         $record->clientSecret = $model->clientSecret;
@@ -414,7 +206,285 @@ class OauthService extends BaseApplicationComponent
         return $record->save(false);
     }
 
-    public function sessionClean()
+    /**
+     * Get provider infos
+     */
+    public function getProviderInfos($handle)
+    {
+        $record = $this->_getProviderRecordByHandle($handle);
+
+        if($record)
+        {
+            return Oauth_ProviderInfosModel::populateModel($record);
+        }
+    }
+
+    /**
+     * Get token by ID
+     */
+    public function getTokenById($id)
+    {
+        if ($id)
+        {
+            $record = Oauth_TokenRecord::model()->findById($id);
+
+            if ($record)
+            {
+                $token = Oauth_TokenModel::populateModel($record);
+
+                // will refresh token if needed
+
+                try
+                {
+                    if($this->_refreshToken($token))
+                    {
+                        // save refreshed token
+                        $this->saveToken($token);
+                    }
+                }
+                catch(\Exception $e)
+                {
+                    // todo: log
+                    // throw $e;
+
+                    // return null;
+                }
+
+                return $token;
+            }
+        }
+    }
+
+    /**
+     * Get real token
+     */
+    public function getRealToken(Oauth_TokenModel $token)
+    {
+        $provider = $this->getProvider($token->providerHandle);
+
+        if($provider)
+        {
+            switch($provider->oauthVersion)
+            {
+                case 1:
+                $realToken = new \League\OAuth1\Client\Credentials\TokenCredentials();
+                $realToken->setIdentifier($token->accessToken);
+                $realToken->setSecret($token->secret);
+                break;
+
+
+                case 2:
+                $realToken = new \League\OAuth2\Client\Token\AccessToken([
+                    'access_token' => $token->accessToken,
+                    'refresh_token' => $token->refreshToken,
+                    'secret' => $token->secret,
+                    'expires' => $token->endOfLife,
+                ]);
+
+                break;
+            }
+
+            return $realToken;
+        }
+    }
+    /**
+     * Get tokens by provider
+     */
+    public function getTokensByProvider($providerHandle)
+    {
+        $conditions = 'providerHandle=:providerHandle';
+        $params = array(':providerHandle' => $providerHandle);
+        $records = Oauth_TokenRecord::model()->findAll($conditions, $params);
+        return Oauth_TokenModel::populateModels($records);
+    }
+
+    /**
+     * Save token
+     */
+    public function saveToken(Oauth_TokenModel &$model)
+    {
+        // is new ?
+        $isNewToken = !$model->id;
+
+        // populate record
+        $record = $this->_getTokenRecordById($model->id);
+        $record->providerHandle = strtolower($model->providerHandle);
+        $record->pluginHandle = strtolower($model->pluginHandle);
+        $record->accessToken = $model->accessToken;
+        $record->secret = $model->secret;
+        $record->endOfLife = $model->endOfLife;
+        $record->refreshToken = $model->refreshToken;
+
+        // save record
+        if($record->save(false))
+        {
+            // populate id
+            if($isNewToken)
+            {
+                $model->id = $record->id;
+            }
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /**
+     * Delete token ID
+     */
+    public function deleteToken(Oauth_TokenModel $token)
+    {
+        if (!$token->id)
+        {
+            return false;
+        }
+
+        $record = Oauth_TokenRecord::model()->findById($token->id);
+
+        if($record)
+        {
+            return $record->delete();
+        }
+
+        return false;
+    }
+
+    /**
+     * Delete tokens by plugin
+     */
+    public function deleteTokensByPlugin($pluginHandle)
+    {
+        $conditions = 'pluginHandle=:pluginHandle';
+        $params = array(':pluginHandle' => $pluginHandle);
+        return Oauth_TokenRecord::model()->deleteAll($conditions, $params);
+    }
+
+    /**
+     * Token to array
+     */
+    public function tokenToArray(Oauth_TokenModel $token)
+    {
+        return $token->getAttributes();
+    }
+
+    /**
+     * Array to token
+     */
+    public function arrayToToken(array $array)
+    {
+        $token = new Oauth_TokenModel;
+        $token->setAttributes($array);
+
+        return $token;
+    }
+
+    /**
+     * Real token to array
+     */
+    public function realTokenToArray($token)
+    {
+        $class = get_class($token);
+
+        $tokenArray = array(
+            'class' => $class,
+
+            // 'extraParams' => $token->getExtraParams(),
+        );
+
+        switch($class)
+        {
+            case 'League\OAuth1\Client\Credentials\TokenCredentials':
+            $tokenArray['identifier'] = $token->getIdentifier();
+            $tokenArray['secret'] = $token->getSecret();
+            break;
+
+            case 'League\OAuth2\Client\Token\AccessToken':
+            $tokenArray['accessToken'] = $token->accessToken;
+            $tokenArray['refreshToken'] = $token->refreshToken;
+            $tokenArray['endOfLife'] = $token->expires;
+            break;
+        }
+
+        return $tokenArray;
+    }
+
+    // Private Methods
+    // =========================================================================
+
+    /**
+     * Get token record by ID
+     */
+    private function _getTokenRecordById($id = null)
+    {
+        if ($id)
+        {
+            $record = Oauth_TokenRecord::model()->findById($id);
+
+            if (!$record)
+            {
+                throw new Exception(Craft::t('No oauth token exists with the ID “{id}”', array('id' => $id)));
+            }
+        }
+        else
+        {
+            $record = new Oauth_TokenRecord();
+        }
+
+        return $record;
+    }
+
+    private function _refreshToken(Oauth_TokenModel $model)
+    {
+        $time = time();
+
+        // force refresh for testing
+        // $time = time() + 3595; // google ttl
+        // $time = time() + 50400005089; // facebook ttl
+
+        $provider = craft()->oauth->getProvider($model->providerHandle);
+
+
+        // Refreshing the token only applies to OAuth 2.0 providers
+
+        if($provider && $provider->oauthVersion == 2)
+        {
+            // Has token expired ?
+
+            if($time > $model->endOfLife)
+            {
+                $realToken = $this->getRealToken($model);
+
+                $infos = $provider->getInfos();
+
+                $refreshToken = $realToken->refreshToken;
+
+                $grant = new \League\OAuth2\Client\Grant\RefreshToken();
+                $newToken = $provider->getProvider()->getAccessToken($grant, ['refresh_token' => $refreshToken]);
+
+                if($newToken)
+                {
+                    $model->accessToken = $newToken->accessToken;
+                    $model->endOfLife = $newToken->expires;
+
+                    $newRefreshToken = $newToken->refreshToken;
+
+                    if(!empty($newRefreshToken))
+                    {
+                        $model->refreshToken = $newToken->refreshToken;
+                    }
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public function _sessionClean()
     {
         craft()->httpSession->remove('oauth.handle');
         craft()->httpSession->remove('oauth.referer');
@@ -445,7 +515,7 @@ class OauthService extends BaseApplicationComponent
         return null;
     }
 
-    private function _getProviderRecordById($providerId = null)
+    private function _getProviderInfosRecordById($providerId = null)
     {
         if ($providerId)
         {
@@ -464,16 +534,6 @@ class OauthService extends BaseApplicationComponent
         return $providerRecord;
     }
 
-    public function getProviderInfos($handle)
-    {
-        $record = $this->_getProviderRecordByHandle($handle);
-
-        if($record)
-        {
-            return Oauth_ProviderInfosModel::populateModel($record);
-        }
-    }
-
     /**
      * Loads the configured providers.
      */
@@ -484,7 +544,7 @@ class OauthService extends BaseApplicationComponent
             return;
         }
 
-        $providerSources = $this->getProviderSources();
+        $providerSources = $this->_getProviders();
 
         foreach($providerSources as $providerSource)
         {
@@ -530,11 +590,11 @@ class OauthService extends BaseApplicationComponent
         $this->_providersLoaded = true;
     }
 
-    public function getProviderSources()
+    private function _getProviders()
     {
         $providerSources = array();
 
-        $providersPath = CRAFT_PLUGINS_PATH.'oauth/src/Providers/';
+        $providersPath = CRAFT_PLUGINS_PATH.'oauth/providers/';
         $providersFolderContents = IOHelper::getFolderContents($providersPath, false);
 
         if($providersFolderContents)
@@ -543,20 +603,15 @@ class OauthService extends BaseApplicationComponent
             {
                 $path = IOHelper::normalizePathSeparators($path);
                 $fileName = IOHelper::getFileName($path, false);
-
-                if($fileName == 'AbstractProvider') continue;
-
                 $handle = $fileName;
-
-                $providerSources[] = $this->getProviderSource($handle);
+                $providerSources[] = $this->_getProvider($handle);
             }
         }
 
         return $providerSources;
     }
 
-
-    public function getProviderSource($providerClass)
+    private function _getProvider($providerClass)
     {
         // Get the full class name
 
@@ -566,190 +621,11 @@ class OauthService extends BaseApplicationComponent
 
         $providerSource = new $nsClass;
 
-        if (!$providerSource instanceof \Dukt\OAuth\Providers\AbstractProvider)
+        if (!$providerSource instanceof \Dukt\OAuth\base\Provider)
         {
-            die("this provider doesn't implement AbstractProvider abstract class");
+            die("This provider doesn't implement Provider abstract class");
         }
 
         return $providerSource;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // getSiteActionUrl
-
-    public function getSiteActionUrl($path = '', $params = null, $protocol = '')
-    {
-        $path = craft()->config->get('actionTrigger').'/'.trim($path, '/');
-        return $this->getSiteUrl($path, $params, $protocol, true, true);
-    }
-
-
-    // getSiteUrl with mustShowScriptName arg
-
-    public function getSiteUrl($path = '', $params = null, $protocol = '', $dynamicBaseUrl = false, $mustShowScriptName = false)
-    {
-        $path = trim($path, '/');
-        return static::_getUrl($path, $params, $protocol, $dynamicBaseUrl, $mustShowScriptName);
-    }
-
-
-    // copy of _getUrl
-
-    private static function _getUrl($path, $params, $protocol, $cpUrl, $mustShowScriptName)
-    {
-        // Normalize the params
-        $params = static::_normalizeParams($params, $anchor);
-
-        // Were there already any query string params in the path?
-        if (($qpos = strpos($path, '?')) !== false)
-        {
-            $params = substr($path, $qpos+1).($params ? '&'.$params : '');
-            $path = substr($path, 0, $qpos);
-        }
-
-        $showScriptName = ($mustShowScriptName || !craft()->config->omitScriptNameInUrls());
-
-        if ($cpUrl)
-        {
-            // Did they set the base URL manually?
-            $baseUrl = craft()->config->get('baseCpUrl');
-
-            if ($baseUrl)
-            {
-                // Make sure it ends in a slash
-                $baseUrl = rtrim($baseUrl, '/').'/';
-
-                if ($protocol)
-                {
-                    // Make sure we're using the right protocol
-                    $baseUrl = static::getUrlWithProtocol($baseUrl, $protocol);
-                }
-
-                // Should we be adding that script name in?
-                if ($showScriptName)
-                {
-                    $baseUrl .= craft()->request->getScriptName();
-                }
-            }
-            else
-            {
-                // Figure it out for ourselves, then
-                $baseUrl = craft()->request->getHostInfo($protocol);
-
-                if ($showScriptName)
-                {
-                    $baseUrl .= craft()->request->getScriptUrl();
-                }
-                else
-                {
-                    $baseUrl .= craft()->request->getBaseUrl();
-                }
-            }
-        }
-        else
-        {
-            $baseUrl = craft()->getSiteUrl($protocol);
-
-            // Should we be adding that script name in?
-            if ($showScriptName)
-            {
-                $baseUrl .= craft()->request->getScriptName();
-            }
-        }
-
-        // Put it all together
-        if (!$showScriptName || craft()->config->usePathInfo())
-        {
-            if ($path)
-            {
-                $url = rtrim($baseUrl, '/').'/'.trim($path, '/');
-
-                if (craft()->request->isSiteRequest() && craft()->config->get('addTrailingSlashesToUrls'))
-                {
-                    $url .= '/';
-                }
-            }
-            else
-            {
-                $url = $baseUrl;
-            }
-        }
-        else
-        {
-            $url = $baseUrl;
-
-            if ($path)
-            {
-                $params = craft()->urlManager->pathParam.'='.$path.($params ? '&'.$params : '');
-            }
-        }
-
-        if ($params)
-        {
-            $url .= '?'.$params;
-        }
-
-        if ($anchor)
-        {
-            $url .= $anchor;
-        }
-
-        return $url;
-    }
-
-    private static function _normalizeParams($params, &$anchor = '')
-    {
-        if (is_array($params))
-        {
-            foreach ($params as $name => $value)
-            {
-                if (!is_numeric($name))
-                {
-                    if ($name == '#')
-                    {
-                        $anchor = '#'.$value;
-                    }
-                    else if ($value !== null && $value !== '')
-                    {
-                        $params[] = $name.'='.$value;
-                    }
-
-                    unset($params[$name]);
-                }
-            }
-
-            $params = implode('&', array_filter($params));
-        }
-        else
-        {
-            $params = trim($params, '&?');
-        }
-
-        return $params;
     }
 }

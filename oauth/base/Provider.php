@@ -10,8 +10,7 @@
  * @license   https://dukt.net/craft/oauth/docs/license
  */
 
-
-namespace Dukt\OAuth\Providers;
+namespace Dukt\OAuth\base;
 
 use \Craft\Craft;
 use \Craft\LogLevel;
@@ -19,24 +18,80 @@ use \Craft\Oauth_TokenRecord;
 use \Craft\Oauth_TokenModel;
 use \Craft\Oauth_ProviderInfosRecord;
 use \Craft\Oauth_ProviderInfosModel;
-use \Craft\UrlHelper;
 
 use OAuth\Common\Storage\Session;
 use OAuth\Common\Consumer\Credentials;
 
-abstract class AbstractProvider {
+abstract class Provider {
 
     public $class;
     public $storage = null;
     public $token = null;
-    public $provider = null;
+    public $providerInfos = null;
+    protected $_provider;
     protected $service = null;
     protected $scopes = array();
+    protected $httpBuildEncType = 1;
 
-    public function __construct()
+    public function getUserDetails()
     {
-        // storage
-        $this->storage = new Session();
+        // try {
+            $token = \Craft\craft()->oauth->getRealToken($this->token);
+
+            return $this->_provider->getUserDetails($token);
+        // }
+        // catch(\Exception $e)
+        // {
+        //     // problem
+        // }
+    }
+
+    public function getAuthorizationUrl($options = array())
+    {
+        $this->_provider->state = isset($options['state']) ? $options['state'] : md5(uniqid(rand(), true));
+
+        //options as params
+        $params = $options;
+
+        // set default
+        $params['client_id'] = $this->_provider->clientId;
+        $params['redirect_uri'] = $this->_provider->redirectUri;
+        $params['state'] = $this->_provider->state;
+        $params['scope'] = is_array($this->_provider->scopes) ? implode($this->_provider->scopeSeparator, $this->_provider->scopes) : $this->_provider->scopes;
+        $params['response_type'] = isset($options['response_type']) ? $options['response_type'] : 'code';
+        $params['approval_prompt'] = isset($options['approval_prompt']) ? $options['approval_prompt'] : 'auto';
+
+        return $this->_provider->urlAuthorize().'?'.$this->httpBuildQuery($params, '', '&');
+    }
+
+    /**
+     * Build HTTP the HTTP query, handling PHP version control options
+     *
+     * @param  array        $params
+     * @param  integer      $numeric_prefix
+     * @param  string       $arg_separator
+     * @param  null|integer $enc_type
+     *
+     * @return string
+     * @codeCoverageIgnoreStart
+     */
+    protected function httpBuildQuery($params, $numeric_prefix = 0, $arg_separator = '&', $enc_type = null)
+    {
+        if (version_compare(PHP_VERSION, '5.4.0', '>=') && !defined('HHVM_VERSION')) {
+            if ($enc_type === null) {
+                $enc_type = $this->httpBuildEncType;
+            }
+            $url = http_build_query($params, $numeric_prefix, $arg_separator, $enc_type);
+        } else {
+            $url = http_build_query($params, $numeric_prefix, $arg_separator);
+        }
+
+        return $url;
+    }
+
+    public function getRedirectUri()
+    {
+        return \Craft\OauthHelper::getSiteActionUrl('oauth/connect');
     }
 
     public function getHandle()
@@ -67,43 +122,24 @@ abstract class AbstractProvider {
 
     public function initService()
     {
-        $handle = $this->getHandle();
-        $serviceFactory = new \OAuth\ServiceFactory();
-        $callbackUrl = \Craft\craft()->oauth->callbackUrl($handle);
+        // throw new \Exception("Error Processing Request", 1);
 
-        if($this->provider)
+        $this->getProvider();
+    }
+
+    public function getProvider()
+    {
+        if (!isset($this->_provider))
         {
-            $credentials = new Credentials(
-                $this->provider->clientId,
-                $this->provider->clientSecret,
-                $callbackUrl
-            );
-        }
-        else
-        {
-            $credentials = new Credentials(
-                'client id not provided',
-                'client secret not provided',
-                $callbackUrl
-            );
+            $this->_provider = $this->createProvider();
         }
 
-        $this->service = $serviceFactory->createService($handle, $credentials, $this->storage, $this->scopes);
+        return $this->_provider;
     }
 
     public function getAuthorizationMethod()
     {
         return null;
-    }
-
-    public function getAuthorizationUri($params)
-    {
-        return $this->service->getAuthorizationUri($params);
-    }
-
-    public function requestRequestToken()
-    {
-        return $this->service->requestRequestToken();
     }
 
     public function hasRefreshToken()
@@ -134,7 +170,7 @@ abstract class AbstractProvider {
     public function setInfos(Oauth_ProviderInfosModel $provider)
     {
         // set provider
-        $this->provider = $provider;
+        $this->providerInfos = $provider;
 
         // re-initialize service with new scope
         $this->initService();
@@ -142,16 +178,12 @@ abstract class AbstractProvider {
 
     public function getInfos()
     {
-        return $this->provider;
+        return $this->providerInfos;
     }
 
     public function setScopes(array $scopes)
     {
-        // set scope
-        $this->scopes = $scopes;
-
-        // re-initialize service with new scope
-        $this->initService();
+        $this->_provider->scopes = $scopes;
     }
 
     public function getScopes()
@@ -162,19 +194,6 @@ abstract class AbstractProvider {
     public function getParams()
     {
         return array();
-    }
-
-    public function getStorage()
-    {
-        if(!$this->storage)
-        {
-            $this->storage = new Session();
-        }
-    }
-
-    public function retrieveAccessToken()
-    {
-        return $this->storage->retrieveAccessToken($this->getClass());
     }
 
     public function setToken(Oauth_TokenModel $token)
@@ -192,7 +211,7 @@ abstract class AbstractProvider {
      */
     public function isConfigured()
     {
-        if(!empty($this->provider->clientId))
+        if(!empty($this->providerInfos->clientId))
         {
             return true;
         }

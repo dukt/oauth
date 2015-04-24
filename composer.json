@@ -4,7 +4,9 @@
     },
     "autoload": {
         "psr-4": {
-            "Dukt\\OAuth\\": "oauth/src/"
+            "Dukt\\OAuth\\": "oauth/src/",
+            "Dukt\\OAuth\\base\\": "oauth/base/",
+            "Dukt\\OAuth\\Providers\\": "oauth/providers/"
         }
     },
     "repositories": [
@@ -14,6 +16,7 @@
         }
     ],
     "require": {
-        "lusitanian/oauth": "dev-dukt"
+        "league/oauth1-client": "1.0.*@dev",
+        "league/oauth2-client": "0.10.*@dev"
     }
 }

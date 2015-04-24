@@ -24,6 +24,157 @@ class OauthController extends BaseController
     private $referer;
 
     /**
+     * Connect
+     *
+     * @return null
+     */
+    public function actionConnect()
+    {
+        $error = false;
+        $success = false;
+        $token = false;
+        $errorMsg = false;
+
+        try
+        {
+            // handle
+            $this->handle = craft()->httpSession->get('oauth.handle');
+
+            if(!$this->handle)
+            {
+                $this->handle = craft()->request->getParam('provider');
+                craft()->httpSession->add('oauth.handle', $this->handle);
+            }
+
+
+            // session vars
+
+            $this->scopes = craft()->httpSession->get('oauth.scopes');
+            $this->params = craft()->httpSession->get('oauth.params');
+            $this->referer = craft()->httpSession->get('oauth.referer');
+
+
+            // google cancel
+
+            if(craft()->request->getParam('error'))
+            {
+                throw new Exception("An error occured: ".craft()->request->getParam('error'));
+            }
+
+
+            // twitter cancel
+
+            if(craft()->request->getParam('denied'))
+            {
+                throw new Exception("An error occured: ".craft()->request->getParam('denied'));
+            }
+
+
+            // provider
+
+            $provider = craft()->oauth->getProvider($this->handle);
+            $provider->setScopes($this->scopes);
+
+
+            // init service
+
+            switch($provider->oauthVersion)
+            {
+                case 2:
+
+                    if (!isset($_GET['code']))
+                    {
+                        $authUrl = $provider->getAuthorizationUrl($this->params);
+                        $_SESSION['oauth2state'] = $provider->getProvider()->state;
+                        header('Location: '.$authUrl);
+                        exit;
+                    }
+                    elseif (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state']))
+                    {
+                        unset($_SESSION['oauth2state']);
+                        exit('Invalid state');
+                    }
+                    else
+                    {
+                        $token = $provider->getProvider()->getAccessToken('authorization_code', [
+                            'code' => $_GET['code']
+                        ]);
+                    }
+
+                    break;
+
+                case 1:
+
+                    if (isset($_GET['user']))
+                    {
+                        if ( ! isset($_SESSION['token_credentials']))
+                        {
+                            echo 'No token credentials.';
+                            exit(1);
+                        }
+
+                        $token = unserialize($_SESSION['token_credentials']);
+                        // $user = $provider->getUserDetails($token);
+                        // var_dump($user);
+                    }
+                    elseif (isset($_GET['oauth_token']) && isset($_GET['oauth_verifier']))
+                    {
+                        $temporaryCredentials = unserialize($_SESSION['temporary_credentials']);
+
+                        $token = $provider->getProvider()->getTokenCredentials($temporaryCredentials, $_GET['oauth_token'], $_GET['oauth_verifier']);
+
+                        unset($_SESSION['temporary_credentials']);
+                        $_SESSION['token_credentials'] = serialize($token);
+                    }
+                    elseif (isset($_GET['denied']))
+                    {
+                        echo 'Hey! You denied the client access to your Twitter account! If you did this by mistake, you should <a href="?go=go">try again</a>.';
+                    }
+                    else
+                    {
+                        $temporaryCredentials = $provider->getProvider()->getTemporaryCredentials();
+                        $_SESSION['temporary_credentials'] = serialize($temporaryCredentials);
+                        $provider->getProvider()->authorize($temporaryCredentials);
+                    }
+
+                break;
+
+                default:
+                    throw new Exception("Couldn't handle connect for this provider");
+            }
+
+            $success = true;
+        }
+        catch(\Exception $e)
+        {
+            $error = true;
+            $errorMsg = $e->getMessage();
+        }
+
+
+        // we now have $token, build up response
+
+        $tokenArray = null;
+
+        if($token)
+        {
+            $tokenArray = craft()->oauth->realTokenToArray($token);
+        }
+
+        $response = array(
+            'error'         => $error,
+            'errorMsg'      => $errorMsg,
+            'success'       => $success,
+            'token'         => $tokenArray
+        );
+
+        craft()->httpSession->add('oauth.response', $response);
+
+        // redirect
+        $this->redirect($this->referer);
+    }
+
+    /**
      * Edit Provider
      *
      * @return null
@@ -130,333 +281,4 @@ class OauthController extends BaseController
             }
         }
     }
-
-
-/*
-    handle
-    referer
-    params
-    response
-    scopes
-*/
-
-/*
-    requestUri
-    social
-    socialToken
-    socialUser
-    socialUid
-    socialProviderHandle
-    socialRedirect
-*/
-
-
-    /**
-     * Connect
-     *
-     * @return null
-     */
-    public function actionConnect()
-    {
-        $error = false;
-        $success = false;
-        $token = false;
-        $errorMsg = false;
-
-        try
-        {
-            // handle
-            $this->handle = craft()->httpSession->get('oauth.handle');
-
-            if(!$this->handle)
-            {
-                $this->handle = craft()->request->getParam('provider');
-                craft()->httpSession->add('oauth.handle', $this->handle);
-            }
-
-
-            // session vars
-
-            $this->scopes = craft()->httpSession->get('oauth.scopes');
-            $this->params = craft()->httpSession->get('oauth.params');
-            $this->referer = craft()->httpSession->get('oauth.referer');
-
-
-            // google cancel
-
-            if(craft()->request->getParam('error'))
-            {
-                throw new Exception("An error occured: ".craft()->request->getParam('error'));
-            }
-
-
-            // twitter cancel
-
-            if(craft()->request->getParam('denied'))
-            {
-                throw new Exception("An error occured: ".craft()->request->getParam('denied'));
-            }
-
-
-            // provider
-
-            $provider = craft()->oauth->getProvider($this->handle);
-            $provider->setScopes($this->scopes);
-
-
-            // init service
-
-            switch($provider->oauthVersion)
-            {
-                case 2:
-                    // oauth 2
-
-                    $code = craft()->request->getParam('code');
-
-                    if (!$code)
-                    {
-                        // redirect to authorization url if we don't have a code yet
-
-                        $authorizationUrl = $provider->getAuthorizationUri($this->params);
-
-                        $this->redirect($authorizationUrl);
-                    }
-                    else
-                    {
-                        // get token from code
-                        $token = $provider->requestAccessToken($code);
-                    }
-
-                    break;
-
-                case 1:
-
-                    // oauth 1
-
-                    $oauth_token = craft()->request->getParam('oauth_token');
-                    $oauth_verifier = craft()->request->getParam('oauth_verifier');
-
-                    if (!$oauth_token)
-                    {
-                        // redirect to authorization url if we don't have a oauth_token yet
-
-                        $token = $provider->requestRequestToken();
-                        $authorizationUrl = $provider->getAuthorizationUri(array('oauth_token' => $token->getRequestToken()));
-                        $this->redirect($authorizationUrl);
-                    }
-                    else
-                    {
-                        // get token from oauth_token
-                        $token = $provider->retrieveAccessToken();
-
-                        // This was a callback request, now get the token
-                        $token = $provider->requestAccessToken(
-                            $oauth_token,
-                            $oauth_verifier,
-                            $token->getRequestTokenSecret()
-                        );
-
-                        if(!$token->getAccessToken())
-                        {
-                            throw new Exception("Couldn't retrieve token");
-                        }
-                    }
-
-                break;
-
-                default:
-                    throw new Exception("Couldn't handle connect for this provider");
-            }
-
-            $success = true;
-        }
-        catch(\Exception $e)
-        {
-            $error = true;
-            $errorMsg = $e->getMessage();
-        }
-
-
-        // we now have $token, build up response
-
-        $tokenArray = null;
-
-        if($token)
-        {
-            $tokenArray = craft()->oauth->realTokenToArray($token);
-        }
-
-        $response = array(
-            'error'         => $error,
-            'errorMsg'      => $errorMsg,
-            'success'       => $success,
-            'token'         => $tokenArray
-        );
-
-        craft()->httpSession->add('oauth.response', $response);
-
-
-        // redirect
-        $this->redirect($this->referer);
-    }
-
-
-    // Console
-    // -------------------------------------------------------------------------
-
-    /**
-     * Console
-     *
-     * @return null
-     */
-    public function actionConsole(array $variables = array())
-    {
-        $providers = craft()->oauth->getProviders(false);
-
-        $tokens = array();
-
-        foreach($providers as $provider)
-        {
-            $token = craft()->httpSession->get('oauth.console.token.'.$provider->getHandle());
-
-            if($token)
-            {
-                $tokens[$provider->getHandle()] = true;
-            }
-        }
-        $variables['providers'] = $providers;
-        $variables['tokens'] = $tokens;
-
-        $this->renderTemplate('oauth/console/index', $variables);
-    }
-    /**
-     * Console
-     *
-     * @return null
-     */
-    public function actionConsoleProvider(array $variables = array())
-    {
-        // require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
-
-        $handle = $variables['providerHandle'];
-
-
-        // token
-
-        $token = false;
-        $tokenArray = craft()->httpSession->get('oauth.console.token.'.$handle);
-
-        if($tokenArray)
-        {
-            $token = craft()->oauth->arrayToToken($tokenArray);
-        }
-
-
-
-
-        // provider
-
-        $provider = craft()->oauth->getProvider($handle);
-
-
-        // render
-
-        $variables['provider'] = $provider;
-        $variables['token'] = $token;
-
-        $this->renderTemplate('oauth/console/_provider', $variables);
-    }
-
-    /**
-     * Console connect
-     *
-     * @return null
-     */
-    public function actionConsoleConnect()
-    {
-        $referer = craft()->request->getUrlReferrer();
-        $providerHandle = craft()->request->getParam('provider');
-
-        craft()->httpSession->add('oauth.console.referer', $referer);
-        craft()->httpSession->add('oauth.console.providerHandle', $providerHandle);
-        craft()->httpSession->remove('oauth.console.token.'.$providerHandle);
-
-        $this->redirect(UrlHelper::getActionUrl('oauth/consoleConnectStep2'));
-    }
-
-    /**
-     * Console Connect Step 2
-     *
-     * @return null
-     */
-    public function actionConsoleConnectStep2()
-    {
-        $providerHandle = craft()->httpSession->get('oauth.console.providerHandle');
-        $referer = craft()->httpSession->get('oauth.console.referer');
-
-
-        // connect
-
-        $provider = craft()->oauth->getProvider($providerHandle);
-
-        $scopes = $provider->getScopes();
-        $params = $provider->getParams();
-
-        if($response = craft()->oauth->connect(array(
-            'plugin' => 'oauth',
-            'provider' => $providerHandle,
-            'scopes' => $scopes,
-            'params' => $params
-        )))
-        {
-            if($response['success'])
-            {
-                // token
-                $token = $response['token'];
-
-                $tokenArray = craft()->oauth->tokenToArray($token);
-
-                // save token
-                craft()->httpSession->add('oauth.console.token.'.$providerHandle, $tokenArray);
-
-                // session notice
-                craft()->userSession->setNotice(Craft::t("Connected."));
-            }
-            else
-            {
-                craft()->userSession->setError(Craft::t($response['errorMsg']));
-            }
-        }
-        else
-        {
-            // session error
-            craft()->userSession->setError(Craft::t("Couldn’t connect"));
-        }
-
-
-        // redirect
-
-        $this->redirect($referer);
-    }
-
-    /**
-     * Console disconnect
-     *
-     * @return null
-     */
-    public function actionConsoleDisconnect()
-    {
-        $providerHandle = craft()->request->getParam('provider');
-
-        // reset token
-        craft()->httpSession->remove('oauth.console.token.'.$providerHandle);
-
-        // set notice
-        craft()->userSession->setNotice(Craft::t("Disconnected."));
-
-        // redirect
-        $redirect = craft()->request->getUrlReferrer();
-        $this->redirect($redirect);
-    }
-
 }

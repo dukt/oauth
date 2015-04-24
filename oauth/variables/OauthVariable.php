@@ -14,11 +14,6 @@ namespace Craft;
 
 class OauthVariable
 {
-    public function callbackUrl($handle)
-    {
-        return craft()->oauth->callbackUrl($handle);
-    }
-
     public function connect($handle, $scopes = null, $namespace = null, $params = array())
     {
         return craft()->oauth->connect($handle, $scopes, $namespace, $params);

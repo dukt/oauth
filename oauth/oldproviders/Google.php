@@ -24,6 +24,16 @@ class Google extends AbstractProvider {
         'userinfo_email'
     );
 
+    public function createProvider()
+    {
+        $config = [
+            'clientId' => $this->clientId,
+            'clientSecret' => $this->clientSecret
+        ];
+
+        return new \League\OAuth2\Client\Provider\Google($config);
+    }
+
 	public function getName()
 	{
 		return 'Google';
