@@ -142,31 +142,6 @@ abstract class Provider {
         return null;
     }
 
-    public function hasRefreshToken()
-    {
-        return method_exists($this->service, 'refreshAccessToken');
-    }
-
-    public function requestAccessToken($code)
-    {
-        return $this->service->requestAccessToken($code);
-    }
-
-    public function refreshAccessToken($token)
-    {
-        if(method_exists($this->service, 'refreshAccessToken'))
-        {
-            // $realToken = \Craft\craft()->oauth->getRealToken($token);
-
-            // return $this->service->refreshAccessToken($realToken);
-            return $this->service->refreshAccessToken($token);
-        }
-        else
-        {
-            return false;
-        }
-    }
-
     public function setInfos(Oauth_ProviderInfosModel $provider)
     {
         // set provider
