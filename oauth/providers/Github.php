@@ -31,9 +31,9 @@ class Github extends Provider {
     }
 
     /**
-     * Create Google Provider
+     * Create Github Provider
      *
-     * @return Google
+     * @return Github
      */
     public function createProvider()
     {

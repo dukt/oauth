@@ -46,8 +46,6 @@ class Oauth_ConsoleController extends BaseController
      */
     public function actionProvider(array $variables = array())
     {
-        // require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
-
         $handle = $variables['providerHandle'];
 
 
@@ -60,9 +58,6 @@ class Oauth_ConsoleController extends BaseController
         {
             $token = craft()->oauth->arrayToToken($tokenArray);
         }
-
-
-
 
         // provider
 
@@ -143,9 +138,7 @@ class Oauth_ConsoleController extends BaseController
             craft()->userSession->setError(Craft::t("Couldn’t connect"));
         }
 
-
         // redirect
-
         $this->redirect($referer);
     }
 

@@ -29,9 +29,9 @@ class Linkedin extends Provider {
     }
 
     /**
-     * Create Google Provider
+     * Create Linkedin Provider
      *
-     * @return Google
+     * @return Linkedin
      */
     public function createProvider()
     {

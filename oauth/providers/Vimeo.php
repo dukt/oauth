@@ -30,9 +30,9 @@ class Vimeo extends Provider {
     }
 
     /**
-     * Create Google Provider
+     * Create Vimeo Provider
      *
-     * @return Google
+     * @return Vimeo
      */
     public function createProvider()
     {

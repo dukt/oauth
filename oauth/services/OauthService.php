@@ -287,6 +287,7 @@ class OauthService extends BaseApplicationComponent
             return $realToken;
         }
     }
+
     /**
      * Get tokens by provider
      */
@@ -436,6 +437,9 @@ class OauthService extends BaseApplicationComponent
         return $record;
     }
 
+    /**
+     * Refresh token
+     */
     private function _refreshToken(Oauth_TokenModel $model)
     {
         $time = time();
@@ -484,6 +488,9 @@ class OauthService extends BaseApplicationComponent
         return false;
     }
 
+    /**
+     * Clean session
+     */
     public function _sessionClean()
     {
         craft()->httpSession->remove('oauth.handle');
@@ -494,6 +501,9 @@ class OauthService extends BaseApplicationComponent
         craft()->httpSession->remove('oauth.scopes');
     }
 
+    /**
+     * Get provider record by handle
+     */
     private function _getProviderRecordByHandle($handle)
     {
         $providerRecord = Oauth_ProviderInfosRecord::model()->find(
@@ -515,6 +525,9 @@ class OauthService extends BaseApplicationComponent
         return null;
     }
 
+    /**
+     * Get provider infos record by ID
+     */
     private function _getProviderInfosRecordById($providerId = null)
     {
         if ($providerId)
