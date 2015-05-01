@@ -92,7 +92,9 @@ class OauthController extends BaseController
                     elseif (empty($_GET['state']) || ($_GET['state'] !== $_SESSION['oauth2state']))
                     {
                         unset($_SESSION['oauth2state']);
-                        exit('Invalid state');
+
+                        throw new Exception("Invalid state");
+
                     }
                     else
                     {
@@ -109,13 +111,10 @@ class OauthController extends BaseController
                     {
                         if ( ! isset($_SESSION['token_credentials']))
                         {
-                            echo 'No token credentials.';
-                            exit(1);
+                            throw new Exception("Token credentials not provided");
                         }
 
                         $token = unserialize($_SESSION['token_credentials']);
-                        // $user = $provider->getUserDetails($token);
-                        // var_dump($user);
                     }
                     elseif (isset($_GET['oauth_token']) && isset($_GET['oauth_verifier']))
                     {
@@ -124,11 +123,12 @@ class OauthController extends BaseController
                         $token = $provider->getProvider()->getTokenCredentials($temporaryCredentials, $_GET['oauth_token'], $_GET['oauth_verifier']);
 
                         unset($_SESSION['temporary_credentials']);
+
                         $_SESSION['token_credentials'] = serialize($token);
                     }
                     elseif (isset($_GET['denied']))
                     {
-                        echo 'Hey! You denied the client access to your Twitter account! If you did this by mistake, you should <a href="?go=go">try again</a>.';
+                        throw new Exception("Client access denied by the user");
                     }
                     else
                     {
