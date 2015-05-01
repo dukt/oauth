@@ -39,13 +39,13 @@
                 {% endif %}
             </ul>
  #}
-            <p><a class="btn small" href="{{ actionUrl('oauth/consoleDisconnect', {provider:provider.handle}) }}">{{'Disconnect'|t}}</a></p>
+            <p><a class="btn small" href="{{ actionUrl('oauth/console/disconnect', {provider:provider.handle}) }}">{{'Disconnect'|t}}</a></p>
 
         {% else %}
 
             <h2 class="first">{{'Not connected'|t}}</h2>
             <p>{{'Test that the connection with this provider can be made.'|t}}</p>
-            <p><a class="btn submit" href="{{ actionUrl('oauth/consoleConnect', {provider:provider.handle}) }}">{{"Connect"|t}}</a></p>
+            <p><a class="btn submit" href="{{ actionUrl('oauth/console/connect', {provider:provider.handle}) }}">{{"Connect"|t}}</a></p>
 
         {% endif %}
     {% else %}
