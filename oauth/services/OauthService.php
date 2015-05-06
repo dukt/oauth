@@ -624,8 +624,10 @@ class OauthService extends BaseApplicationComponent
 
         foreach($oauthProviderTypes as $oauthProviderType)
         {
-            $providers[] = $this->_createProvider($oauthProviderType);
+            $providers[$oauthProviderType] = $this->_createProvider($oauthProviderType);
         }
+
+        ksort($providers);
 
         return $providers;
     }
