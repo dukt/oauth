@@ -122,8 +122,6 @@ abstract class Provider {
 
     public function initService()
     {
-        // throw new \Exception("Error Processing Request", 1);
-
         $this->getProvider();
     }
 
