@@ -9,6 +9,9 @@ namespace Craft;
 
 class OauthPlugin extends BasePlugin
 {
+    /**
+     * Get OAuth Providers
+     */
     public function getOAuthProviders()
     {
         return [
