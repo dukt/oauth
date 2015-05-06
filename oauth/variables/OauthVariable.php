@@ -14,11 +14,6 @@ namespace Craft;
 
 class OauthVariable
 {
-    public function connect($handle, $scopes = null, $namespace = null, $params = array())
-    {
-        return craft()->oauth->connect($handle, $scopes, $namespace, $params);
-    }
-
     public function disconnect($handle, $namespace = null)
     {
         return craft()->oauth->disconnect($handle, $namespace);
