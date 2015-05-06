@@ -6,6 +6,7 @@
  */
 
 namespace Dukt\OAuth\Providers;
+
 use Dukt\OAuth\base\Provider;
 
 class Linkedin extends Provider {

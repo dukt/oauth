@@ -7,7 +7,6 @@
 
 namespace Dukt\OAuth\Providers;
 
-use Guzzle\Http\Client;
 use Dukt\OAuth\base\Provider;
 
 class Facebook extends Provider {
