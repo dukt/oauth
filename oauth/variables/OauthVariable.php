@@ -21,12 +21,6 @@ class OauthVariable
     {
         return craft()->oauth->getProviders($configuredOnly);
     }
-
-    public function pluginCheckUpdates($pluginHandle)
-    {
-        return craft()->oauth_plugin->checkUpdates($pluginHandle);
-    }
-
     public function pluginUpdatePluginsUrl($plugins)
     {
         return craft()->oauth_plugin->pluginUpdatePluginsUrl($plugins);
