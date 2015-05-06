@@ -83,13 +83,13 @@ abstract class Provider {
     }
 
     /**
-     * Get Class
+     * Get provider class
+     *
+     * from : Dukt\OAuth\Providers\Dribbble
+     * to : Dribbble
      */
     public function getClass()
     {
-        // from : Dukt\OAuth\Providers\Dribbble
-        // to : Dribbble
-
         $nsClass = get_class($this);
 
         $class = substr($nsClass, strrpos($nsClass, "\\") + 1);
@@ -200,7 +200,7 @@ abstract class Provider {
     }
 
     /**
-     * Is Configured ?
+     * Checks if the provider is configured
      */
     public function isConfigured()
     {
