@@ -7,8 +7,9 @@
 
 namespace Dukt\OAuth\base;
 
-use \Craft\OauthHelper;
-use \Craft\Oauth_ProviderInfosModel;
+use Craft\OauthHelper;
+use Craft\Oauth_ProviderInfosModel;
+use Craft\Oauth_TokenModel;
 
 /**
  * Provider is the base class for classes representing providers in terms of objects.
