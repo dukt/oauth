@@ -12,11 +12,6 @@ class OauthVariable
     // Public Methods
     // =========================================================================
 
-    public function disconnect($handle, $namespace = null)
-    {
-        return craft()->oauth->disconnect($handle, $namespace);
-    }
-
     public function getAccount($handle, $namespace = null)
     {
         return craft()->oauth->getAccount($handle, $namespace);
