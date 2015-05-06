@@ -17,7 +17,7 @@ class OauthHelper
      */
     public function getRealToken(Oauth_TokenModel $token)
     {
-        $provider = $this->getProvider($token->providerHandle);
+        $provider = craft()->oauth->getProvider($token->providerHandle);
 
         if($provider)
         {
