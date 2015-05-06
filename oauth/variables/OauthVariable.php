@@ -12,11 +12,6 @@ class OauthVariable
     // Public Methods
     // =========================================================================
 
-    public function getAccount($handle, $namespace = null)
-    {
-        return craft()->oauth->getAccount($handle, $namespace);
-    }
-
     public function getProvider($handle, $configuredOnly = true)
     {
         return craft()->oauth->getProvider($handle, $configuredOnly);
