@@ -29,16 +29,6 @@ class Oauth_TokenModel extends BaseModel
         return $attributes;
     }
 
-    public function getHash()
-    {
-        return md5(array(
-                $this->accessToken,
-                $this->secret,
-                $this->endOfLife,
-                $this->refreshToken
-            ));
-    }
-
     public function getPlugin()
     {
         return craft()->plugins->getPlugin($this->pluginHandle);
