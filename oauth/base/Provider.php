@@ -23,18 +23,17 @@ abstract class Provider {
     // Properties
     // =========================================================================
 
-    public $class;
-    public $storage = null;
-    public $token = null;
-    public $providerInfos = null;
+    protected $token;
+    protected $providerInfos;
     protected $provider;
-    protected $service = null;
-    protected $scopes = array();
     protected $httpBuildEncType = 1;
 
     // Public Methods
     // =========================================================================
 
+    /**
+     * Get Account
+     */
     public function getAccount()
     {
         $token = OauthHelper::getRealToken($this->token);
@@ -42,6 +41,9 @@ abstract class Provider {
         return $this->getProvider()->getUserDetails($token);
     }
 
+    /**
+     * Get Authorization URL
+     */
     public function getAuthorizationUrl($options = array())
     {
         $this->getProvider()->state = isset($options['state']) ? $options['state'] : md5(uniqid(rand(), true));
@@ -60,11 +62,17 @@ abstract class Provider {
         return $this->getProvider()->urlAuthorize().'?'.$this->httpBuildQuery($params, '', '&');
     }
 
+    /**
+     * Get Redirect URI
+     */
     public function getRedirectUri()
     {
         return OauthHelper::getSiteActionUrl('oauth/connect');
     }
 
+    /**
+     * Get Handle
+     */
     public function getHandle()
     {
         $class = $this->getClass();
@@ -74,6 +82,9 @@ abstract class Provider {
         return $handle;
     }
 
+    /**
+     * Get Class
+     */
     public function getClass()
     {
         // from : Dukt\OAuth\Providers\Dribbble
@@ -86,11 +97,17 @@ abstract class Provider {
         return $class;
     }
 
-    // public function getTokens()
-    // {
-    //     return \Craft\craft()->oauth->getTokensByProvider($this->getHandle());
-    // }
+    /**
+     * Get Tokens
+     */
+    public function getTokens()
+    {
+        return \Craft\craft()->oauth->getTokensByProvider($this->getHandle());
+    }
 
+    /**
+     * Get Provider
+     */
     public function getProvider()
     {
         if (!isset($this->provider))
@@ -101,42 +118,44 @@ abstract class Provider {
         return $this->provider;
     }
 
+    /**
+     * Get Authorization Method
+     */
     public function getAuthorizationMethod()
     {
         return null;
     }
 
+    /**
+     * Set Infos
+     */
     public function setInfos(Oauth_ProviderInfosModel $provider)
     {
         $this->providerInfos = $provider;
     }
 
+    /**
+     * Get Infos
+     */
     public function getInfos()
     {
         return $this->providerInfos;
     }
 
+    /**
+     * Set Scopes
+     */
     public function setScopes(array $scopes)
     {
         $this->getProvider()->scopes = $scopes;
     }
 
+    /**
+     * Set Token
+     */
     public function setToken(Oauth_TokenModel $token)
     {
         $this->token = $token;
-    }
-
-    /**
-     * Is Configured ?
-     */
-    public function isConfigured()
-    {
-        if(!empty($this->providerInfos->clientId))
-        {
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -180,6 +199,18 @@ abstract class Provider {
         }
     }
 
+    /**
+     * Is Configured ?
+     */
+    public function isConfigured()
+    {
+        if(!empty($this->providerInfos->clientId))
+        {
+            return true;
+        }
+
+        return false;
+    }
 
     // Protected Methods
     // =========================================================================
