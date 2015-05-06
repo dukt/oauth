@@ -17,6 +17,7 @@ class OauthPlugin extends BasePlugin
     public function getOAuthProviders()
     {
         return [
+            'Dukt\OAuth\Providers\Bitbucket',
             'Dukt\OAuth\Providers\Facebook',
             'Dukt\OAuth\Providers\Github',
             'Dukt\OAuth\Providers\Google',
