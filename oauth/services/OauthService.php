@@ -603,42 +603,40 @@ class OauthService extends BaseApplicationComponent
         $this->_providersLoaded = true;
     }
 
+    /**
+     * Get Providers
+     */
     private function _getProviders()
     {
-        $providerSources = array();
+        // fetch all OAuth provider types
 
-        $providersPath = CRAFT_PLUGINS_PATH.'oauth/providers/';
-        $providersFolderContents = IOHelper::getFolderContents($providersPath, false);
+        $oauthProviderTypes = array();
 
-        if($providersFolderContents)
+        foreach(craft()->plugins->call('getOAuthProviders', [], true) as $pluginOAuthProviderTypes)
         {
-            foreach($providersFolderContents as $path)
-            {
-                $path = IOHelper::normalizePathSeparators($path);
-                $fileName = IOHelper::getFileName($path, false);
-                $handle = $fileName;
-                $providerSources[] = $this->_getProvider($handle);
-            }
+            $oauthProviderTypes = array_merge($oauthProviderTypes, $pluginOAuthProviderTypes);
         }
 
-        return $providerSources;
+
+        // instantiate providers
+
+        $providers = [];
+
+        foreach($oauthProviderTypes as $oauthProviderType)
+        {
+            $providers[] = $this->_createProvider($oauthProviderType);
+        }
+
+        return $providers;
     }
 
-    private function _getProvider($providerClass)
+    /**
+     * Create OAuth provider
+     */
+    private function _createProvider($oauthProviderType)
     {
-        // Get the full class name
+        $oauthProvider = new $oauthProviderType;
 
-        $class = $providerClass;
-
-        $nsClass = 'Dukt\\OAuth\\Providers\\'.$class;
-
-        $providerSource = new $nsClass;
-
-        if (!$providerSource instanceof \Dukt\OAuth\base\Provider)
-        {
-            die("This provider doesn't implement Provider abstract class");
-        }
-
-        return $providerSource;
+        return $oauthProvider;
     }
 }
