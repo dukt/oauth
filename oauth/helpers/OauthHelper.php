@@ -14,6 +14,91 @@ namespace Craft;
 class OauthHelper
 {
     /**
+     * Get real token
+     */
+    public function getRealToken(Oauth_TokenModel $token)
+    {
+        $provider = $this->getProvider($token->providerHandle);
+
+        if($provider)
+        {
+            switch($provider->oauthVersion)
+            {
+                case 1:
+                $realToken = new \League\OAuth1\Client\Credentials\TokenCredentials();
+                $realToken->setIdentifier($token->accessToken);
+                $realToken->setSecret($token->secret);
+                break;
+
+
+                case 2:
+                $realToken = new \League\OAuth2\Client\Token\AccessToken([
+                    'access_token' => $token->accessToken,
+                    'refresh_token' => $token->refreshToken,
+                    'secret' => $token->secret,
+                    'expires' => $token->endOfLife,
+                ]);
+
+                break;
+            }
+
+            return $realToken;
+        }
+    }
+
+    /**
+     * Token to array
+     */
+    public function tokenToArray(Oauth_TokenModel $token)
+    {
+        return $token->getAttributes();
+    }
+
+    /**
+     * Array to token
+     */
+    public function arrayToToken(array $array)
+    {
+        $token = new Oauth_TokenModel;
+        $token->setAttributes($array);
+
+        return $token;
+    }
+
+    /**
+     * Real token to array
+     */
+    public function realTokenToArray($token)
+    {
+        $class = get_class($token);
+
+        $tokenArray = array(
+            'class' => $class,
+
+            // 'extraParams' => $token->getExtraParams(),
+        );
+
+        switch($class)
+        {
+            case 'League\OAuth1\Client\Credentials\TokenCredentials':
+            $tokenArray['identifier'] = $token->getIdentifier();
+            $tokenArray['secret'] = $token->getSecret();
+            break;
+
+            case 'League\OAuth2\Client\Token\AccessToken':
+            $tokenArray['accessToken'] = $token->accessToken;
+            $tokenArray['refreshToken'] = $token->refreshToken;
+            $tokenArray['endOfLife'] = $token->expires;
+            break;
+        }
+
+        return $tokenArray;
+    }
+
+    // Modified Craft getSiteUrl to gain more control over showing script name and admin trigger
+    // =========================================================================
+
+    /**
      * Get site action URL
      *
      * @param string $path

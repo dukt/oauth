@@ -158,7 +158,7 @@ class OauthController extends BaseController
 
         if($token)
         {
-            $tokenArray = craft()->oauth->realTokenToArray($token);
+            $tokenArray = OauthHelper::realTokenToArray($token);
         }
 
         $response = array(

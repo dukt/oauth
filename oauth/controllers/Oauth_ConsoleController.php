@@ -56,7 +56,7 @@ class Oauth_ConsoleController extends BaseController
 
         if($tokenArray)
         {
-            $token = craft()->oauth->arrayToToken($tokenArray);
+            $token = OauthHelper::arrayToToken($tokenArray);
         }
 
         // provider
@@ -119,7 +119,7 @@ class Oauth_ConsoleController extends BaseController
                 // token
                 $token = $response['token'];
 
-                $tokenArray = craft()->oauth->tokenToArray($token);
+                $tokenArray = OauthHelper::tokenToArray($token);
 
                 // save token
                 craft()->httpSession->add('oauth.console.token.'.$providerHandle, $tokenArray);

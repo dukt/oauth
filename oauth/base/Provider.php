@@ -12,15 +12,8 @@
 
 namespace Dukt\OAuth\base;
 
-use \Craft\Craft;
-use \Craft\LogLevel;
-use \Craft\Oauth_TokenRecord;
-use \Craft\Oauth_TokenModel;
-use \Craft\Oauth_ProviderInfosRecord;
+use \Craft\OauthHelper;
 use \Craft\Oauth_ProviderInfosModel;
-
-use OAuth\Common\Storage\Session;
-use OAuth\Common\Consumer\Credentials;
 
 abstract class Provider {
 
@@ -35,15 +28,9 @@ abstract class Provider {
 
     public function getUserDetails()
     {
-        // try {
-            $token = \Craft\craft()->oauth->getRealToken($this->token);
+        $token = OauthHelper::getRealToken($this->token);
 
-            return $this->_provider->getUserDetails($token);
-        // }
-        // catch(\Exception $e)
-        // {
-        //     // problem
-        // }
+        return $this->_provider->getUserDetails($token);
     }
 
     public function getAuthorizationUrl($options = array())
@@ -91,7 +78,7 @@ abstract class Provider {
 
     public function getRedirectUri()
     {
-        return \Craft\OauthHelper::getSiteActionUrl('oauth/connect');
+        return OauthHelper::getSiteActionUrl('oauth/connect');
     }
 
     public function getHandle()
