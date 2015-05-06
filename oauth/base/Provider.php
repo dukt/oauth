@@ -172,28 +172,22 @@ abstract class Provider {
         switch($this->oauthVersion)
         {
             case 1:
-                $oauth = new \Guzzle\Plugin\Oauth\OauthPlugin(array(
+                return new \Guzzle\Plugin\Oauth\OauthPlugin(array(
                     'consumer_key' => $infos->clientId,
                     'consumer_secret' => $infos->clientSecret,
                     'token' => $token->accessToken,
                     'token_secret' => $token->secret
                 ));
 
-                return $oauth;
-
                 break;
 
             case 2:
-                $config = array(
+                return new \Dukt\OAuth\Guzzle\Plugin\Oauth2Plugin(array(
                     'consumer_key' => $infos->clientId,
                     'consumer_secret' => $infos->clientSecret,
                     'authorization_method' => $this->getAuthorizationMethod(),
                     'access_token' => $token->accessToken,
-                );
-
-                $oauth = new \Dukt\OAuth\Guzzle\Plugin\Oauth2Plugin($config);
-
-                return $oauth;
+                ));
 
                 break;
         }
