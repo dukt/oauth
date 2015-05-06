@@ -33,16 +33,4 @@ class Oauth_TokenModel extends BaseModel
     {
         return craft()->plugins->getPlugin($this->pluginHandle);
     }
-
-    public function refreshToken()
-    {
-        try {
-            craft()->oauth->refreshToken($this);
-            return true;
-        }
-        catch(\Exception $e)
-        {
-            return false;
-        }
-    }
 }
