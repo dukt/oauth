@@ -1,6 +1,12 @@
 <?php
+/**
+ * @link      https://dukt.net/craft/oauth/
+ * @copyright Copyright (c) 2015, Dukt
+ * @license   https://dukt.net/craft/oauth/docs/license
+ */
 
 namespace Dukt\OAuth\OAuth2\Client\Provider;
+
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Entity\User;
 

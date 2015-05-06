@@ -1,12 +1,7 @@
 <?php
-
 /**
- * Craft OAuth by Dukt
- *
- * @package   Craft OAuth
- * @author    Benjamin David
- * @copyright Copyright (c) 2015, Dukt
  * @link      https://dukt.net/craft/oauth/
+ * @copyright Copyright (c) 2015, Dukt
  * @license   https://dukt.net/craft/oauth/docs/license
  */
 
