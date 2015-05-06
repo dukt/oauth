@@ -10,7 +10,17 @@ namespace Dukt\OAuth\base;
 use \Craft\OauthHelper;
 use \Craft\Oauth_ProviderInfosModel;
 
+/**
+ * Provider is the base class for classes representing providers in terms of objects.
+ *
+ * @author Dukt <support@dukt.net>
+ * @since 1.0
+ */
+
 abstract class Provider {
+
+    // Properties
+    // =========================================================================
 
     public $class;
     public $storage = null;
@@ -20,6 +30,9 @@ abstract class Provider {
     protected $service = null;
     protected $scopes = array();
     protected $httpBuildEncType = 1;
+
+    // Public Methods
+    // =========================================================================
 
     public function getUserDetails()
     {

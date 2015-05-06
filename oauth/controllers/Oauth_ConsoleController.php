@@ -9,6 +9,9 @@ namespace Craft;
 
 class Oauth_ConsoleController extends BaseController
 {
+    // Public Methods
+    // =========================================================================
+
     /**
      * Console
      *
@@ -34,6 +37,7 @@ class Oauth_ConsoleController extends BaseController
 
         $this->renderTemplate('oauth/console/index', $variables);
     }
+
     /**
      * Console
      *

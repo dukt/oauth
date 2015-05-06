@@ -9,6 +9,9 @@ namespace Craft;
 
 class Oauth_ProviderInfosRecord extends BaseRecord
 {
+    // Public Methods
+    // =========================================================================
+
     /**
      * Get Table Name
      */

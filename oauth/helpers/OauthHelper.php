@@ -1,9 +1,17 @@
 <?php
+/**
+ * @link      https://dukt.net/craft/oauth/
+ * @copyright Copyright (c) 2015, Dukt
+ * @license   https://dukt.net/craft/oauth/docs/license
+ */
 
 namespace Craft;
 
 class OauthHelper
 {
+    // Public Methods
+    // =========================================================================
+
     /**
      * Get real token
      */

@@ -9,6 +9,9 @@ namespace Craft;
 
 class OauthVariable
 {
+    // Public Methods
+    // =========================================================================
+
     public function disconnect($handle, $namespace = null)
     {
         return craft()->oauth->disconnect($handle, $namespace);

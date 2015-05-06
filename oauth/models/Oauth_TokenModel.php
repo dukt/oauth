@@ -9,6 +9,9 @@ namespace Craft;
 
 class Oauth_TokenModel extends BaseModel
 {
+    // Public Methods
+    // =========================================================================
+
     public function defineAttributes()
     {
         $attributes = array(

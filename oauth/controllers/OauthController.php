@@ -9,14 +9,19 @@ namespace Craft;
 
 class OauthController extends BaseController
 {
-    protected $allowAnonymous = array('actionConnect');
+    // Properties
+    // =========================================================================
 
+    protected $allowAnonymous = array('actionConnect');
     private $handle;
     private $namespace;
     private $scopes;
     private $params;
     private $redirect;
     private $referer;
+
+    // Public Methods
+    // =========================================================================
 
     /**
      * Connect

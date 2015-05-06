@@ -9,7 +9,13 @@ namespace Craft;
 
 class Oauth_ProviderInfosModel extends BaseModel
 {
+    // Properties
+    // =========================================================================
+
     public $source;
+
+    // Public Methods
+    // =========================================================================
 
     public function defineAttributes()
     {
