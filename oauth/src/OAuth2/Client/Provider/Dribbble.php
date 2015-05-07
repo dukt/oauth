@@ -32,7 +32,7 @@ class Dribbble extends AbstractProvider
         $user = new User;
         $user->uid = $response->id;
         $user->name = $response->name;
-        $user->username = $response->username;
+        $user->nickname = $response->username;
 
         return $user;
     }
