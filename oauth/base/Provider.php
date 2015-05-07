@@ -24,6 +24,7 @@ abstract class Provider {
     // =========================================================================
 
     protected $token;
+    protected $params = array();
     protected $providerInfos;
     protected $provider;
     protected $httpBuildEncType = 1;
@@ -158,11 +159,26 @@ abstract class Provider {
         return $this->params;
     }
 
+    /**
      * Set Scopes
      */
     public function setScopes(array $scopes)
     {
-        $this->getProvider()->scopes = $scopes;
+        if(isset($this->getProvider()->scopes))
+        {
+            $this->getProvider()->scopes = $scopes;
+        }
+    }
+
+    /**
+     * Get Scopes
+     */
+    public function getScopes()
+    {
+        if(isset($this->getProvider()->scopes))
+        {
+            return $this->getProvider()->scopes;
+        }
     }
 
     /**

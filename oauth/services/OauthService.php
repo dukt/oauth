@@ -38,6 +38,10 @@ class OauthService extends BaseApplicationComponent
             $this->_sessionClean();
 
 
+            // get provider
+
+            $provider = craft()->oauth->getProvider($variables['provider']);
+
             // referer
 
             if(!empty($variables['referer']))
@@ -60,7 +64,7 @@ class OauthService extends BaseApplicationComponent
             }
             else
             {
-                $scopes = array();
+                $scopes = $provider->getScopes();
             }
 
             craft()->httpSession->add('oauth.scopes', $scopes);
@@ -74,7 +78,7 @@ class OauthService extends BaseApplicationComponent
             }
             else
             {
-                $params = array();
+                $params = $provider->getParams();
             }
 
             craft()->httpSession->add('oauth.params', $params);

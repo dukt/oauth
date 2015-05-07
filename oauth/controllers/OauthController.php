@@ -73,7 +73,11 @@ class OauthController extends BaseController
             // provider
 
             $provider = craft()->oauth->getProvider($this->handle);
-            $provider->setScopes($this->scopes);
+
+            if(is_array($this->scopes))
+            {
+                $provider->setScopes($this->scopes);
+            }
 
 
             // init service

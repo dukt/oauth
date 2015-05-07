@@ -103,14 +103,9 @@ class Oauth_ConsoleController extends BaseController
 
         $provider = craft()->oauth->getProvider($providerHandle);
 
-        $scopes = $provider->getScopes();
-        $params = $provider->getParams();
-
         if($response = craft()->oauth->connect(array(
             'plugin' => 'oauth',
-            'provider' => $providerHandle,
-            'scopes' => $scopes,
-            'params' => $params
+            'provider' => $providerHandle
         )))
         {
             if($response['success'])
