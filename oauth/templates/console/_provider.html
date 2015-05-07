@@ -17,7 +17,7 @@
         {% if token %}
 
             {% set void = provider.setToken(token) %}
-            {% set account = provider.getUserDetails() %}
+            {% set account = provider.getAccount() %}
 
             <h2 class="first">{{'Connected'|t}}</h2>
             <p>{{'You are authenticated to {provider} with the following account'|t({provider:provider.name})}} :</p>
@@ -25,20 +25,6 @@
 
             <pre>{{ dump(account) }}</pre>
 
-{#             <ul>
-                {% if account.uid is defined %}
-                    <li><strong>{{'UID'|t}} : </strong> {{account.uid}}</li>
-                {% endif %}
-
-                {% if account.name is defined %}
-                    <li><strong>{{'Name'|t}} : </strong> {{account.name}}</li>
-                {% endif %}
-
-                {% if account.email is defined %}
-                    <li><strong>{{'Email'|t}} : </strong> {{account.email}}</li>
-                {% endif %}
-            </ul>
- #}
             <p><a class="btn small" href="{{ actionUrl('oauth/console/disconnect', {provider:provider.handle}) }}">{{'Disconnect'|t}}</a></p>
 
         {% else %}
