@@ -143,6 +143,21 @@ abstract class Provider {
     }
 
     /**
+     * Set Params
+     */
+    public function setParams(array $params)
+    {
+        $this->params = $params;
+    }
+
+    /**
+     * Get Params
+     */
+    public function getParams()
+    {
+        return $this->params;
+    }
+
      * Set Scopes
      */
     public function setScopes(array $scopes)
