@@ -7,6 +7,8 @@
 
 namespace Craft;
 
+require_once(CRAFT_PLUGINS_PATH.'oauth/Info.php');
+
 class OauthPlugin extends BasePlugin
 {
     /**
@@ -40,7 +42,7 @@ class OauthPlugin extends BasePlugin
      */
     function getVersion()
     {
-        return '0.9.66';
+        return OAUTH_VERSION;
     }
 
     /**

@@ -1,6 +1,4 @@
 *.log
 .DS_Store
-/oauth/vendor
-composer.lock
-composer.phar
-phpunit.xml
+Source/oauth/vendor
+Source/composer.lock
