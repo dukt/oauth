@@ -15,7 +15,7 @@ class OauthHelper
     /**
      * Get real token
      */
-    public function getRealToken(Oauth_TokenModel $token)
+    public static function getRealToken(Oauth_TokenModel $token)
     {
         $provider = craft()->oauth->getProvider($token->providerHandle);
 
@@ -48,7 +48,7 @@ class OauthHelper
     /**
      * Token to array
      */
-    public function tokenToArray(Oauth_TokenModel $token)
+    public static function tokenToArray(Oauth_TokenModel $token)
     {
         return $token->getAttributes();
     }
@@ -56,7 +56,7 @@ class OauthHelper
     /**
      * Array to token
      */
-    public function arrayToToken(array $array)
+    public static function arrayToToken(array $array)
     {
         $token = new Oauth_TokenModel;
         $token->setAttributes($array);
@@ -67,7 +67,7 @@ class OauthHelper
     /**
      * Real token to array
      */
-    public function realTokenToArray($token)
+    public static function realTokenToArray($token)
     {
         $class = get_class($token);
 
