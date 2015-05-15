@@ -205,12 +205,12 @@ class OauthController extends BaseController
             }
             else
             {
-                throw new HttpException(404, $exception->getMessage());
+                throw new HttpException(404);
             }
         }
         else
         {
-            throw new HttpException(404, $exception->getMessage());
+            throw new HttpException(404);
         }
     }
 
