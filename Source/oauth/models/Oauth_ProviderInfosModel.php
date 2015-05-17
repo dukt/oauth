@@ -17,7 +17,37 @@ class Oauth_ProviderInfosModel extends BaseModel
     // Public Methods
     // =========================================================================
 
-    public function defineAttributes()
+    /**
+     * Set Source
+     */
+    public function setSource($source)
+    {
+        $this->source = $source;
+    }
+
+    /**
+     * Get Handle
+     */
+    public function getHandle()
+    {
+        return strtolower($this->class);
+    }
+
+    /**
+     * Get Name
+     */
+    public function getName()
+    {
+        return $this->source->getName();
+    }
+
+    // Protected Methods
+    // =========================================================================
+
+    /**
+     * Define Attributes
+     */
+    protected function defineAttributes()
     {
         $attributes = array(
                 'id'    => AttributeType::Number,
@@ -27,20 +57,5 @@ class Oauth_ProviderInfosModel extends BaseModel
             );
 
         return $attributes;
-    }
-
-    public function setSource($source)
-    {
-        $this->source = $source;
-    }
-
-    public function getHandle()
-    {
-        return strtolower($this->class);
-    }
-
-    public function getName()
-    {
-        return $this->source->getName();
     }
 }
