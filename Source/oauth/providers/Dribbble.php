@@ -9,10 +9,16 @@ namespace Dukt\OAuth\Providers;
 
 use Dukt\OAuth\base\Provider;
 
-class Dribbble extends Provider {
+class Dribbble extends Provider
+{
+    // Properties
+    // =========================================================================
 
     public $consoleUrl = 'https://dribbble.com/account/applications';
     public $oauthVersion = 2;
+
+    // Public Methods
+    // =========================================================================
 
     /**
      * Get Name

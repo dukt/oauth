@@ -9,10 +9,16 @@ namespace Dukt\OAuth\Providers;
 
 use Dukt\OAuth\base\Provider;
 
-class Linkedin extends Provider {
+class Linkedin extends Provider
+{
+    // Properties
+    // =========================================================================
 
     public $consoleUrl = 'https://www.linkedin.com/secure/developer';
     public $oauthVersion = 2;
+
+    // Public Methods
+    // =========================================================================
 
     /**
      * Get Name

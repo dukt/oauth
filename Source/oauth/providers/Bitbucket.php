@@ -9,10 +9,16 @@ namespace Dukt\OAuth\Providers;
 
 use Dukt\OAuth\base\Provider;
 
-class Bitbucket extends Provider {
+class Bitbucket extends Provider
+{
+    // Properties
+    // =========================================================================
 
     public $consoleUrl = 'https://bitbucket.org/account/';
     public $oauthVersion = 1;
+
+    // Public Methods
+    // =========================================================================
 
     /**
      * Get Name

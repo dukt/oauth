@@ -9,10 +9,16 @@ namespace Dukt\OAuth\Providers;
 
 use Dukt\OAuth\base\Provider;
 
-class Instagram extends Provider {
+class Instagram extends Provider
+{
+    // Properties
+    // =========================================================================
 
     public $consoleUrl = 'http://instagram.com/developer/clients/';
     public $oauthVersion = 2;
+
+    // Public Methods
+    // =========================================================================
 
     /**
      * Get Name

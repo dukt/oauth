@@ -13,7 +13,7 @@ class Oauth_ConsoleController extends BaseController
     // =========================================================================
 
     /**
-     * Console
+     * Index
      *
      * @return null
      */
@@ -39,7 +39,7 @@ class Oauth_ConsoleController extends BaseController
     }
 
     /**
-     * Console
+     * Provider
      *
      * @return null
      */
@@ -72,7 +72,7 @@ class Oauth_ConsoleController extends BaseController
     }
 
     /**
-     * Console connect
+     * Connect
      *
      * @return null
      */
@@ -89,7 +89,7 @@ class Oauth_ConsoleController extends BaseController
     }
 
     /**
-     * Console Connect Step 2
+     * Connect Step 2
      *
      * @return null
      */
@@ -137,7 +137,7 @@ class Oauth_ConsoleController extends BaseController
     }
 
     /**
-     * Console disconnect
+     * Disconnect
      *
      * @return null
      */

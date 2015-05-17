@@ -9,10 +9,16 @@ namespace Dukt\OAuth\Providers;
 
 use Dukt\OAuth\base\Provider;
 
-class Twitter extends Provider {
+class Twitter extends Provider
+{
+    // Properties
+    // =========================================================================
 
     public $consoleUrl = 'https://dev.twitter.com/apps';
     public $oauthVersion = 1;
+
+    // Public Methods
+    // =========================================================================
 
     /**
      * Get Name

@@ -9,10 +9,16 @@ namespace Dukt\OAuth\Providers;
 
 use Dukt\OAuth\base\Provider;
 
-class Vimeo extends Provider {
+class Vimeo extends Provider
+{
+    // Properties
+    // =========================================================================
 
     public $consoleUrl = 'https://developer.vimeo.com/apps';
     public $oauthVersion = 2;
+
+    // Public Methods
+    // =========================================================================
 
     /**
      * Get Name

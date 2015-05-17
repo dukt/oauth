@@ -9,10 +9,16 @@ namespace Dukt\OAuth\Providers;
 
 use Dukt\OAuth\base\Provider;
 
-class Github extends Provider {
+class Github extends Provider
+{
+    // Properties
+    // =========================================================================
 
     public $consoleUrl = 'https://github.com/settings/applications/';
     public $oauthVersion = 2;
+
+    // Public Methods
+    // =========================================================================
 
     /**
      * Get Name

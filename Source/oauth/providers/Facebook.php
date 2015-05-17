@@ -9,10 +9,16 @@ namespace Dukt\OAuth\Providers;
 
 use Dukt\OAuth\base\Provider;
 
-class Facebook extends Provider {
+class Facebook extends Provider
+{
+    // Properties
+    // =========================================================================
 
     public $consoleUrl = 'https://developers.facebook.com/apps';
     public $oauthVersion = 2;
+
+    // Public Methods
+    // =========================================================================
 
     /**
      * Get Name

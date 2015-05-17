@@ -12,6 +12,9 @@ use League\OAuth2\Client\Entity\User;
 
 class Vimeo extends AbstractProvider
 {
+    // Public Methods
+    // =========================================================================
+
     public function urlAuthorize()
     {
         return 'https://api.vimeo.com/oauth/authorize';

@@ -9,11 +9,16 @@ namespace Dukt\OAuth\Providers;
 
 use Dukt\OAuth\base\Provider;
 
-class Google extends Provider {
+class Google extends Provider
+{
+    // Properties
+    // =========================================================================
 
 	public $consoleUrl = 'https://code.google.com/apis/console/';
     public $oauthVersion = 2;
 
+    // Public Methods
+    // =========================================================================
 
     /* default scopes (minimum scope for getting user details) */
 

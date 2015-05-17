@@ -11,6 +11,9 @@ require_once(CRAFT_PLUGINS_PATH.'oauth/Info.php');
 
 class OauthPlugin extends BasePlugin
 {
+    // Public Methods
+    // =========================================================================
+
     /**
      * Get OAuth Providers
      */
