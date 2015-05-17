@@ -12,14 +12,26 @@ class Oauth_TokenModel extends BaseModel
     // Public Methods
     // =========================================================================
 
-    public function defineAttributes()
+    /**
+     * Get Plugin
+     */
+    public function getPlugin()
+    {
+        return craft()->plugins->getPlugin($this->pluginHandle);
+    }
+
+    // Protected Methods
+    // =========================================================================
+
+    /**
+     * Define Attributes
+     */
+    protected function defineAttributes()
     {
         $attributes = array(
-
                 'id' => AttributeType::Number,
                 'providerHandle' => AttributeType::String,
                 'pluginHandle' => AttributeType::String,
-
                 'accessToken' => AttributeType::String,
                 'secret' => AttributeType::String,
                 'endOfLife' => AttributeType::String,
@@ -27,10 +39,5 @@ class Oauth_TokenModel extends BaseModel
             );
 
         return $attributes;
-    }
-
-    public function getPlugin()
-    {
-        return craft()->plugins->getPlugin($this->pluginHandle);
     }
 }
