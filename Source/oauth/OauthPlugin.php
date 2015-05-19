@@ -86,16 +86,10 @@ class OauthPlugin extends BasePlugin
     }
 
     /**
-     * HTML Settings
+     * Get Settings URL
      */
-    public function getSettingsHtml()
+    public function getSettingsUrl()
     {
-        if(craft()->request->getPath() == 'settings/plugins') {
-            return true;
-        }
-
-        return craft()->templates->render('oauth/_redirect', array(
-            'settings' => $this->getSettings()
-        ));
+        return 'oauth';
     }
 }
