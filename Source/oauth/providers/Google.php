@@ -63,6 +63,6 @@ class Google extends Provider
             'redirectUri' => $this->getRedirectUri(),
         ];
 
-        return new \League\OAuth2\Client\Provider\Google($config);
+        return new \Dukt\OAuth\OAuth2\Client\Provider\Google($config);
     }
 }
