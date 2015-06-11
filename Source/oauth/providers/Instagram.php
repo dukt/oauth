@@ -14,7 +14,7 @@ class Instagram extends Provider
     // Properties
     // =========================================================================
 
-    public $consoleUrl = 'http://instagram.com/developer/clients/';
+    public $consoleUrl = 'http://instagram.com/developer/clients/manage/';
     public $oauthVersion = 2;
 
     // Public Methods
