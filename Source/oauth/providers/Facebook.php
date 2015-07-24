@@ -45,4 +45,21 @@ class Facebook extends Provider
 
         return new \League\OAuth2\Client\Provider\Facebook($config);
     }
+
+    /**
+     * Facebook refuses to accept the redirect URL if the query string is not
+     * URL encoded.
+     *
+     * @return string
+     */
+    public function getRedirectUri()
+    {
+        $url = parent::getRedirectUri();
+
+        if (preg_match('/^(.+\?p=)(.+)$/', $url, $matches)) {
+            $url = $matches[1] . urlencode($matches[2]);
+        }
+
+        return $url;
+    }
 }
