@@ -46,6 +46,8 @@ do
 
     set -e
 
+    ssh -T git@github.com
+
     if GIT_DIR=./.git git show-ref --tags | egrep -q "refs/tags/${VERSION}"
 
     then
