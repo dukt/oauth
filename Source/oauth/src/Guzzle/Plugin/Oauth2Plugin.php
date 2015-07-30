@@ -43,6 +43,10 @@ class Oauth2Plugin implements EventSubscriberInterface
             $request->getQuery()->set('oauth2_access_token', $accessToken);
             break;
 
+            case 'oauth2_token':
+            $request->getQuery()->set('token', $accessToken);
+            break;
+
             default:
             $request->getQuery()->set('access_token', $accessToken);
         }
