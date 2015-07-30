@@ -9,12 +9,6 @@
             "Dukt\\OAuth\\Providers\\": "oauth/providers/"
         }
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/dukt/PHPoAuthLib"
-        }
-    ],
     "require": {
         "league/oauth1-client": "1.0.*@dev",
         "league/oauth2-client": "0.10.*@dev"
