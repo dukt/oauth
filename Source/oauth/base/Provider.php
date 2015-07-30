@@ -213,6 +213,7 @@ abstract class Provider {
                 break;
 
             case 2:
+
                 return new \Dukt\OAuth\Guzzle\Plugin\Oauth2Plugin(array(
                     'consumer_key' => $infos->clientId,
                     'consumer_secret' => $infos->clientSecret,

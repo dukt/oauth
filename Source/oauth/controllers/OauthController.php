@@ -53,7 +53,6 @@ class OauthController extends BaseController
             $this->params = craft()->httpSession->get('oauth.params');
             $this->referer = craft()->httpSession->get('oauth.referer');
 
-
             // google cancel
 
             if(craft()->request->getParam('error'))
