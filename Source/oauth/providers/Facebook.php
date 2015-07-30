@@ -17,6 +17,8 @@ class Facebook extends Provider
     public $consoleUrl = 'https://developers.facebook.com/apps';
     public $oauthVersion = 2;
 
+    protected $scopes = ['public_profile', 'email'];
+
     // Public Methods
     // =========================================================================
 
