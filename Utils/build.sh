@@ -6,6 +6,6 @@ export SOURCE_FOLDER="Source/"
 
 cd $SOURCE_FOLDER
 
-composer update
+composer install --prefer-source --no-interaction
 
 cd ../
