@@ -520,7 +520,7 @@ class OauthService extends BaseApplicationComponent
 
             // override provider infos from config
 
-            $oauthConfig = craft()->config->get('oauth');
+            $oauthConfig = craft()->config->get('providerInfos', 'oauth');
 
             if($oauthConfig && !$fromRecord)
             {

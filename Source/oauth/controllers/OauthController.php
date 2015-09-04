@@ -205,7 +205,7 @@ class OauthController extends BaseController
                 $variables['infos'] = craft()->oauth->getProviderInfos($variables['handle']);;
                 $variables['provider'] = $provider;
 
-                $configInfos = craft()->config->get('oauth');
+                $configInfos = craft()->config->get('providerInfos', 'oauth');
 
                 if(!empty($configInfos[$variables['handle']]))
                 {
