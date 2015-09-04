@@ -37,6 +37,35 @@ abstract class Provider {
      */
     public function getAccount()
     {
+        $provider = $this->getProvider();
+        $token = OauthHelper::getRealToken($this->token);
+
+        $url = $provider->urlUserDetails($token);
+        $headers = $provider->getHeaders($token);
+
+        $response = $this->fetchProviderData($url, $headers);
+
+        return $this->getProvider()->userDetails(json_decode($response), $token);
+    }
+
+    protected function fetchProviderData($url, array $headers = [])
+    {
+        $client = $this->getProvider()->getHttpClient();
+        $client->setBaseUrl($url);
+
+        if ($headers)
+        {
+            $client->setDefaultOption('headers', $headers);
+        }
+
+        $request = $client->get()->send();
+        $response = $request->getBody();
+
+        return $response;
+    }
+
+    public function getUserDetails()
+    {
         $token = OauthHelper::getRealToken($this->token);
 
         return $this->getProvider()->getUserDetails($token);
