@@ -83,16 +83,34 @@ class OauthService extends BaseApplicationComponent
 
             craft()->httpSession->add('oauth.params', $params);
 
-            // redirect
-            craft()->request->redirect(UrlHelper::getActionUrl('oauth/connect/', array(
+            // redirect url
+
+            $redirectUrl = UrlHelper::getActionUrl('oauth/connect/', array(
                 'provider' => $variables['provider']
-            )));
+            ));
+
+            // OAuth Step 1
+            Craft::log('OAuth Connect - Step 1'."\r\n".print_r([
+                    'referer' => $referer,
+                    'scopes' => $scopes,
+                    'params' => $params,
+                    'redirectTo' => $redirectUrl
+                ], true), LogLevel::Info, true);
+
+            // redirect
+            craft()->request->redirect($redirectUrl);
         }
         else
         {
+            // OAuth Step 3
+
             // populate token object from response
 
             $response = craft()->httpSession->get('oauth.response');
+
+            Craft::log('OAuth Connect - Step 3'."\r\n".print_r([
+                    'response' => $response
+                ], true), LogLevel::Info, true);
 
             if(!empty($response['token']))
             {
@@ -143,7 +161,12 @@ class OauthService extends BaseApplicationComponent
                 $token->providerHandle = $variables['provider'];
                 $token->pluginHandle = $variables['plugin'];
 
+                Craft::log('OAuth Connect - Step 4'."\r\n".print_r([
+                        'response' => $response
+                    ], true), LogLevel::Info, true);
+
                 $response['token'] = $token;
+
             }
 
             $this->_sessionClean();

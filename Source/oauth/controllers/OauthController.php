@@ -30,6 +30,8 @@ class OauthController extends BaseController
      */
     public function actionConnect()
     {
+        // OAuth Step 2
+
         $error = false;
         $success = false;
         $token = false;
@@ -48,10 +50,16 @@ class OauthController extends BaseController
 
 
             // session vars
-
             $this->scopes = craft()->httpSession->get('oauth.scopes');
             $this->params = craft()->httpSession->get('oauth.params');
             $this->referer = craft()->httpSession->get('oauth.referer');
+
+            Craft::log('OAuth Connect - Step 2A'."\r\n".print_r([
+                    'handle' => $this->handle,
+                    'scopes' => $this->scopes,
+                    'params' => $this->params,
+                    'referer' => $this->referer,
+                ], true), LogLevel::Info, true);
 
             // google cancel
 
@@ -170,6 +178,10 @@ class OauthController extends BaseController
             'success'       => $success,
             'token'         => $tokenArray
         );
+
+        Craft::log('OAuth Connect - Step 2B'."\r\n".print_r([
+                'response' => $response
+            ], true), LogLevel::Info, true);
 
         craft()->httpSession->add('oauth.response', $response);
 
