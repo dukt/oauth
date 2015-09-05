@@ -90,7 +90,7 @@ class OauthService extends BaseApplicationComponent
             ));
 
             // OAuth Step 1
-            Craft::log('OAuth Connect - Step 1'."\r\n".print_r([
+            OauthHelper::log('OAuth Connect - Step 1'."\r\n".print_r([
                     'referer' => $referer,
                     'scopes' => $scopes,
                     'params' => $params,
@@ -108,7 +108,7 @@ class OauthService extends BaseApplicationComponent
 
             $response = craft()->httpSession->get('oauth.response');
 
-            Craft::log('OAuth Connect - Step 3'."\r\n".print_r([
+            OauthHelper::log('OAuth Connect - Step 3'."\r\n".print_r([
                     'response' => $response
                 ], true), LogLevel::Info, true);
 
@@ -161,7 +161,7 @@ class OauthService extends BaseApplicationComponent
                 $token->providerHandle = $variables['provider'];
                 $token->pluginHandle = $variables['plugin'];
 
-                Craft::log('OAuth Connect - Step 4'."\r\n".print_r([
+                OauthHelper::log('OAuth Connect - Step 4'."\r\n".print_r([
                         'response' => $response
                     ], true), LogLevel::Info, true);
 

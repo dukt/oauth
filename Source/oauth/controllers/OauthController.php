@@ -54,7 +54,7 @@ class OauthController extends BaseController
             $this->params = craft()->httpSession->get('oauth.params');
             $this->referer = craft()->httpSession->get('oauth.referer');
 
-            Craft::log('OAuth Connect - Step 2A'."\r\n".print_r([
+            OauthHelper::log('OAuth Connect - Step 2A'."\r\n".print_r([
                     'handle' => $this->handle,
                     'scopes' => $this->scopes,
                     'params' => $this->params,
@@ -179,7 +179,7 @@ class OauthController extends BaseController
             'token'         => $tokenArray
         );
 
-        Craft::log('OAuth Connect - Step 2B'."\r\n".print_r([
+        OauthHelper::log('OAuth Connect - Step 2B'."\r\n".print_r([
                 'response' => $response
             ], true), LogLevel::Info, true);
 

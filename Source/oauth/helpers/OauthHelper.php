@@ -13,6 +13,17 @@ class OauthHelper
     // =========================================================================
 
     /**
+     * Log messages only if `duktDeveMode` is set to true
+     */
+    public static function log($message, $level = 'info', $force = true, $category = 'application', $plugin = null)
+    {
+        if(craft()->config->get('duktDevMode'))
+        {
+            Craft::log($message, $level, $force, $category, $plugin);
+        }
+    }
+
+    /**
      * Get real token
      */
     public static function getRealToken(Oauth_TokenModel $token)
