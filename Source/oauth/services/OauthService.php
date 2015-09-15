@@ -390,7 +390,7 @@ class OauthService extends BaseApplicationComponent
                 $refreshToken = $realToken->refreshToken;
 
                 $grant = new \League\OAuth2\Client\Grant\RefreshToken();
-                $newToken = $provider->getProvider()->getAccessToken($grant, ['refresh_token' => $refreshToken]);
+                $newToken = $provider->getProvider()->getAccessToken($grant, array('refresh_token' => $refreshToken));
 
                 if($newToken)
                 {
@@ -536,15 +536,14 @@ class OauthService extends BaseApplicationComponent
 
         $oauthProviderTypes = array();
 
-        foreach(craft()->plugins->call('getOAuthProviders', [], true) as $pluginOAuthProviderTypes)
-        {
+        foreach (craft()->plugins->call('getOAuthProviders', array(), true) as $pluginOAuthProviderTypes) {
             $oauthProviderTypes = array_merge($oauthProviderTypes, $pluginOAuthProviderTypes);
         }
 
 
         // instantiate providers
 
-        $providers = [];
+        $providers = array();
 
         foreach($oauthProviderTypes as $oauthProviderType)
         {

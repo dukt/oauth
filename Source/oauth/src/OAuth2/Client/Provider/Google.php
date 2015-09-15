@@ -14,10 +14,10 @@ class Google extends \League\OAuth2\Client\Provider\Google
     // Properties
     // =========================================================================
 
-    public $scopes = [
+    public $scopes = array(
         'profile',
         'email',
-    ];
+    );
 
     // Public Methods
     // =========================================================================
@@ -40,14 +40,14 @@ class Google extends \League\OAuth2\Client\Provider\Google
         $email = isset($response['email']) ? $response['email'] : null;
         $imageUrl = isset($response['picture']) ? $response['picture'] : null;
 
-        $user->exchangeArray([
+        $user->exchangeArray(array(
             'uid' => $uid,
             'name' => $name,
             'firstname' => $firstName,
             'lastName' => $lastName,
             'email' => $email,
             'imageUrl' => $imageUrl,
-        ]);
+        ));
 
         return $user;
     }
@@ -64,6 +64,6 @@ class Google extends \League\OAuth2\Client\Provider\Google
 
     public function userScreenName($response, \League\OAuth2\Client\Token\AccessToken $token)
     {
-        return [$response->given_name, $response->family_name];
+        return array($response->given_name, $response->family_name);
     }
 }

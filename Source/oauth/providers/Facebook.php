@@ -17,7 +17,7 @@ class Facebook extends Provider
     public $consoleUrl = 'https://developers.facebook.com/apps';
     public $oauthVersion = 2;
 
-    protected $scopes = ['public_profile', 'email'];
+    protected $scopes = array('public_profile', 'email');
 
     // Public Methods
     // =========================================================================
@@ -39,11 +39,11 @@ class Facebook extends Provider
      */
     public function createProvider()
     {
-        $config = [
+        $config = array(
             'clientId' => $this->providerInfos->clientId,
             'clientSecret' => $this->providerInfos->clientSecret,
             'redirectUri' => $this->getRedirectUri(),
-        ];
+        );
 
         return new \League\OAuth2\Client\Provider\Facebook($config);
     }

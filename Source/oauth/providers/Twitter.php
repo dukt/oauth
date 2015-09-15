@@ -37,11 +37,11 @@ class Twitter extends Provider
      */
     public function createProvider()
     {
-        $config = [
+        $config = array(
             'identifier' => $this->providerInfos->clientId,
             'secret' => $this->providerInfos->clientSecret,
             'callback_uri' => $this->getRedirectUri(),
-        ];
+        );
 
         return new \League\OAuth1\Client\Server\Twitter($config);
     }

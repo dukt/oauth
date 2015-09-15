@@ -37,11 +37,11 @@ class Github extends Provider
      */
     public function createProvider()
     {
-        $config = [
+        $config = array(
             'clientId' => $this->providerInfos->clientId,
             'clientSecret' => $this->providerInfos->clientSecret,
             'redirectUri' => $this->getRedirectUri(),
-        ];
+        );
 
         return new \League\OAuth2\Client\Provider\Github($config);
     }

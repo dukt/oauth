@@ -57,11 +57,11 @@ class Google extends Provider
      */
     public function createProvider()
     {
-        $config = [
+        $config = array(
             'clientId' => $this->providerInfos->clientId,
             'clientSecret' => $this->providerInfos->clientSecret,
             'redirectUri' => $this->getRedirectUri(),
-        ];
+        );
 
         return new \Dukt\OAuth\OAuth2\Client\Provider\Google($config);
     }

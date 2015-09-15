@@ -31,12 +31,12 @@ class OauthHelper
 
 
                 case 2:
-                $realToken = new \League\OAuth2\Client\Token\AccessToken([
+                $realToken = new \League\OAuth2\Client\Token\AccessToken(array(
                     'access_token' => $token->accessToken,
                     'refresh_token' => $token->refreshToken,
                     'secret' => $token->secret,
                     'expires' => $token->endOfLife,
-                ]);
+                ));
 
                 break;
             }
