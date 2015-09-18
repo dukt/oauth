@@ -10,7 +10,7 @@
         }
     },
     "require": {
-        "league/oauth1-client": "1.0.*@dev",
-        "league/oauth2-client": "0.10.*@dev"
+        "league/oauth1-client": "1.6.0@dev",
+        "league/oauth2-client": "0.12.1@dev"
     }
 }
