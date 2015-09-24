@@ -40,12 +40,7 @@ abstract class Provider {
         $provider = $this->getProvider();
         $token = OauthHelper::getRealToken($this->token);
 
-        $url = $provider->urlUserDetails($token);
-        $headers = $provider->getHeaders($token);
-
-        $response = $this->fetchProviderData($url, $headers);
-
-        return $this->getProvider()->userDetails(json_decode($response), $token);
+        return $provider->getUserDetails($token);
     }
 
     protected function fetchProviderData($url, array $headers = [])
