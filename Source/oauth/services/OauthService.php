@@ -107,12 +107,13 @@ class OauthService extends BaseApplicationComponent
             // populate token object from response
 
             $response = craft()->httpSession->get('oauth.response');
+            craft()->httpSession->remove('oauth.response');
 
             OauthHelper::log('OAuth Connect - Step 3'."\r\n".print_r([
                     'response' => $response
                 ], true), LogLevel::Info, true);
 
-            if(!empty($response['token']))
+            if($response['token'])
             {
                 // response token to token model
 
@@ -124,7 +125,6 @@ class OauthService extends BaseApplicationComponent
                 {
                     switch ($provider->oauthVersion) {
                         case 1:
-
                             if(!empty($response['token']['identifier']))
                             {
                                 $token->accessToken = $response['token']['identifier'];
@@ -166,7 +166,6 @@ class OauthService extends BaseApplicationComponent
                     ], true), LogLevel::Info, true);
 
                 $response['token'] = $token;
-
             }
 
             $this->_sessionClean();
@@ -446,6 +445,11 @@ class OauthService extends BaseApplicationComponent
         craft()->httpSession->remove('oauth.redirect');
         craft()->httpSession->remove('oauth.response');
         craft()->httpSession->remove('oauth.scopes');
+    }
+
+    public function sessionClean()
+    {
+        return $this->_sessionClean();
     }
 
     /**
