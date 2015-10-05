@@ -1,5 +1,3 @@
 *.log
 .DS_Store
-Source/oauth/Info.php
-Source/oauth/vendor
-Source/composer.lock
+composer.lock
