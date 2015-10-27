@@ -38,14 +38,25 @@ class Google extends Provider
         return 'Google';
     }
 
-    public function getScopeDocsUrl()
-    {
-        return 'https://developers.google.com/identity/protocols/googlescopes';
-    }
-
+    /**
+     * Get Icon URL
+     *
+     * @return string
+     */
     public function getIconUrl()
     {
         return UrlHelper::getResourceUrl('oauth/icons/google.svg');
+    }
+
+
+    /**
+     * Get Scope Docs URL
+     *
+     * @return string
+     */
+    public function getScopeDocsUrl()
+    {
+        return 'https://developers.google.com/identity/protocols/googlescopes';
     }
 
     /**
