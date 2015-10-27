@@ -18,14 +18,8 @@ class OauthPlugin extends BasePlugin
     public function getOAuthProviders()
     {
         return [
-            'Dukt\OAuth\Providers\Bitbucket',
-            'Dukt\OAuth\Providers\Dribbble',
             'Dukt\OAuth\Providers\Facebook',
-            'Dukt\OAuth\Providers\Github',
             'Dukt\OAuth\Providers\Google',
-            'Dukt\OAuth\Providers\Instagram',
-            'Dukt\OAuth\Providers\Linkedin',
-            'Dukt\OAuth\Providers\Slack',
             'Dukt\OAuth\Providers\Twitter',
             'Dukt\OAuth\Providers\Vimeo'
         ];
