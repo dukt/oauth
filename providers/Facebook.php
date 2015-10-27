@@ -33,9 +33,24 @@ class Facebook extends Provider
         return 'Facebook';
     }
 
+    /**
+     * Get Icon URL
+     *
+     * @return string
+     */
     public function getIconUrl()
     {
         return UrlHelper::getResourceUrl('oauth/icons/facebook.svg');
+    }
+
+    /**
+     * Get Scope Docs URL
+     *
+     * @return string
+     */
+    public function getScopeDocsUrl()
+    {
+        return 'https://developers.facebook.com/docs/facebook-login/permissions/v2.5';
     }
 
     /**
