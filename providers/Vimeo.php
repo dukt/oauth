@@ -31,6 +31,12 @@ class Vimeo extends Provider
         return 'Vimeo';
     }
 
+
+    /**
+     * Get Icon URL
+     *
+     * @return string
+     */
     public function getIconUrl()
     {
         return UrlHelper::getResourceUrl('oauth/icons/vimeo.svg');

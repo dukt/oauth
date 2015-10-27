@@ -31,6 +31,11 @@ class Twitter extends Provider
         return 'Twitter';
     }
 
+    /**
+     * Get Icon URL
+     *
+     * @return string
+     */
     public function getIconUrl()
     {
         return UrlHelper::getResourceUrl('oauth/icons/twitter.svg');
