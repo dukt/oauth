@@ -12,6 +12,8 @@ use League\OAuth2\Client\Entity\User;
 
 class Dribbble extends AbstractProvider
 {
+    public $scopeSeparator = ' ';
+
     // Public Methods
     // =========================================================================
 
