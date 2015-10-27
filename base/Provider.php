@@ -32,6 +32,13 @@ abstract class Provider {
     // Public Methods
     // =========================================================================
 
+
+    public function getScopeDocsUrl()
+    {
+        return null;
+    }
+
+
     public function getIconUrl()
     {
         return null;
