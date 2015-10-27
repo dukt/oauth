@@ -7,6 +7,7 @@
 
 namespace Dukt\OAuth\Providers;
 
+use Craft\UrlHelper;
 use Dukt\OAuth\base\Provider;
 
 class Vimeo extends Provider
@@ -28,6 +29,11 @@ class Vimeo extends Provider
     public function getName()
     {
         return 'Vimeo';
+    }
+
+    public function getIconUrl()
+    {
+        return UrlHelper::getResourceUrl('oauth/icons/vimeo.svg');
     }
 
     /**

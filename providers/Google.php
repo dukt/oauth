@@ -7,6 +7,7 @@
 
 namespace Dukt\OAuth\Providers;
 
+use Craft\UrlHelper;
 use Dukt\OAuth\base\Provider;
 
 class Google extends Provider
@@ -35,6 +36,11 @@ class Google extends Provider
     public function getName()
     {
         return 'Google';
+    }
+
+    public function getIconUrl()
+    {
+        return UrlHelper::getResourceUrl('oauth/icons/google.svg');
     }
 
     /**

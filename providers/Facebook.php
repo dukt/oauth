@@ -7,6 +7,7 @@
 
 namespace Dukt\OAuth\Providers;
 
+use Craft\UrlHelper;
 use Dukt\OAuth\base\Provider;
 
 class Facebook extends Provider
@@ -30,6 +31,11 @@ class Facebook extends Provider
     public function getName()
     {
         return 'Facebook';
+    }
+
+    public function getIconUrl()
+    {
+        return UrlHelper::getResourceUrl('oauth/icons/facebook.svg');
     }
 
     /**

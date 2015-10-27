@@ -7,6 +7,7 @@
 
 namespace Dukt\OAuth\Providers;
 
+use Craft\UrlHelper;
 use Dukt\OAuth\base\Provider;
 
 class Twitter extends Provider
@@ -28,6 +29,11 @@ class Twitter extends Provider
     public function getName()
     {
         return 'Twitter';
+    }
+
+    public function getIconUrl()
+    {
+        return UrlHelper::getResourceUrl('oauth/icons/twitter.svg');
     }
 
     /**

@@ -32,6 +32,11 @@ abstract class Provider {
     // Public Methods
     // =========================================================================
 
+    public function getIconUrl()
+    {
+        return null;
+    }
+
     /**
      * Get Account
      */
