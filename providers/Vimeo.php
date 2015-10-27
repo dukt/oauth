@@ -49,7 +49,7 @@ class Vimeo extends Provider
      */
     public function getScopeDocsUrl()
     {
-        return 'https://developers.facebook.com/docs/facebook-login/permissions/v2.5';
+        return 'https://developer.vimeo.com/api/authentication#scopes';
     }
 
     /**
