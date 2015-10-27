@@ -37,6 +37,16 @@ class Vimeo extends Provider
     }
 
     /**
+     * Get Scope Docs URL
+     *
+     * @return string
+     */
+    public function getScopeDocsUrl()
+    {
+        return 'https://developers.facebook.com/docs/facebook-login/permissions/v2.5';
+    }
+
+    /**
      * Create Vimeo Provider
      *
      * @return Vimeo
