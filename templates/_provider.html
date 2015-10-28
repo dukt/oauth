@@ -32,17 +32,14 @@
         <h2 class="first">{{ "Create an OAuth application"|t }}</h2>
 
         <p>
-            {% if provider.consoleUrl %}
+            {% if provider.getManagerUrl() %}
                 {{ "Create an OAuth 2.0 application and enable associated providers in the {console}"|t({
-                    console:           '<a href=\"'~provider.consoleUrl~'\">'~'{provider} API Management Console'|t({provider:provider.name})~'</a>'
+                    console:           '<a href=\"'~provider.getManagerUrl()~'\">'~'{provider} API Management Console'|t({provider:provider.name})~'</a>'
                 })|raw }}
             {% else %}
                 {{ "Create an OAuth 2.0 application and enable associated providers in the API management Console."|t }}
             {% endif %}
-
-
         </p>
-
 
         <p>{{ "Once created, configure the application with the following settings. You might not need to use all of them."|t }}</p>
 

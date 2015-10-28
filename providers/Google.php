@@ -14,7 +14,6 @@ class Google extends BaseProvider
     // Properties
     // =========================================================================
 
-	public $consoleUrl = 'https://code.google.com/apis/console/';
     public $oauthVersion = 2;
 
     // Public Methods
@@ -86,4 +85,15 @@ class Google extends BaseProvider
 
         return new \Dukt\OAuth\OAuth2\Client\Provider\Google($config);
     }
+
+    /**
+     * Get API Manager URL
+     *
+     * @return string
+     */
+    public function getManagerUrl()
+    {
+        return 'https://code.google.com/apis/console/';
+    }
+
 }
