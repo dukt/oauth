@@ -1,18 +1,5 @@
-{% extends "_layouts/cp" %}
+{% extends "oauth/_layouts/cp" %}
 {% import "_includes/forms" as forms %}
-
-{% if providerHandle is not defined %}{% set providerHandle = null %}{% endif %}
-
-{% if provider is not defined %}
-    {% if providerHandle %}
-        {% set provider = craft.oauth.getProvider(providerHandle, false) %}
-
-        {% if not provider %}{% exit 404 %}{% endif %}
-    {% else %}
-        {% set provider = null %}
-    {% endif %}
-{% endif %}
-
 
 {% set title = provider.name~" Tokens"|t %}
 

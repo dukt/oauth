@@ -35,7 +35,7 @@ class Oauth_ConsoleController extends BaseController
         $variables['providers'] = $providers;
         $variables['tokens'] = $tokens;
 
-        $this->renderTemplate('oauth/console/index', $variables);
+        $this->renderTemplate('oauth/console/_index', $variables);
     }
 
     /**

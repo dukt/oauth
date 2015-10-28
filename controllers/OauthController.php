@@ -28,6 +28,16 @@ class OauthController extends BaseController
      *
      * @return null
      */
+    public function actionIndex()
+    {
+        $this->renderTemplate('oauth/providers/_index');
+    }
+
+    /**
+     * Connect
+     *
+     * @return null
+     */
     public function actionConnect()
     {
         // OAuth Step 2
@@ -273,7 +283,7 @@ class OauthController extends BaseController
                     $variables['configInfos'] = $configInfos[$variables['handle']];
                 }
 
-                $this->renderTemplate('oauth/_provider', $variables);
+                $this->renderTemplate('oauth/providers/_edit', $variables);
             }
             else
             {

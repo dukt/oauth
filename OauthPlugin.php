@@ -64,6 +64,11 @@ class OauthPlugin extends BasePlugin
      */
     public function hasCpSection()
     {
+        if(craft()->config->get('showCpSection', 'oauth') === true)
+        {
+            return true;
+        }
+
         return false;
     }
 
@@ -73,10 +78,11 @@ class OauthPlugin extends BasePlugin
     public function registerCpRoutes()
     {
         return array(
-            'oauth\/console' => array('action' => "oauth/console/index"),
-            'oauth\/console/(?P<providerHandle>.*)' => array('action' => "oauth/console/provider"),
-            'oauth\/(?P<providerHandle>.*)/tokens' => 'oauth/_tokens',
-            'oauth\/(?P<handle>.*)' => array('action' => "oauth/providerInfos"),
+            'oauth' => array('action' => "oauth/index"),
+            'oauth/providers/(?P<handle>.*)/tokens' => ['action' => 'oauth/tokens/providerTokens'],
+            'oauth/providers/(?P<handle>.*)' => array('action' => "oauth/providerInfos"),
+            'oauth/console' => array('action' => "oauth/console/index"),
+            'oauth/console/(?P<providerHandle>.*)' => array('action' => "oauth/console/provider"),
         );
     }
 

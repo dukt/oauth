@@ -11,14 +11,6 @@ use Craft\UrlHelper;
 
 class Facebook extends BaseProvider
 {
-    // Properties
-    // =========================================================================
-
-    public $consoleUrl = 'https://developers.facebook.com/apps';
-    public $oauthVersion = 2;
-
-    protected $scopes = ['public_profile', 'email'];
-
     // Public Methods
     // =========================================================================
 
@@ -43,19 +35,19 @@ class Facebook extends BaseProvider
     }
 
     /**
-     * Get Scope Docs URL
+     * Get OAuth Version
      *
-     * @return string
+     * @return int
      */
-    public function getScopeDocsUrl()
+    public function getOauthVersion()
     {
-        return 'https://developers.facebook.com/docs/facebook-login/permissions/v2.5';
+        return 2;
     }
 
     /**
      * Create Facebook Provider
      *
-     * @return Facebook
+     * @return League\OAuth2\Client\Provider\Facebook
      */
     public function createProvider()
     {
@@ -66,5 +58,25 @@ class Facebook extends BaseProvider
         ];
 
         return new \League\OAuth2\Client\Provider\Facebook($config);
+    }
+
+    /**
+     * Get API Manager URL
+     *
+     * @return string
+     */
+    public function getManagerUrl()
+    {
+        return 'https://developers.facebook.com/apps';
+    }
+
+    /**
+     * Get Scope Docs URL
+     *
+     * @return string
+     */
+    public function getScopeDocsUrl()
+    {
+        return 'https://developers.facebook.com/docs/facebook-login/permissions/v2.5';
     }
 }
