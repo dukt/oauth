@@ -1,83 +1,60 @@
 # OAuth 2.0 Client
 
-This package makes it simple to integrate your application with [OAuth 2.0](http://oauth.net/2/) service providers.
+[![Join the chat at https://gitter.im/thephpleague/oauth2-client](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/thephpleague/oauth2-client?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Gitter Chat](https://img.shields.io/badge/gitter-join_chat-brightgreen.svg?style=flat-square)](https://gitter.im/thephpleague/oauth2-client)
-[![Source Code](http://img.shields.io/badge/source-thephpleague/oauth2--client-blue.svg?style=flat-square)](https://github.com/thephpleague/oauth2-client)
-[![Latest Version](https://img.shields.io/github/release/thephpleague/oauth2-client.svg?style=flat-square)](https://github.com/thephpleague/oauth2-client/releases)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/thephpleague/oauth2-client/blob/master/LICENSE)
-[![Build Status](https://img.shields.io/travis/thephpleague/oauth2-client/master.svg?style=flat-square)](https://travis-ci.org/thephpleague/oauth2-client)
-[![HHVM Status](https://img.shields.io/hhvm/league/oauth2-client.svg?style=flat-square)](http://hhvm.h4cc.de/package/league/oauth2-client)
-[![Scrutinizer](https://img.shields.io/scrutinizer/g/thephpleague/oauth2-client/master.svg?style=flat-square)](https://scrutinizer-ci.com/g/thephpleague/oauth2-client/)
-[![Coverage Status](https://img.shields.io/coveralls/thephpleague/oauth2-client/master.svg?style=flat-square)](https://coveralls.io/r/thephpleague/oauth2-client?branch=master)
-[![Total Downloads](https://img.shields.io/packagist/dt/league/oauth2-client.svg?style=flat-square)](https://packagist.org/packages/league/oauth2-client)
+[![Build Status](https://travis-ci.org/thephpleague/oauth2-client.svg?branch=master)](https://travis-ci.org/thephpleague/oauth2-client)
+[![Coverage Status](https://coveralls.io/repos/thephpleague/oauth2-client/badge.svg?branch=master)](https://coveralls.io/r/thephpleague/oauth2-client?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/league/oauth2-client/v/stable)](https://packagist.org/packages/league/oauth2-client)
+[![Total Downloads](https://poser.pugx.org/league/oauth2-client/downloads)](https://packagist.org/packages/league/oauth2-client)
+[![Latest Unstable Version](https://poser.pugx.org/league/oauth2-client/v/unstable)](https://packagist.org/packages/league/oauth2-client)
+[![License](https://poser.pugx.org/league/oauth2-client/license)](https://packagist.org/packages/league/oauth2-client)
 
----
+This package makes it stupidly simple to integrate your application with OAuth 2.0 identity providers.
 
-We are all used to seeing those "Connect with Facebook/Google/etc." buttons around the internet, and social network integration is an important feature of most web applications these days. Many of these sites use an authentication and authorization standard called OAuth 2.0 ([RFC 6749](http://tools.ietf.org/html/rfc6749)).
+Everyone is used to seeing those "Connect with Facebook/Google/etc" buttons around the Internet and social network
+integration is an important feature of most web-apps these days. Many of these sites use an Authentication and Authorization standard called OAuth 2.0.
 
-This OAuth 2.0 client library will work with any OAuth provider that conforms to the OAuth 2.0 standard. Out-of-the-box, we provide a `GenericProvider` that may be used to connect to any service provider that uses [Bearer tokens](http://tools.ietf.org/html/rfc6750) (see example below).
+It will work with any OAuth 2.0 provider (be it an OAuth 2.0 Server for your own API or Facebook) and provides support
+for popular systems out of the box. This package abstracts out some of the subtle but important differences between various providers, handles access tokens and refresh tokens, and allows you easy access to profile information on these other sites.
 
-Many service providers provide additional functionality above and beyond the OAuth 2.0 standard. For this reason, this library may be easily extended and wrapped to support this additional behavior. We provide links to [all known provider clients extending this library](README.PROVIDERS.md) (i.e. Facebook, GitHub, Google, Instagram, LinkedIn, etc.). If your provider isn't in the list, feel free to add it.
+This package is compliant with [PSR-1][], [PSR-2][] and [PSR-4][]. If you notice compliance oversights, please send
+a patch via pull request.
 
-This package is compliant with [PSR-1][], [PSR-2][], [PSR-4][], and [PSR-7][]. If you notice compliance oversights, please send a patch via pull request. If you're interesting in contributing to this library, please take a look at our [contributing guidelines](CONTRIBUTING.md).
+[PSR-1]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md
+[PSR-2]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
+[PSR-4]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md
+
 
 ## Requirements
 
 The following versions of PHP are supported.
 
+* PHP 5.4
 * PHP 5.5
 * PHP 5.6
 * PHP 7.0
 * HHVM
 
-## Providers
-
-A list of official PHP League providers, as well as third-party providers, may be found in the [providers list README](README.PROVIDERS.md).
-
-To build your own provider, please refer to the [provider guide README](README.PROVIDER-GUIDE.md).
-
 ## Usage
 
-**In most cases, you'll want to use a specific provider client library rather than this base library.**
+### Authorization Code Flow
 
-Take a look at [README.PROVIDERS.md](README.PROVIDERS.md) to see a list of provider client libraries.
-
-If using Composer to require a specific provider client library, you **do not need to also require this library**. Composer will handle the dependencies for you.
-
-### Authorization Code Grant
-
-The following example uses the out-of-the-box `GenericProvider` provided by this library. If you're looking for a specific provider (i.e. Facebook, Google, GitHub, etc.), take a look at our [list of provider client libraries](README.PROVIDERS.md). **HINT: You're probably looking for a specific provider.**
-
-The authorization code grant type is the most common grant type used when authenticating users with a third-party service. This grant type utilizes a client (this library), a server (the service provider), and a resource owner (the user with credentials to a protected—or owned—resource) to request access to resources owned by the user. This is often referred to as _3-legged OAuth_, since there are three parties involved.
-
-The following example illustrates this using [Brent Shaffer's](https://github.com/bshaffer) demo OAuth 2.0 application named **Lock'd In**. When running this code, you will be redirected to Lock'd In, where you'll be prompted to authorize the client to make requests to a resource on your behalf.
-
-Now, you don't really have an account on Lock'd In, but for the sake of this example, imagine that you are already logged in on Lock'd In when you are redirected there.
+*Note: This example code requires the Google+ API to be enabled in your developer console*
 
 ```php
-$provider = new \League\OAuth2\Client\Provider\GenericProvider([
-    'clientId'                => 'demoapp',    // The client ID assigned to you by the provider
-    'clientSecret'            => 'demopass',   // The client password assigned to you by the provider
-    'redirectUri'             => 'http://example.com/your-redirect-url/',
-    'urlAuthorize'            => 'http://brentertainment.com/oauth2/lockdin/authorize',
-    'urlAccessToken'          => 'http://brentertainment.com/oauth2/lockdin/token',
-    'urlResourceOwnerDetails' => 'http://brentertainment.com/oauth2/lockdin/resource'
+$provider = new League\OAuth2\Client\Provider\<ProviderName>([
+    'clientId'      => 'XXXXXXXX',
+    'clientSecret'  => 'XXXXXXXX',
+    'redirectUri'   => 'https://your-registered-redirect-uri/',
+    'scopes'        => ['email', '...', '...'],
 ]);
 
-// If we don't have an authorization code then get one
 if (!isset($_GET['code'])) {
 
-    // Fetch the authorization URL from the provider; this returns the
-    // urlAuthorize option and generates and applies any necessary parameters
-    // (e.g. state).
-    $authorizationUrl = $provider->getAuthorizationUrl();
-
-    // Get the state generated for you and store it to the session.
-    $_SESSION['oauth2state'] = $provider->getState();
-
-    // Redirect the user to the authorization URL.
-    header('Location: ' . $authorizationUrl);
+    // If we don't have an authorization code then get one
+    $authUrl = $provider->getAuthorizationUrl();
+    $_SESSION['oauth2state'] = $provider->state;
+    header('Location: '.$authUrl);
     exit;
 
 // Check given state against previously stored one to mitigate CSRF attack
@@ -88,144 +65,153 @@ if (!isset($_GET['code'])) {
 
 } else {
 
+    // Try to get an access token (using the authorization code grant)
+    $token = $provider->getAccessToken('authorization_code', [
+        'code' => $_GET['code']
+    ]);
+
+    // Optional: Now you have a token you can look up a users profile data
     try {
 
-        // Try to get an access token using the authorization code grant.
-        $accessToken = $provider->getAccessToken('authorization_code', [
-            'code' => $_GET['code']
-        ]);
+        // We got an access token, let's now get the user's details
+        $userDetails = $provider->getUserDetails($token);
 
-        // We have an access token, which we may use in authenticated
-        // requests against the service provider's API.
-        echo $accessToken->getToken() . "\n";
-        echo $accessToken->getRefreshToken() . "\n";
-        echo $accessToken->getExpires() . "\n";
-        echo ($accessToken->hasExpired() ? 'expired' : 'not expired') . "\n";
+        // Use these details to create a new profile
+        printf('Hello %s!', $userDetails->firstName);
 
-        // Using the access token, we may look up details about the
-        // resource owner.
-        $resourceOwner = $provider->getResourceOwner($accessToken);
+    } catch (Exception $e) {
 
-        var_export($resourceOwner->toArray());
-
-        // The provider provides a way to get an authenticated API request for
-        // the service, using the access token; it returns an object conforming
-        // to Psr\Http\Message\RequestInterface.
-        $request = $provider->getAuthenticatedRequest(
-            'GET',
-            'http://brentertainment.com/oauth2/lockdin/resource',
-            $accessToken
-        );
-
-    } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
-
-        // Failed to get the access token or user details.
-        exit($e->getMessage());
-
+        // Failed to get user details
+        exit('Oh dear...');
     }
 
+    // Use this to interact with an API on the users behalf
+    echo $token->accessToken;
+
+    // Use this to get a new access token if the old one expires
+    echo $token->refreshToken;
+
+    // Unix timestamp of when the token will expire, and need refreshing
+    echo $token->expires;
 }
 ```
 
 ### Refreshing a Token
 
-Once your application is authorized, you can refresh an expired token using a refresh token rather than going through the entire process of obtaining a brand new token. To do so, simply reuse this refresh token from your data store to request a refresh.
-
-_This example uses [Brent Shaffer's](https://github.com/bshaffer) demo OAuth 2.0 application named **Lock'd In**. See authorization code example above, for more details._
+Once and as long as your application is authorized, you then only need to refresh an expired access token. To do so, simply reuse this refresh token from your data store to request a refresh.
 
 ```php
-$provider = new \League\OAuth2\Client\Provider\GenericProvider([
-    'clientId'                => 'demoapp',    // The client ID assigned to you by the provider
-    'clientSecret'            => 'demopass',   // The client password assigned to you by the provider
-    'redirectUri'             => 'http://example.com/your-redirect-url/',
-    'urlAuthorize'            => 'http://brentertainment.com/oauth2/lockdin/authorize',
-    'urlAccessToken'          => 'http://brentertainment.com/oauth2/lockdin/token',
-    'urlResourceOwnerDetails' => 'http://brentertainment.com/oauth2/lockdin/resource'
+$provider = new League\OAuth2\Client\Provider\<ProviderName>([
+    'clientId'      => 'XXXXXXXX',
+    'clientSecret'  => 'XXXXXXXX',
+    'redirectUri'   => 'https://your-registered-redirect-uri/',
 ]);
 
-$existingAccessToken = getAccessTokenFromYourDataStore();
-
-if ($existingAccessToken->hasExpired()) {
-    $newAccessToken = $provider->getAccessToken('refresh_token', [
-        'refresh_token' => $existingAccessToken->getRefreshToken()
-    ]);
-
-    // Purge old access token and store new access token to your data store.
-}
+$grant = new \League\OAuth2\Client\Grant\RefreshToken();
+$token = $provider->getAccessToken($grant, ['refresh_token' => $refreshToken]);
 ```
 
-### Resource Owner Password Credentials Grant
 
-Some service providers allow you to skip the authorization code step to exchange a user's credentials (username and password) for an access token. This is referred to as the "resource owner password credentials" grant type.
+### Built-In Providers
 
-According to [section 1.3.3](http://tools.ietf.org/html/rfc6749#section-1.3.3) of the OAuth 2.0 standard (emphasis added):
+This package currently has built-in support for:
 
-> The credentials **should only be used when there is a high degree of trust**
-> between the resource owner and the client (e.g., the client is part of the
-> device operating system or a highly privileged application), and when other
-> authorization grant types are not available (such as an authorization code).
+- Eventbrite
+- Facebook
+- Github
+- Google
+- Instagram
+- LinkedIn
+- Microsoft
 
-**We do not advise using this grant type if the service provider supports the authorization code grant type (see above), as this reinforces the [password anti-pattern](https://agentile.com/the-password-anti-pattern) by allowing users to think it's okay to trust third-party applications with their usernames and passwords.**
+These are as many OAuth 2 services as we plan to support officially. Maintaining a wide selection of providers
+damages our ability to make this package the best it can be, especially as we progress towards v1.0.
 
-That said, there are use-cases where the resource owner password credentials grant is acceptable and useful. Here's an example using it with [Brent Shaffer's](https://github.com/bshaffer) demo OAuth 2.0 application named **Lock'd In**. See authorization code example above, for more details about the Lock'd In demo application.
+#### Managing LinkedIn Scopes
 
-``` php
-$provider = new \League\OAuth2\Client\Provider\GenericProvider([
-    'clientId'                => 'demoapp',    // The client ID assigned to you by the provider
-    'clientSecret'            => 'demopass',   // The client password assigned to you by the provider
-    'redirectUri'             => 'http://example.com/your-redirect-url/',
-    'urlAuthorize'            => 'http://brentertainment.com/oauth2/lockdin/authorize',
-    'urlAccessToken'          => 'http://brentertainment.com/oauth2/lockdin/token',
-    'urlResourceOwnerDetails' => 'http://brentertainment.com/oauth2/lockdin/resource'
+The LinkedIn provider included in this package does not include scopes by default. When creating your LinkedIn provider, you can specify the scopes your application may authorize.
+
+```php
+$provider = new League\OAuth2\Client\Provider\LinkedIn([
+    'clientId'          => '{linkedin-client-id}',
+    'clientSecret'      => '{linkedin-client-secret}',
+    'redirectUri'       => 'https://example.com/callback-url',
+    'scopes'            => ['r_basicprofile','r_emailaddress'],
 ]);
-
-try {
-
-    // Try to get an access token using the resource owner password credentials grant.
-    $accessToken = $provider->getAccessToken('password', [
-        'username' => 'demouser',
-        'password' => 'testpass'
-    ]);
-
-} catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
-
-    // Failed to get the access token
-    exit($e->getMessage());
-
-}
 ```
 
-### Client Credentials Grant
+At the time of authoring this documentation, the following scopes are available.
 
-When your application is acting on its own behalf to access resources it controls/owns in a service provider, it may use the client credentials grant type. This is best used when the credentials for your application are stored privately and never exposed (e.g. through the web browser, etc.) to end-users. This grant type functions similarly to the resource owner password credentials grant type, but it does not request a user's username or password. It uses only the client ID and secret issued to your client by the service provider.
+- r_basicprofile
+- r_emailaddress
+- rw_company_admin
+- w_share
 
-Unlike earlier examples, the following does not work against a functioning demo service provider. It is provided for the sake of example only.
+### Third-Party Providers
 
-``` php
-// Note: the GenericProvider requires the `urlAuthorize` option, even though
-// it's not used in the OAuth 2.0 client credentials grant type.
+If you would like to support other providers, please make them available as a Composer package, then link to them
+below.
 
-$provider = new \League\OAuth2\Client\Provider\GenericProvider([
-    'clientId'                => 'XXXXXX',    // The client ID assigned to you by the provider
-    'clientSecret'            => 'XXXXXX',    // The client password assigned to you by the provider
-    'redirectUri'             => 'http://my.example.com/your-redirect-url/',
-    'urlAuthorize'            => 'http://service.example.com/authorize',
-    'urlAccessToken'          => 'http://service.example.com/token',
-    'urlResourceOwnerDetails' => 'http://service.example.com/resource'
-]);
+These providers allow integration with other providers not supported by `oauth2-client`. They may require an older version
+so please help them out with a pull request if you notice this.
 
-try {
+- [Amazon](https://github.com/lemonstand/oauth2-amazon/)
+- [Auth0](https://github.com/RiskioFr/oauth2-auth0)
+- [Battle.net](https://packagist.org/packages/depotwarehouse/oauth2-bnet)
+- [BookingSync](https://github.com/BookingSync/oauth2-bookingsync-php)
+- [Clover](https://github.com/wheniwork/oauth2-clover)
+- [Coinbase](https://github.com/openclerk/coinbase-oauth2)
+- [Dropbox](https://github.com/pixelfear/oauth2-dropbox)
+- [FreeAgent](https://github.com/CloudManaged/oauth2-freeagent)
+- [Google Nest](https://github.com/JC5/nest-oauth2-provider)
+- [Mail.ru](https://packagist.org/packages/aego/oauth2-mailru)
+- [Meetup](https://github.com/howlowck/meetup-oauth2-provider)
+- [Naver](https://packagist.org/packages/deminoth/oauth2-naver)
+- [Odnoklassniki](https://packagist.org/packages/aego/oauth2-odnoklassniki)
+- [Reddit](https://github.com/rtheunissen/oauth2-reddit)
+- [Square](https://packagist.org/packages/wheniwork/oauth2-square)
+- [Twitch.tv](https://github.com/tpavlek/oauth2-twitch)
+- [Uber](https://github.com/stevenmaguire/oauth2-uber)
+- [Vend](https://github.com/wheniwork/oauth2-vend)
+- [Vkontakte](https://packagist.org/packages/j4k/oauth2-vkontakte)
+- [Yandex](https://packagist.org/packages/aego/oauth2-yandex)
+- [ZenPayroll](https://packagist.org/packages/wheniwork/oauth2-zenpayroll)
+- [Envato](https://github.com/dilab/envato-oauth2-provider)
 
-    // Try to get an access token using the client credentials grant.
-    $accessToken = $provider->getAccessToken('client_credentials');
+### Implementing your own provider
 
-} catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
+If you are working with an oauth2 service not supported out-of-the-box or by an existing package, it is quite simple to
+implement your own. Simply extend `League\OAuth2\Client\Provider\AbstractProvider` and implement the required abstract
+methods:
 
-    // Failed to get the access token
-    exit($e->getMessage());
-
-}
+```php
+abstract public function urlAuthorize();
+abstract public function urlAccessToken();
+abstract public function urlUserDetails(\League\OAuth2\Client\Token\AccessToken $token);
+abstract public function userDetails($response, \League\OAuth2\Client\Token\AccessToken $token);
 ```
+
+Each of these abstract methods contain a docblock defining their expectations and typical behaviour. Once you have
+extended this class, you can simply follow the example above using your new `Provider`.
+
+#### Custom account identifiers in access token responses
+
+Some OAuth2 Server implementations include a field in their access token response defining some identifier
+for the user account that just requested the access token. In many cases this field, if present, is called "uid", but
+some providers define custom identifiers in their response. If your provider uses a nonstandard name for the "uid" field,
+when extending the AbstractProvider, in your new class, define a property `public $uidKey` and set it equal to whatever
+your provider uses as its key. For example, Battle.net uses `accountId` as the key for the identifier field, so in that
+provider you would add a property:
+
+```php
+public $uidKey = 'accountId';
+```
+
+### Client Packages
+
+Some developers use this library as a base for their own PHP API wrappers, and that seems like a really great idea. It might make it slightly tricky to integrate their provider with an existing generic "OAuth 2.0 All the Things" login system, but it does make working with them easier.
+
+- [Sniply](https://github.com/younes0/sniply)
 
 ## Install
 
@@ -235,16 +221,27 @@ Via Composer
 $ composer require league/oauth2-client
 ```
 
+## Testing
+
+``` bash
+$ ./vendor/bin/phpunit
+```
+
 ## Contributing
 
 Please see [CONTRIBUTING](https://github.com/thephpleague/oauth2-client/blob/master/CONTRIBUTING.md) for details.
 
+
+## Credits
+
+- [Alex Bilbie](https://github.com/alexbilbie)
+- [Ben Corlett](https://github.com/bencorlett)
+- [James Mills](https://github.com/jamesmills)
+- [Phil Sturgeon](https://github.com/philsturgeon)
+- [Tom Anderson](https://github.com/TomHAnderson)
+- [All Contributors](https://github.com/thephpleague/oauth2-client/contributors)
+
+
 ## License
 
 The MIT License (MIT). Please see [License File](https://github.com/thephpleague/oauth2-client/blob/master/LICENSE) for more information.
-
-
-[PSR-1]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md
-[PSR-2]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
-[PSR-4]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md
-[PSR-7]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-7-http-message.md
