@@ -78,13 +78,10 @@ class OauthController extends BaseController
 
 
             // provider
-
             $provider = craft()->oauth->getProvider($this->handle);
 
-            if(is_array($this->scopes))
-            {
-                $provider->setScopes($this->scopes);
-            }
+            // source oauth provider
+            $oauthProvider = $provider->getProvider();
 
 
             // init service
@@ -100,9 +97,12 @@ class OauthController extends BaseController
                     {
                         OauthHelper::log('OAuth 2 Connect - Step 1', LogLevel::Info);
 
-                        $authorizationUrl = $provider->getAuthorizationUrl($this->params);
+                        $options = $this->params;
+                        $options['scope'] = $this->scopes;
 
-                        craft()->httpSession->add('oauth2state', $provider->getProvider()->state);
+                        $authorizationUrl = $oauthProvider->getAuthorizationUrl($options);
+
+                        craft()->httpSession->add('oauth2state', $oauthProvider->getState());
 
                         OauthHelper::log('OAuth 2 Connect - Step 1 - Data'."\r\n".print_r([
                             'authorizationUrl' => $authorizationUrl,
@@ -128,7 +128,7 @@ class OauthController extends BaseController
                     {
                         OauthHelper::log('OAuth 2 Connect - Step 2', LogLevel::Info, true);
 
-                        $token = $provider->getProvider()->getAccessToken('authorization_code', [
+                        $token = $oauthProvider->getAccessToken('authorization_code', [
                             'code' => $code
                         ]);
 
@@ -170,7 +170,7 @@ class OauthController extends BaseController
 
                         $temporaryCredentials = unserialize(craft()->httpSession->get('temporary_credentials'));
 
-                        $token = $provider->getProvider()->getTokenCredentials($temporaryCredentials, $oauth_token, $oauth_verifier);
+                        $token = $oauthProvider->getTokenCredentials($temporaryCredentials, $oauth_token, $oauth_verifier);
 
                         craft()->httpSession->add('token_credentials', serialize($token));
 
@@ -191,11 +191,11 @@ class OauthController extends BaseController
                     {
                         OauthHelper::log('OAuth 1 Connect - Step 1', LogLevel::Info, true);
 
-                        $temporaryCredentials = $provider->getProvider()->getTemporaryCredentials();
+                        $temporaryCredentials = $oauthProvider->getTemporaryCredentials();
 
                         craft()->httpSession->add('temporary_credentials', serialize($temporaryCredentials));
 
-                        $authorizationUrl = $provider->getProvider()->getAuthorizationUrl($temporaryCredentials);
+                        $authorizationUrl = $oauthProvider->getAuthorizationUrl($temporaryCredentials);
                         craft()->request->redirect($authorizationUrl);
 
                         OauthHelper::log('OAuth 1 Connect - Step 1 - Data'."\r\n".print_r([
@@ -216,7 +216,6 @@ class OauthController extends BaseController
             $error = true;
             $errorMsg = $e->getMessage();
         }
-
 
         // we now have $token, build up response
 

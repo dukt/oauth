@@ -8,9 +8,8 @@
 namespace Dukt\OAuth\Providers;
 
 use Craft\UrlHelper;
-use Dukt\OAuth\base\Provider;
 
-class Twitter extends Provider
+class Twitter extends BaseProvider
 {
     // Properties
     // =========================================================================

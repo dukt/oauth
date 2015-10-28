@@ -8,9 +8,8 @@
 namespace Dukt\OAuth\Providers;
 
 use Craft\UrlHelper;
-use Dukt\OAuth\base\Provider;
 
-class Vimeo extends Provider
+class Vimeo extends BaseProvider
 {
     // Properties
     // =========================================================================

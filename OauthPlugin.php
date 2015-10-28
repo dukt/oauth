@@ -7,6 +7,8 @@
 
 namespace Craft;
 
+require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
+
 class OauthPlugin extends BasePlugin
 {
     // Public Methods

@@ -7,8 +7,6 @@
 
 namespace Craft;
 
-require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
-
 use ReflectionClass;
 use Guzzle\Http\Client;
 
@@ -430,21 +428,21 @@ class OauthService extends BaseApplicationComponent
 
                 $infos = $provider->getInfos();
 
-                $refreshToken = $realToken->refreshToken;
+                $refreshToken = $realToken->getRefreshToken();
 
                 $grant = new \League\OAuth2\Client\Grant\RefreshToken();
                 $newToken = $provider->getProvider()->getAccessToken($grant, ['refresh_token' => $refreshToken]);
 
                 if($newToken)
                 {
-                    $model->accessToken = $newToken->accessToken;
-                    $model->endOfLife = $newToken->expires;
+                    $model->accessToken = $newToken->getToken();
+                    $model->endOfLife = $newToken->getExpires();
 
-                    $newRefreshToken = $newToken->refreshToken;
+                    $newRefreshToken = $newToken->getRefreshToken();
 
                     if(!empty($newRefreshToken))
                     {
-                        $model->refreshToken = $newToken->refreshToken;
+                        $model->refreshToken = $newToken->getRefreshToken();
                     }
 
                     return true;
