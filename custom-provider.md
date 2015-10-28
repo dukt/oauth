@@ -1,4 +1,4 @@
-# Adding a custom provider to OAuth plugin for Craft CMS
+# Adding a custom OAuth provider
 
 OAuth plugin for Craft CMS is extensible and developers can add a custom provider
 by simply creating a plugin for Craft containing the OAuth provider.
