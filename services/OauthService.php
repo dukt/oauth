@@ -121,7 +121,7 @@ class OauthService extends BaseApplicationComponent
 
                 if($provider)
                 {
-                    switch ($provider->oauthVersion) {
+                    switch ($provider->getOauthVersion()) {
                         case 1:
                             if(!empty($response['token']['identifier']))
                             {
@@ -418,7 +418,7 @@ class OauthService extends BaseApplicationComponent
 
         // Refreshing the token only applies to OAuth 2.0 providers
 
-        if($provider && $provider->oauthVersion == 2)
+        if($provider && $provider->getOauthVersion() == 2)
         {
             // Has token expired ?
 

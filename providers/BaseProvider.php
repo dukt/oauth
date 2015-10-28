@@ -63,7 +63,7 @@ abstract class BaseProvider implements IOauth_Provider {
     {
         $infos = $this->getInfos();
 
-        switch($this->oauthVersion)
+        switch($this->getOauthVersion())
         {
             case 1:
                 return new \Guzzle\Plugin\Oauth\OauthPlugin(array(

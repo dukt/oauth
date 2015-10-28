@@ -32,7 +32,7 @@ class OauthHelper
 
         if($provider)
         {
-            switch($provider->oauthVersion)
+            switch($provider->getOauthVersion())
             {
                 case 1:
                 $realToken = new \League\OAuth1\Client\Credentials\TokenCredentials();

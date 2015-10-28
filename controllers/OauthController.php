@@ -86,7 +86,7 @@ class OauthController extends BaseController
 
             // init service
 
-            switch($provider->oauthVersion)
+            switch($provider->getOauthVersion())
             {
                 case 2:
                     $state = craft()->request->getParam('state');
