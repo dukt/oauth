@@ -11,20 +11,8 @@ use Craft\UrlHelper;
 
 class Google extends BaseProvider
 {
-    // Properties
-    // =========================================================================
-
-    public $oauthVersion = 2;
-
     // Public Methods
     // =========================================================================
-
-    /* default scopes (minimum scope for getting user details) */
-
-    protected $scopes = array(
-        'https://www.googleapis.com/auth/userinfo.profile',
-        'https://www.googleapis.com/auth/userinfo.email',
-    );
 
     /**
      * Get Name
@@ -46,34 +34,20 @@ class Google extends BaseProvider
         return UrlHelper::getResourceUrl('oauth/icons/google.svg');
     }
 
-
     /**
-     * Get Scope Docs URL
+     * Get OAuth Version
      *
-     * @return string
+     * @return int
      */
-    public function getScopeDocsUrl()
+    public function getOauthVersion()
     {
-        return 'https://developers.google.com/identity/protocols/googlescopes';
+        return 2;
     }
 
     /**
-     * Get Params
+     * Create Provider
      *
-     * @return array
-     */
-    public function getParams()
-    {
-        return  array(
-            'access_type' => 'offline',
-            'approval_prompt' => 'force'
-        );
-    }
-
-    /**
-     * Create Google Provider
-     *
-     * @return Google
+     * @return Dukt\OAuth\OAuth2\Client\Provider\Google
      */
     public function createProvider()
     {
