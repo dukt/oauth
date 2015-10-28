@@ -4,14 +4,16 @@
     },
     "autoload": {
         "psr-4": {
+            "Craft\\": "etc/providers/",
             "Dukt\\OAuth\\": "src/",
-            "Dukt\\OAuth\\base\\": "base/",
             "Dukt\\OAuth\\Providers\\": "providers/"
         }
     },
     "require": {
-        "league/oauth1-client": "1.6.0@dev",
-        "league/oauth2-client": "0.12.1@dev"
+        "league/oauth1-client": "1.6.1@dev",
+        "league/oauth2-client": "1.0.2@dev",
+        "league/oauth2-facebook": "1.1.0",
+        "league/oauth2-google": "1.0.1"
     },
     "scripts": {
         "post-update-cmd": ["echo [WARNING] Delete all .git dirs", "rm -rf vendor/**/**/.git"],
