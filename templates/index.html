@@ -8,54 +8,72 @@
     { label: "Plugins"|t, url: url('settings/plugins') }
 ] %}
 
+
+{% set tabs = {
+    providers: { label: "Providers"|t, url: url('oauth') },
+} %}
+
 {% set content %}
 
-{% import "_includes/forms" as forms %}
+    {% import "_includes/forms" as forms %}
 
-{% includeCssResource 'oauth/css/disableSave.css' %}
+    {% includeCssResource 'oauth/css/disableSave.css' %}
 
-<table id="fields" class="data fullwidth collapsible">
-    <thead>
-        <tr>
-            <th scope="col">{{ "Provider"|t }}</th>
-            <th scope="col">{{ "Status"|t }}</th>
-            <th scope="col">{{ "Tokens"|t }}</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        {% for provider in craft.oauth.getProviders(false) %}
-
+    <table id="fields" class="data fullwidth collapsible">
+        <thead>
             <tr>
-                <td><a href="{{ url('oauth/'~provider.handle) }}">{{provider.name}}</a></td>
-
-                <td class="nowrap">
-                    {% if provider.isConfigured %}
-                        <span class="status on"></span> {{ "Configured"|t }}
-                    {% else %}
-                        <span class="status"></span><span class="light">{{ "Not Configured"|t }}</span>
-                    {% endif %}
-                </td>
-
-                <td class="light">
-                    {% set count = provider.tokens|length %}
-
-                    {% if count == 0 %}
-                        {{ "{count} tokens"|t({ count: count }) }}
-                    {% else %}
-                        <a href="{{url('oauth/'~provider.handle~'/tokens')}}">
-                            {% if count == 1 %}
-                                {{ "{count} token"|t({ count: count }) }}
-                            {% else %}
-                                {{ "{count} tokens"|t({ count: count }) }}
-                            {% endif %}
-                        </a>
-                    {% endif %}
-                </td>
+                <th scope="col"></th>
+                <th scope="col">{{ "Provider"|t }}</th>
+                <th scope="col">{{ "Status"|t }}</th>
+                <th scope="col">{{ "Version"|t }}</th>
             </tr>
+        </thead>
 
-        {% endfor %}
-    </tbody>
-</table>
+        <tbody>
+            {% for provider in craft.oauth.getProviders(false) %}
+
+                <tr>
+                    <td class="thin">
+                        {% if provider.iconUrl %}
+                            <img src="{{ provider.iconUrl }}" height="24" />
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a href="{{ url('oauth/'~provider.handle) }}">{{provider.name}}</a>
+                    </td>
+
+                    <td class="nowrap">
+                        {% if provider.isConfigured %}
+                            <span class="status on"></span> {{ "Configured"|t }}
+                        {% else %}
+                            <span class="status"></span><span class="light">{{ "Not Configured"|t }}</span>
+                        {% endif %}
+                    </td>
+
+                    <td class="light">
+                        OAuth {{ provider.oauthVersion }}.0
+                    </td>
+{#
+                    <td class="light">
+                        {% set count = provider.tokens|length %}
+
+                        {% if count == 0 %}
+                            {{ "{count} tokens"|t({ count: count }) }}
+                        {% else %}
+                            <a href="{{url('oauth/'~provider.handle~'/tokens')}}">
+                                {% if count == 1 %}
+                                    {{ "{count} token"|t({ count: count }) }}
+                                {% else %}
+                                    {{ "{count} tokens"|t({ count: count }) }}
+                                {% endif %}
+                            </a>
+                        {% endif %}
+                    </td> #}
+                </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
 
 {% endset %}
