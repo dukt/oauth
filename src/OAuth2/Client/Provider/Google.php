@@ -1,110 +1,69 @@
 <?php
+/**
+ * @link      https://dukt.net/craft/oauth/
+ * @copyright Copyright (c) 2015, Dukt
+ * @license   https://dukt.net/craft/oauth/docs/license
+ */
 
 namespace Dukt\OAuth\OAuth2\Client\Provider;
 
-use League\OAuth2\Client\Provider\AbstractProvider;
-use League\OAuth2\Client\Provider\GoogleUser;
+use League\OAuth2\Client\Entity\User;
 
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
-use League\OAuth2\Client\Token\AccessToken;
-use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
-use Psr\Http\Message\ResponseInterface;
-
-class Google extends AbstractProvider
+class Google extends \League\OAuth2\Client\Provider\Google
 {
-    use BearerAuthorizationTrait;
+    // Properties
+    // =========================================================================
 
-    const ACCESS_TOKEN_RESOURCE_OWNER_ID = 'id';
-
-    /**
-     * @var string If set, this will be sent to google as the "access_type" parameter.
-     * @link https://developers.google.com/accounts/docs/OAuth2WebServer#offline
-     */
-    protected $accessType = 'offline';
-
-    /**
-     * @var string If set, this will be sent to google as the "hd" parameter.
-     * @link https://developers.google.com/accounts/docs/OAuth2Login#hd-param
-     */
-    protected $hostedDomain;
-
-    /**
-     * @var array Default fields to be requested from the user profile.
-     * @link https://developers.google.com/+/web/api/rest/latest/people
-     */
-    protected $defaultUserFields = [
-        'id',
-        'name(familyName,givenName)',
-        'displayName',
-        'emails/value',
-        'image/url',
+    public $scopes = [
+        'profile',
+        'email',
     ];
-    /**
-     * @var array Additional fields to be requested from the user profile.
-     *            If set, these values will be included with the defaults.
-     */
-    protected $userFields = [];
 
-    public function getBaseAuthorizationUrl()
-    {
-        return 'https://accounts.google.com/o/oauth2/auth';
-    }
+    // Public Methods
+    // =========================================================================
 
-    public function getBaseAccessTokenUrl(array $params)
-    {
-        return 'https://accounts.google.com/o/oauth2/token';
-    }
-
-    public function getResourceOwnerDetailsUrl(AccessToken $token)
+    public function urlUserDetails(\League\OAuth2\Client\Token\AccessToken $token)
     {
         return 'https://www.googleapis.com/oauth2/v1/userinfo';
     }
 
-    protected function getAuthorizationParameters(array $options)
+    public function userDetails($response, \League\OAuth2\Client\Token\AccessToken $token)
     {
-        $params = array_merge(
-            parent::getAuthorizationParameters($options),
-            array_filter([
-                'hd'          => $this->hostedDomain,
-                'access_type' => $this->accessType,
-                // if the user is logged in with more than one account ask which one to use for the login!
-                'authuser'    => '-1'
-            ])
-        );
+        $response = (array) $response;
 
-        return $params;
+        $user = new User();
+
+        $uid = $response['id'];
+        $name = $response['name'];
+        $firstName = $response['given_name'];
+        $lastName = $response['family_name'];
+        $email = isset($response['email']) ? $response['email'] : null;
+        $imageUrl = isset($response['picture']) ? $response['picture'] : null;
+
+        $user->exchangeArray([
+            'uid' => $uid,
+            'name' => $name,
+            'firstname' => $firstName,
+            'lastName' => $lastName,
+            'email' => $email,
+            'imageUrl' => $imageUrl,
+        ]);
+
+        return $user;
     }
 
-    protected function getDefaultScopes()
+    public function userUid($response, \League\OAuth2\Client\Token\AccessToken $token)
     {
-        return [
-            'email',
-            'profile',
-        ];
+        return $response->id;
     }
 
-    protected function getScopeSeparator()
+    public function userEmail($response, \League\OAuth2\Client\Token\AccessToken $token)
     {
-        return ' ';
+        return isset($response->email) ? $response->email : null;
     }
 
-    protected function checkResponse(ResponseInterface $response, $data)
+    public function userScreenName($response, \League\OAuth2\Client\Token\AccessToken $token)
     {
-        if (!empty($data['error'])) {
-            $code  = 0;
-            $error = $data['error'];
-
-            if (is_array($error)) {
-                $code  = $error['code'];
-                $error = $error['message'];
-            }
-
-            throw new IdentityProviderException($error, $code, $data);
-        }
-    }
-
-    protected function createResourceOwner(array $response, AccessToken $token)
-    {
-        return new GoogleUser($response);
+        return [$response->given_name, $response->family_name];
     }
 }
