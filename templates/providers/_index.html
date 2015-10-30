@@ -3,20 +3,22 @@
 
 {% set content %}
 
-    {% includeCssResource 'oauth/css/disableSave.css' %}
-
     <table id="fields" class="data fullwidth collapsible">
         <thead>
             <tr>
                 <th scope="col"></th>
                 <th scope="col">{{ "Provider"|t }}</th>
                 <th scope="col">{{ "Status"|t }}</th>
+                <th scope="col">{{ "Client ID & Secret"|t }}</th>
+                <th scope="col">{{ "Default Scope"|t }}</th>
                 <th scope="col">{{ "Version"|t }}</th>
             </tr>
         </thead>
 
         <tbody>
-            {% for provider in craft.oauth.getProviders(false) %}
+            {% for provider in providers %}
+
+                {% set infos = allProviderInfos[provider.handle] %}
 
                 <tr>
                     <td class="thin">
@@ -25,9 +27,7 @@
                         {% endif %}
                     </td>
 
-                    <td>
-                        <a href="{{ url('oauth/providers/'~provider.handle) }}">{{provider.name}}</a>
-                    </td>
+                    <td><a href="{{ url('oauth/providers/'~provider.handle) }}">{{provider.name}}</a></td>
 
                     <td class="nowrap">
                         {% if provider.isConfigured %}
@@ -38,26 +38,21 @@
                     </td>
 
                     <td class="light">
-                        OAuth {{ provider.oauthVersion }}.0
-                    </td>
-{#
-                    <td class="light">
-                        {% set count = provider.tokens|length %}
-
-                        {% if count == 0 %}
-                            {{ "{count} tokens"|t({ count: count }) }}
+                        {% if infos %}
+                            <strong>Client ID:</strong> {{ infos.clientId }}<br />
+                            <strong>Client Secret:</strong> {{ infos.clientSecret }}
                         {% else %}
-                            <a href="{{url('oauth/'~provider.handle~'/tokens')}}">
-                                {% if count == 1 %}
-                                    {{ "{count} token"|t({ count: count }) }}
-                                {% else %}
-                                    {{ "{count} tokens"|t({ count: count }) }}
-                                {% endif %}
-                            </a>
+                            —
                         {% endif %}
-                    </td> #}
-                </tr>
 
+                    </td>
+
+                    <td class="light">
+                        {{ provider.getDefaultScope()|join('<br />')|raw }}
+                    </td>
+
+                    <td class="light">OAuth {{ provider.oauthVersion }}.0</td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
