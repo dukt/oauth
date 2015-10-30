@@ -40,4 +40,9 @@ class Oauth_TokenModel extends BaseModel
 
         return $attributes;
     }
+
+    public function getToken()
+    {
+        return OauthHelper::getRealToken($this);
+    }
 }
