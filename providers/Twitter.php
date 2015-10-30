@@ -8,15 +8,10 @@
 namespace Dukt\OAuth\Providers;
 
 use Craft\UrlHelper;
+use Craft\OauthHelper;
 
 class Twitter extends BaseProvider
 {
-    // Properties
-    // =========================================================================
-
-    public $consoleUrl = 'https://dev.twitter.com/apps';
-    public $oauthVersion = 1;
-
     // Public Methods
     // =========================================================================
 
@@ -41,6 +36,16 @@ class Twitter extends BaseProvider
     }
 
     /**
+     * Get OAuth Version
+     *
+     * @return int
+     */
+    public function getOauthVersion()
+    {
+        return 1;
+    }
+
+    /**
      * Create Twitter Provider
      *
      * @return Twitter
@@ -54,5 +59,29 @@ class Twitter extends BaseProvider
         ];
 
         return new \League\OAuth1\Client\Server\Twitter($config);
+    }
+
+    /**
+     * Get API Manager URL
+     *
+     * @return string
+     */
+    public function getManagerUrl()
+    {
+        return 'https://dev.twitter.com/apps';
+    }
+
+    /**
+     * Get Account
+     */
+    public function getAccount($token)
+    {
+        $provider = $this->getProvider();
+
+        $realToken = OauthHelper::getRealToken($token);
+
+        $response = $provider->getUserDetails($realToken);
+
+        return $response->getIterator();
     }
 }

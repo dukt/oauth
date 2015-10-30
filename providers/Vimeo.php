@@ -11,12 +11,6 @@ use Craft\UrlHelper;
 
 class Vimeo extends BaseProvider
 {
-    // Properties
-    // =========================================================================
-
-    public $consoleUrl = 'https://developer.vimeo.com/apps';
-    public $oauthVersion = 2;
-
     // Public Methods
     // =========================================================================
 
@@ -42,13 +36,13 @@ class Vimeo extends BaseProvider
     }
 
     /**
-     * Get Scope Docs URL
+     * Get OAuth Version
      *
-     * @return string
+     * @return int
      */
-    public function getScopeDocsUrl()
+    public function getOauthVersion()
     {
-        return 'https://developer.vimeo.com/api/authentication#scopes';
+        return 2;
     }
 
     /**
@@ -65,5 +59,24 @@ class Vimeo extends BaseProvider
         ];
 
         return new \Dukt\OAuth\OAuth2\Client\Provider\Vimeo($config);
+    }
+
+    /**
+     * Get API Manager URL
+     *
+     * @return string
+     */
+    public function getManagerUrl()
+    {
+        return 'https://developer.vimeo.com/apps';
+    }
+    /**
+     * Get Scope Docs URL
+     *
+     * @return string
+     */
+    public function getScopeDocsUrl()
+    {
+        return 'https://developer.vimeo.com/api/authentication#scopes';
     }
 }
