@@ -120,9 +120,9 @@ abstract class BaseProvider implements IOauth_Provider {
 
         $realToken = OauthHelper::getRealToken($token);
 
-        $response = $provider->getResourceOwner($realToken);
+        $response = $provider->getUserDetails($realToken);
 
-        return $response->toArray();
+        return $response->getArrayCopy();
     }
 
     protected function fetchProviderData($url, array $headers = [])
