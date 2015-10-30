@@ -142,9 +142,9 @@ class OauthService extends BaseApplicationComponent
                                 $token->accessToken = $response['token']['accessToken'];
                             }
 
-                            if(!empty($response['token']['expires']))
+                            if(!empty($response['token']['endOfLife']))
                             {
-                                $token->endOfLife = $response['token']['expires'];
+                                $token->endOfLife = $response['token']['endOfLife'];
                             }
 
                             if(!empty($response['token']['refreshToken']))
@@ -428,21 +428,21 @@ class OauthService extends BaseApplicationComponent
 
                 $infos = $provider->getInfos();
 
-                $refreshToken = $realToken->getRefreshToken();
+                $refreshToken = $model->getRefreshToken();
 
                 $grant = new \League\OAuth2\Client\Grant\RefreshToken();
                 $newToken = $provider->getProvider()->getAccessToken($grant, ['refresh_token' => $refreshToken]);
 
                 if($newToken)
                 {
-                    $model->accessToken = $newToken->getToken();
-                    $model->endOfLife = $newToken->getExpires();
+                    $model->accessToken = $newToken->accessToken;
+                    $model->endOfLife = $newToken->expires;
 
-                    $newRefreshToken = $newToken->getRefreshToken();
+                    $newRefreshToken = $newToken->refreshToken;
 
                     if(!empty($newRefreshToken))
                     {
-                        $model->refreshToken = $newToken->getRefreshToken();
+                        $model->refreshToken = $newToken->refreshToken;
                     }
 
                     return true;

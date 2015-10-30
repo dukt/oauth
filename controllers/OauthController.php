@@ -30,7 +30,19 @@ class OauthController extends BaseController
      */
     public function actionIndex()
     {
-        $this->renderTemplate('oauth/providers/_index');
+        $providers = craft()->oauth->getProviders(false);
+
+        $allProviderInfos = [];
+
+        foreach($providers as $provider)
+        {
+            $allProviderInfos[$provider->getHandle()] = craft()->oauth->getProviderInfos($provider->getHandle());
+        }
+
+        $variables['providers'] = $providers;
+        $variables['allProviderInfos'] = $allProviderInfos;
+
+        $this->renderTemplate('oauth/providers/_index', $variables);
     }
 
     /**
@@ -107,12 +119,19 @@ class OauthController extends BaseController
                     {
                         OauthHelper::log('OAuth 2 Connect - Step 1', LogLevel::Info);
 
+                        $oauthProvider->setScopes($this->scopes);
+
                         $options = $this->params;
-                        $options['scope'] = $this->scopes;
+
+                        if(!empty($this->params['access_type']) && $this->params['access_type'] == 'offline')
+                        {
+                            unset($this->params['access_type']);
+                            $oauthProvider->setAccessType('offline');
+                        }
 
                         $authorizationUrl = $oauthProvider->getAuthorizationUrl($options);
 
-                        craft()->httpSession->add('oauth2state', $oauthProvider->getState());
+                        craft()->httpSession->add('oauth2state', $oauthProvider->state);
 
                         OauthHelper::log('OAuth 2 Connect - Step 1 - Data'."\r\n".print_r([
                             'authorizationUrl' => $authorizationUrl,
