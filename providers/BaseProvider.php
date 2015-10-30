@@ -56,6 +56,16 @@ abstract class BaseProvider implements IOauth_Provider {
         return null;
     }
 
+    public function getDefaultScope()
+    {
+        $provider = $this->getProvider();
+
+        if($provider && method_exists($provider, 'getScopes'))
+        {
+            return $this->getProvider()->getScopes();
+        }
+    }
+
     /**
      * Get Guzzle Subscriber
      */
