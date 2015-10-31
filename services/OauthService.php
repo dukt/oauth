@@ -428,7 +428,7 @@ class OauthService extends BaseApplicationComponent
 
                 $infos = $provider->getInfos();
 
-                $refreshToken = $model->getRefreshToken();
+                $refreshToken = $model->refreshToken;
 
                 $grant = new \League\OAuth2\Client\Grant\RefreshToken();
                 $newToken = $provider->getProvider()->getAccessToken($grant, ['refresh_token' => $refreshToken]);
