@@ -52,13 +52,16 @@ class Twitter extends BaseProvider
      */
     public function createProvider()
     {
-        $config = [
-            'identifier' => $this->providerInfos->clientId,
-            'secret' => $this->providerInfos->clientSecret,
-            'callback_uri' => $this->getRedirectUri(),
-        ];
+        if($this->providerInfos->clientId && $this->providerInfos->clientSecret)
+        {
+            $config = [
+                'identifier' => $this->providerInfos->clientId,
+                'secret' => $this->providerInfos->clientSecret,
+                'callback_uri' => $this->getRedirectUri(),
+            ];
 
-        return new \League\OAuth1\Client\Server\Twitter($config);
+            return new \League\OAuth1\Client\Server\Twitter($config);
+        }
     }
 
     /**
