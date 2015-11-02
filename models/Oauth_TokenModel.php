@@ -41,6 +41,11 @@ class Oauth_TokenModel extends BaseModel
         return $attributes;
     }
 
+    public function getProvider()
+    {
+        return craft()->oauth->getProvider($this->providerHandle);
+    }
+
     public function getToken()
     {
         return OauthHelper::getRealToken($this);
