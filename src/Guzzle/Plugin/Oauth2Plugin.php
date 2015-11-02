@@ -8,8 +8,6 @@
 namespace Dukt\OAuth\Guzzle\Plugin;
 
 use Guzzle\Common\Event;
-use Guzzle\Http\Exception\BadResponseException;
-use Guzzle\Http\Message\RequestInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -38,6 +36,4 @@ class Oauth2Plugin implements EventSubscriberInterface
         $accessToken = $this->config['access_token'];
         $request->setHeader('Authorization', 'Bearer ' . $accessToken);
     }
-
-
 }
