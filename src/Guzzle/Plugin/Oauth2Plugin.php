@@ -36,20 +36,7 @@ class Oauth2Plugin implements EventSubscriberInterface
     {
         $request = $event['request'];
         $accessToken = $this->config['access_token'];
-
-        switch($this->config['authorization_method'])
-        {
-            case 'oauth2_access_token':
-            $request->getQuery()->set('oauth2_access_token', $accessToken);
-            break;
-
-            case 'oauth2_token':
-            $request->getQuery()->set('token', $accessToken);
-            break;
-
-            default:
-            $request->getQuery()->set('access_token', $accessToken);
-        }
+        $request->setHeader('Authorization', 'Bearer ' . $accessToken);
     }
 
 
