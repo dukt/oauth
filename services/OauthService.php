@@ -62,7 +62,8 @@ class OauthService extends BaseApplicationComponent
             }
             else
             {
-                $scopes = $provider->getScopes();
+                $scopes = [];
+                // $scopes = $provider->getScopes();
             }
 
             craft()->httpSession->add('oauth.scopes', $scopes);
@@ -76,7 +77,8 @@ class OauthService extends BaseApplicationComponent
             }
             else
             {
-                $params = $provider->getParams();
+                $params = [];
+                // $params = $provider->getParams();
             }
 
             craft()->httpSession->add('oauth.params', $params);
@@ -290,10 +292,7 @@ class OauthService extends BaseApplicationComponent
                 }
                 catch(\Exception $e)
                 {
-                    // todo: log
-                    // throw $e;
-
-                    // return null;
+                    OauthHelper::log("OAuth.Debug - Couldn't refresh token\r\n".$e->getMessage().'\r\n'.$e->getTraceAsString(), LogLevel::Error, true);
                 }
 
                 return $token;
