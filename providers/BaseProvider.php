@@ -71,6 +71,11 @@ abstract class BaseProvider implements IOauth_Provider {
      */
     public function getSubscriber(Oauth_TokenModel $token)
     {
+        return $this->createSubscriber($token);
+    }
+
+    public function createSubscriber(Oauth_TokenModel $token)
+    {
         $infos = $this->getInfos();
 
         switch($this->getOauthVersion())
