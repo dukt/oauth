@@ -9,7 +9,6 @@
                 <th scope="col"></th>
                 <th scope="col">{{ "Provider"|t }}</th>
                 <th scope="col">{{ "Status"|t }}</th>
-                <th scope="col">{{ "Client ID & Secret"|t }}</th>
                 <th scope="col">{{ "Default Scope"|t }}</th>
                 <th scope="col">{{ "Version"|t }}</th>
             </tr>
@@ -35,16 +34,6 @@
                         {% else %}
                             <span class="status"></span><span class="light">{{ "Not Configured"|t }}</span>
                         {% endif %}
-                    </td>
-
-                    <td class="light">
-                        {% if infos %}
-                            <strong>Client ID:</strong> {{ infos.clientId }}<br />
-                            <strong>Client Secret:</strong> {{ infos.clientSecret }}
-                        {% else %}
-                            —
-                        {% endif %}
-
                     </td>
 
                     <td class="light">
