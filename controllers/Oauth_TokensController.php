@@ -15,7 +15,7 @@ class Oauth_TokensController extends BaseController
     protected $allowAnonymous = array('actionConnect');
     private $handle;
     private $namespace;
-    private $scopes;
+    private $scope;
     private $params;
     private $redirect;
     private $referer;

@@ -15,7 +15,7 @@ class OauthController extends BaseController
     protected $allowAnonymous = array('actionConnect');
     private $handle;
     private $namespace;
-    private $scopes;
+    private $scope;
     private $authorizationOptions;
     private $redirect;
     private $referer;
@@ -72,13 +72,13 @@ class OauthController extends BaseController
 
 
             // session vars
-            $this->scopes = craft()->httpSession->get('oauth.scopes');
+            $this->scope = craft()->httpSession->get('oauth.scope');
             $this->authorizationOptions = craft()->httpSession->get('oauth.authorizationOptions');
             $this->referer = craft()->httpSession->get('oauth.referer');
 
             OauthHelper::log('OAuth Connect - Step 2A'."\r\n".print_r([
                     'handle' => $this->handle,
-                    'scopes' => $this->scopes,
+                    'scope' => $this->scope,
                     'authorizationOptions' => $this->authorizationOptions,
                     'referer' => $this->referer,
                 ], true), LogLevel::Info, true);
@@ -119,7 +119,7 @@ class OauthController extends BaseController
                     {
                         OauthHelper::log('OAuth 2 Connect - Step 1', LogLevel::Info);
 
-                        $oauthProvider->setScopes($this->scopes);
+                        $oauthProvider->setScopes($this->scope);
 
                         $options = $this->authorizationOptions;
 
