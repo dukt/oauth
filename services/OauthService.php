@@ -69,19 +69,19 @@ class OauthService extends BaseApplicationComponent
             craft()->httpSession->add('oauth.scopes', $scopes);
 
 
-            // params
+            // authorizationOptions
 
-            if(!empty($variables['params']))
+            if(!empty($variables['authorizationOptions']))
             {
-                $params = $variables['params'];
+                $authorizationOptions = $variables['authorizationOptions'];
             }
             else
             {
-                $params = [];
-                // $params = $provider->getParams();
+                $authorizationOptions = [];
+                // $authorizationOptions = $provider->getauthorizationOptions();
             }
 
-            craft()->httpSession->add('oauth.params', $params);
+            craft()->httpSession->add('oauth.authorizationOptions', $authorizationOptions);
 
             // redirect url
 
@@ -93,7 +93,7 @@ class OauthService extends BaseApplicationComponent
             OauthHelper::log('OAuth Connect - Step 1'."\r\n".print_r([
                     'referer' => $referer,
                     'scopes' => $scopes,
-                    'params' => $params,
+                    'authorizationOptions' => $authorizationOptions,
                     'redirectTo' => $redirectUrl
                 ], true), LogLevel::Info, true);
 
@@ -459,7 +459,7 @@ class OauthService extends BaseApplicationComponent
     {
         craft()->httpSession->remove('oauth.handle');
         craft()->httpSession->remove('oauth.referer');
-        craft()->httpSession->remove('oauth.params');
+        craft()->httpSession->remove('oauth.authorizationOptions');
         craft()->httpSession->remove('oauth.redirect');
         craft()->httpSession->remove('oauth.response');
         craft()->httpSession->remove('oauth.scopes');

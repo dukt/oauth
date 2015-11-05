@@ -36,6 +36,11 @@ abstract class BaseProvider implements IOauth_Provider {
     // Public Methods
     // =========================================================================
 
+    public function getDefaultAuthorizationOptions()
+    {
+        return null;
+    }
+
     /**
      * Get Icon URL
      *

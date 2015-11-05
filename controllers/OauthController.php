@@ -16,7 +16,7 @@ class OauthController extends BaseController
     private $handle;
     private $namespace;
     private $scopes;
-    private $params;
+    private $authorizationOptions;
     private $redirect;
     private $referer;
 
@@ -73,13 +73,13 @@ class OauthController extends BaseController
 
             // session vars
             $this->scopes = craft()->httpSession->get('oauth.scopes');
-            $this->params = craft()->httpSession->get('oauth.params');
+            $this->authorizationOptions = craft()->httpSession->get('oauth.authorizationOptions');
             $this->referer = craft()->httpSession->get('oauth.referer');
 
             OauthHelper::log('OAuth Connect - Step 2A'."\r\n".print_r([
                     'handle' => $this->handle,
                     'scopes' => $this->scopes,
-                    'params' => $this->params,
+                    'authorizationOptions' => $this->authorizationOptions,
                     'referer' => $this->referer,
                 ], true), LogLevel::Info, true);
 
@@ -121,11 +121,11 @@ class OauthController extends BaseController
 
                         $oauthProvider->setScopes($this->scopes);
 
-                        $options = $this->params;
+                        $options = $this->authorizationOptions;
 
-                        if(!empty($this->params['access_type']) && $this->params['access_type'] == 'offline')
+                        if(!empty($this->authorizationOptions['access_type']) && $this->authorizationOptions['access_type'] == 'offline')
                         {
-                            unset($this->params['access_type']);
+                            unset($this->authorizationOptions['access_type']);
                             $oauthProvider->setAccessType('offline');
                         }
 
