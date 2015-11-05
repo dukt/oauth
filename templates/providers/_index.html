@@ -9,8 +9,6 @@
                 <th scope="col"></th>
                 <th scope="col">{{ "Provider"|t }}</th>
                 <th scope="col">{{ "Status"|t }}</th>
-                <th scope="col">{{ "Default Scope"|t }}</th>
-                <th scope="col">{{ "Default Authorization Options"|t }}</th>
                 <th scope="col">{{ "Version"|t }}</th>
             </tr>
         </thead>
@@ -35,14 +33,6 @@
                         {% else %}
                             <span class="status"></span><span class="light">{{ "Not Configured"|t }}</span>
                         {% endif %}
-                    </td>
-
-                    <td class="light">
-                        {{ provider.getDefaultScope()|join('<br />')|raw }}
-                    </td>
-
-                    <td class="light">
-                        {{ provider.getDefaultAuthorizationOptions()|join('<br />')|raw }}
                     </td>
 
                     <td class="light">OAuth {{ provider.oauthVersion }}.0</td>
