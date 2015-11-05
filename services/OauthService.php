@@ -580,7 +580,7 @@ class OauthService extends BaseApplicationComponent
 
         $oauthProviderTypes = array();
 
-        foreach(craft()->plugins->call('getOAuthProviders', [], true) as $pluginOAuthProviderTypes)
+        foreach(craft()->plugins->call('getOauthProviders', [], true) as $pluginOAuthProviderTypes)
         {
             $oauthProviderTypes = array_merge($oauthProviderTypes, $pluginOAuthProviderTypes);
         }

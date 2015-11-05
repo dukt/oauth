@@ -17,7 +17,7 @@ class OauthPlugin extends BasePlugin
     /**
      * Get OAuth Providers
      */
-    public function getOAuthProviders()
+    public function getOauthProviders()
     {
         return [
             'Dukt\OAuth\Providers\Facebook',

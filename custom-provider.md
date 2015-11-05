@@ -21,7 +21,7 @@ by simply creating a plugin for Craft containing the OAuth provider.
         /**
          * Get OAuth providers
          */
-        public function getOAuthProviders()
+        public function getOauthProviders()
         {
             require_once(CRAFT_PLUGINS_PATH.'github/providers/Github.php');
 
