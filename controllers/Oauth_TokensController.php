@@ -16,7 +16,6 @@ class Oauth_TokensController extends BaseController
     private $handle;
     private $namespace;
     private $scope;
-    private $params;
     private $redirect;
     private $referer;
 
