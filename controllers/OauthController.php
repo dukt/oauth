@@ -343,47 +343,4 @@ class OauthController extends BaseController
             craft()->urlManager->setRouteVariables(array('infos' => $providerInfos));
         }
     }
-
-    /**
-     * Delete token.
-     *
-     * @return null
-     */
-    public function actionDeleteToken(array $variables = array())
-    {
-        $this->requirePostRequest();
-
-        $id = craft()->request->getRequiredPost('id');
-
-        $token = craft()->oauth->getTokenById($id);
-
-        if (craft()->oauth->deleteToken($token))
-        {
-            if (craft()->request->isAjaxRequest())
-            {
-                $this->returnJson(array('success' => true));
-            }
-            else
-            {
-                craft()->userSession->setNotice(Craft::t('Token deleted.'));
-                $this->redirectToPostedUrl($token);
-            }
-        }
-        else
-        {
-            if (craft()->request->isAjaxRequest())
-            {
-                $this->returnJson(array('success' => false));
-            }
-            else
-            {
-                craft()->userSession->setError(Craft::t('Couldn’t delete token.'));
-
-                // Send the token back to the template
-                craft()->urlManager->setRouteVariables(array(
-                    'token' => $token
-                ));
-            }
-        }
-    }
 }
