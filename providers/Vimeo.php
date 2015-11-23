@@ -32,7 +32,7 @@ class Vimeo extends BaseProvider
      */
     public function getIconUrl()
     {
-        return UrlHelper::getResourceUrl('oauth/icons/vimeo.svg');
+        return UrlHelper::getResourceUrl('oauth/providers/vimeo.svg');
     }
 
     /**

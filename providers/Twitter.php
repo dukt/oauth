@@ -32,7 +32,7 @@ class Twitter extends BaseProvider
      */
     public function getIconUrl()
     {
-        return UrlHelper::getResourceUrl('oauth/icons/twitter.svg');
+        return UrlHelper::getResourceUrl('oauth/providers/twitter.svg');
     }
 
     /**

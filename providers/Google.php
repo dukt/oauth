@@ -31,7 +31,7 @@ class Google extends BaseProvider
      */
     public function getIconUrl()
     {
-        return UrlHelper::getResourceUrl('oauth/icons/google.svg');
+        return UrlHelper::getResourceUrl('oauth/providers/google.svg');
     }
 
     /**

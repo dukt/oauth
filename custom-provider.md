@@ -61,7 +61,7 @@ by simply creating a plugin for Craft containing the OAuth provider.
          */
         public function getIconUrl()
         {
-            return UrlHelper::getResourceUrl('oauth/icons/facebook.svg');
+            return UrlHelper::getResourceUrl('oauth/providers/facebook.svg');
         }
 
         /**

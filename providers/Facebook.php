@@ -31,7 +31,7 @@ class Facebook extends BaseProvider
      */
     public function getIconUrl()
     {
-        return UrlHelper::getResourceUrl('oauth/icons/facebook.svg');
+        return UrlHelper::getResourceUrl('oauth/providers/facebook.svg');
     }
 
     /**
