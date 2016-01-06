@@ -257,7 +257,7 @@ class OauthController extends BaseController
 
         }
 
-        if(!is_array($tokenArray))
+        if(!$error && !is_array($tokenArray))
         {
             throw new Exception("Error with token");
         }
