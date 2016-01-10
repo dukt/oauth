@@ -34,9 +34,9 @@ class Google extends \League\OAuth2\Client\Provider\Google
         $user = new User();
 
         $uid = $response['id'];
-        $name = $response['name'];
-        $firstName = $response['given_name'];
-        $lastName = $response['family_name'];
+        $name = isset($response['name']) ? $response['name'] : null;
+        $firstName = isset($response['given_name']) ? $response['given_name'] : null;
+        $lastName = isset($response['family_name']) ? $response['family_name'] : null;
         $email = isset($response['email']) ? $response['email'] : null;
         $imageUrl = isset($response['picture']) ? $response['picture'] : null;
 
