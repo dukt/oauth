@@ -47,117 +47,139 @@ abstract class BaseProvider implements IOauth_Provider {
         switch($this->getOauthVersion())
         {
             case 2:
-                $state = \Craft\craft()->request->getParam('state');
-                $code = \Craft\craft()->request->getParam('code');
-                $oauth2state = \Craft\craft()->httpSession->get('oauth2state');
-
-                if (is_null($code))
-                {
-                    OauthHelper::log('OAuth 2 Connect - Step 1', LogLevel::Info);
-
-                    $oauthProvider->setScopes($options['scope']);
-
-                    $options = $options['authorizationOptions'];
-
-                    if(!empty($options['authorizationOptions']['access_type']) && $options['authorizationOptions']['access_type'] == 'offline')
-                    {
-                        unset($options['authorizationOptions']['access_type']);
-                        $oauthProvider->setAccessType('offline');
-                    }
-
-                    $authorizationUrl = $oauthProvider->getAuthorizationUrl($options);
-
-                    \Craft\craft()->httpSession->add('oauth2state', $oauthProvider->state);
-
-                    OauthHelper::log('OAuth 2 Connect - Step 1 - Data'."\r\n".print_r([
-                        'authorizationUrl' => $authorizationUrl,
-                        'oauth2state' => \Craft\craft()->httpSession->get('oauth2state')
-                    ], true), LogLevel::Info);
-
-                    \Craft\craft()->request->redirect($authorizationUrl);
-                }
-                elseif (!$state || $state !== $oauth2state)
-                {
-                    OauthHelper::log('OAuth 2 Connect - Step 1.5'."\r\n".print_r([
-                        'error' => "Invalid state",
-                        'state' => $state,
-                        'oauth2state' => $oauth2state,
-                    ], true), LogLevel::Info, true);
-
-                    \Craft\craft()->httpSession->remove('oauth2state');
-
-                    throw new Exception("Invalid state");
-
-                }
-                else
-                {
-                    OauthHelper::log('OAuth 2 Connect - Step 2', LogLevel::Info, true);
-
-                    $token = $oauthProvider->getAccessToken('authorization_code', [
-                        'code' => $code
-                    ]);
-
-                    OauthHelper::log('OAuth 2 Connect - Step 2 - Data'."\r\n".print_r([
-                        'code' => $code,
-                        'token' => $token,
-                    ], true), LogLevel::Info, true);
-                }
-
+                $this->connectOauth2();
                 break;
 
             case 1:
-
-                $user = \Craft\craft()->request->getParam('user');
-                $oauth_token = \Craft\craft()->request->getParam('oauth_token');
-                $oauth_verifier = \Craft\craft()->request->getParam('oauth_verifier');
-                $denied = \Craft\craft()->request->getParam('denied');
-
-                if ($oauth_token && $oauth_verifier)
-                {
-                    OauthHelper::log('OAuth 1 Connect - Step 2', LogLevel::Info, true);
-
-                    $temporaryCredentials = unserialize(\Craft\craft()->httpSession->get('temporary_credentials'));
-
-                    $token = $oauthProvider->getTokenCredentials($temporaryCredentials, $oauth_token, $oauth_verifier);
-
-                    \Craft\craft()->httpSession->add('token_credentials', serialize($token));
-
-                    OauthHelper::log('OAuth 1 Connect - Step 2 - Data'."\r\n".print_r([
-                        'temporaryCredentials' => $temporaryCredentials,
-                        'oauth_token' => $oauth_token,
-                        'oauth_verifier' => $oauth_verifier,
-                        'token' => $token,
-                    ], true), LogLevel::Info, true);
-                }
-                elseif ($denied)
-                {
-                    OauthHelper::log('OAuth 1 Connect - Step 1.5'."\r\n".print_r(["Client access denied by the user"], true), LogLevel::Info, true);
-
-                    throw new Exception("Client access denied by the user");
-                }
-                else
-                {
-                    OauthHelper::log('OAuth 1 Connect - Step 1', LogLevel::Info, true);
-
-                    $temporaryCredentials = $oauthProvider->getTemporaryCredentials();
-
-                    \Craft\craft()->httpSession->add('temporary_credentials', serialize($temporaryCredentials));
-
-                    $authorizationUrl = $oauthProvider->getAuthorizationUrl($temporaryCredentials);
-                    \Craft\craft()->request->redirect($authorizationUrl);
-
-                    OauthHelper::log('OAuth 1 Connect - Step 1 - Data'."\r\n".print_r([
-                        'temporaryCredentials' => $temporaryCredentials,
-                        'authorizationUrl' => $authorizationUrl,
-                    ], true), LogLevel::Info, true);
-                }
-            break;
+                $this->connectOauth1();
+                break;
 
             default:
-                throw new Exception("Couldn't handle connect for this provider");
+                throw new \Exception("Couldn't handle connect for this provider because OAuth version is unknown.");
         }
 
         return $token;
+    }
+
+    public function connectOauth2()
+    {
+        // google cancel
+
+        if(\Craft\craft()->request->getParam('error'))
+        {
+            throw new \Exception("An error occured: ".\Craft\craft()->request->getParam('error'));
+        }
+
+        $state = \Craft\craft()->request->getParam('state');
+        $code = \Craft\craft()->request->getParam('code');
+        $oauth2state = \Craft\craft()->httpSession->get('oauth2state');
+
+        if (is_null($code))
+        {
+            OauthHelper::log('OAuth 2 Connect - Step 1', LogLevel::Info);
+
+            $oauthProvider->setScopes($options['scope']);
+
+            $options = $options['authorizationOptions'];
+
+            if(!empty($options['authorizationOptions']['access_type']) && $options['authorizationOptions']['access_type'] == 'offline')
+            {
+                unset($options['authorizationOptions']['access_type']);
+                $oauthProvider->setAccessType('offline');
+            }
+
+            $authorizationUrl = $oauthProvider->getAuthorizationUrl($options);
+
+            \Craft\craft()->httpSession->add('oauth2state', $oauthProvider->state);
+
+            OauthHelper::log('OAuth 2 Connect - Step 1 - Data'."\r\n".print_r([
+                'authorizationUrl' => $authorizationUrl,
+                'oauth2state' => \Craft\craft()->httpSession->get('oauth2state')
+            ], true), LogLevel::Info);
+
+            \Craft\craft()->request->redirect($authorizationUrl);
+        }
+        elseif (!$state || $state !== $oauth2state)
+        {
+            OauthHelper::log('OAuth 2 Connect - Step 1.5'."\r\n".print_r([
+                'error' => "Invalid state",
+                'state' => $state,
+                'oauth2state' => $oauth2state,
+            ], true), LogLevel::Info, true);
+
+            \Craft\craft()->httpSession->remove('oauth2state');
+
+            throw new \Exception("Invalid state");
+
+        }
+        else
+        {
+            OauthHelper::log('OAuth 2 Connect - Step 2', LogLevel::Info, true);
+
+            $token = $oauthProvider->getAccessToken('authorization_code', [
+                'code' => $code
+            ]);
+
+            OauthHelper::log('OAuth 2 Connect - Step 2 - Data'."\r\n".print_r([
+                'code' => $code,
+                'token' => $token,
+            ], true), LogLevel::Info, true);
+        }
+    }
+
+    public function connectOauth1()
+    {
+        // twitter cancel
+
+        if(\Craft\craft()->request->getParam('denied'))
+        {
+            throw new \Exception("An error occured: ".\Craft\craft()->request->getParam('denied'));
+        }
+
+        $user = \Craft\craft()->request->getParam('user');
+        $oauth_token = \Craft\craft()->request->getParam('oauth_token');
+        $oauth_verifier = \Craft\craft()->request->getParam('oauth_verifier');
+        $denied = \Craft\craft()->request->getParam('denied');
+
+        if ($oauth_token && $oauth_verifier)
+        {
+            OauthHelper::log('OAuth 1 Connect - Step 2', LogLevel::Info, true);
+
+            $temporaryCredentials = unserialize(\Craft\craft()->httpSession->get('temporary_credentials'));
+
+            $token = $oauthProvider->getTokenCredentials($temporaryCredentials, $oauth_token, $oauth_verifier);
+
+            \Craft\craft()->httpSession->add('token_credentials', serialize($token));
+
+            OauthHelper::log('OAuth 1 Connect - Step 2 - Data'."\r\n".print_r([
+                'temporaryCredentials' => $temporaryCredentials,
+                'oauth_token' => $oauth_token,
+                'oauth_verifier' => $oauth_verifier,
+                'token' => $token,
+            ], true), LogLevel::Info, true);
+        }
+        elseif ($denied)
+        {
+            OauthHelper::log('OAuth 1 Connect - Step 1.5'."\r\n".print_r(["Client access denied by the user"], true), LogLevel::Info, true);
+
+            throw new \Exception("Client access denied by the user");
+        }
+        else
+        {
+            OauthHelper::log('OAuth 1 Connect - Step 1', LogLevel::Info, true);
+
+            $temporaryCredentials = $oauthProvider->getTemporaryCredentials();
+
+            \Craft\craft()->httpSession->add('temporary_credentials', serialize($temporaryCredentials));
+
+            $authorizationUrl = $oauthProvider->getAuthorizationUrl($temporaryCredentials);
+            \Craft\craft()->request->redirect($authorizationUrl);
+
+            OauthHelper::log('OAuth 1 Connect - Step 1 - Data'."\r\n".print_r([
+                'temporaryCredentials' => $temporaryCredentials,
+                'authorizationUrl' => $authorizationUrl,
+            ], true), LogLevel::Info, true);
+        }
     }
 
     /**
