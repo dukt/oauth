@@ -98,145 +98,14 @@ class OauthController extends BaseController
                 throw new Exception("An error occured: ".craft()->request->getParam('denied'));
             }
 
-
             // provider
             $provider = craft()->oauth->getProvider($this->handle);
 
-            // source oauth provider
-            $oauthProvider = $provider->getProvider();
-
-
-            // init service
-
-            switch($provider->getOauthVersion())
-            {
-                case 2:
-                    $state = craft()->request->getParam('state');
-                    $code = craft()->request->getParam('code');
-                    $oauth2state = craft()->httpSession->get('oauth2state');
-
-                    if (is_null($code))
-                    {
-                        OauthHelper::log('OAuth 2 Connect - Step 1', LogLevel::Info);
-
-                        $oauthProvider->setScopes($this->scope);
-
-                        $options = $this->authorizationOptions;
-
-                        if(!empty($this->authorizationOptions['access_type']) && $this->authorizationOptions['access_type'] == 'offline')
-                        {
-                            unset($this->authorizationOptions['access_type']);
-                            $oauthProvider->setAccessType('offline');
-                        }
-
-                        $authorizationUrl = $oauthProvider->getAuthorizationUrl($options);
-
-                        craft()->httpSession->add('oauth2state', $oauthProvider->state);
-
-                        OauthHelper::log('OAuth 2 Connect - Step 1 - Data'."\r\n".print_r([
-                            'authorizationUrl' => $authorizationUrl,
-                            'oauth2state' => craft()->httpSession->get('oauth2state')
-                        ], true), LogLevel::Info);
-
-                        craft()->request->redirect($authorizationUrl);
-                    }
-                    elseif (!$state || $state !== $oauth2state)
-                    {
-                        OauthHelper::log('OAuth 2 Connect - Step 1.5'."\r\n".print_r([
-                            'error' => "Invalid state",
-                            'state' => $state,
-                            'oauth2state' => $oauth2state,
-                        ], true), LogLevel::Info, true);
-
-                        craft()->httpSession->remove('oauth2state');
-
-                        throw new Exception("Invalid state");
-
-                    }
-                    else
-                    {
-                        OauthHelper::log('OAuth 2 Connect - Step 2', LogLevel::Info, true);
-
-                        $token = $oauthProvider->getAccessToken('authorization_code', [
-                            'code' => $code
-                        ]);
-
-                        OauthHelper::log('OAuth 2 Connect - Step 2 - Data'."\r\n".print_r([
-                            'code' => $code,
-                            'token' => $token,
-                        ], true), LogLevel::Info, true);
-                    }
-
-                    break;
-
-                case 1:
-
-                    $user = craft()->request->getParam('user');
-                    $oauth_token = craft()->request->getParam('oauth_token');
-                    $oauth_verifier = craft()->request->getParam('oauth_verifier');
-                    $denied = craft()->request->getParam('denied');
-
-                    // if(isset($_GET['user']))
-                    // {
-                    //     echo "user exists !";
-                    // }
-                    // if ($user)
-                    // {
-                    //     OauthHelper::log('OAuth 1 Connect - Step 3', LogLevel::Info, true);
-
-                    //     if (!craft()->httpSession->get('token_credentials'))
-                    //     {
-                    //         throw new Exception("Token credentials not provided");
-                    //     }
-
-                    //     $token = unserialize(craft()->httpSession->get('oauth2state'));
-                    // }
-                    // else
-
-                    if ($oauth_token && $oauth_verifier)
-                    {
-                        OauthHelper::log('OAuth 1 Connect - Step 2', LogLevel::Info, true);
-
-                        $temporaryCredentials = unserialize(craft()->httpSession->get('temporary_credentials'));
-
-                        $token = $oauthProvider->getTokenCredentials($temporaryCredentials, $oauth_token, $oauth_verifier);
-
-                        craft()->httpSession->add('token_credentials', serialize($token));
-
-                        OauthHelper::log('OAuth 1 Connect - Step 2 - Data'."\r\n".print_r([
-                            'temporaryCredentials' => $temporaryCredentials,
-                            'oauth_token' => $oauth_token,
-                            'oauth_verifier' => $oauth_verifier,
-                            'token' => $token,
-                        ], true), LogLevel::Info, true);
-                    }
-                    elseif ($denied)
-                    {
-                        OauthHelper::log('OAuth 1 Connect - Step 1.5'."\r\n".print_r(["Client access denied by the user"], true), LogLevel::Info, true);
-
-                        throw new Exception("Client access denied by the user");
-                    }
-                    else
-                    {
-                        OauthHelper::log('OAuth 1 Connect - Step 1', LogLevel::Info, true);
-
-                        $temporaryCredentials = $oauthProvider->getTemporaryCredentials();
-
-                        craft()->httpSession->add('temporary_credentials', serialize($temporaryCredentials));
-
-                        $authorizationUrl = $oauthProvider->getAuthorizationUrl($temporaryCredentials);
-                        craft()->request->redirect($authorizationUrl);
-
-                        OauthHelper::log('OAuth 1 Connect - Step 1 - Data'."\r\n".print_r([
-                            'temporaryCredentials' => $temporaryCredentials,
-                            'authorizationUrl' => $authorizationUrl,
-                        ], true), LogLevel::Info, true);
-                    }
-                break;
-
-                default:
-                    throw new Exception("Couldn't handle connect for this provider");
-            }
+            // connect
+            $token = $provider->connect([
+                'scope' => $this->scope,
+                'authorizationOptions' => $this->authorizationOptions,
+            ]);
 
             $success = true;
         }
@@ -253,8 +122,6 @@ class OauthController extends BaseController
         if($token)
         {
             $tokenArray = OauthHelper::realTokenToArray($token);
-
-
         }
 
         if(!$error && !is_array($tokenArray))
