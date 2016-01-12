@@ -13,12 +13,6 @@ class OauthController extends BaseController
     // =========================================================================
 
     protected $allowAnonymous = array('actionConnect');
-    private $handle;
-    private $namespace;
-    private $scope;
-    private $authorizationOptions;
-    private $redirect;
-    private $referer;
 
     // Public Methods
     // =========================================================================
