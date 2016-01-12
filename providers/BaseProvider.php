@@ -39,32 +39,29 @@ abstract class BaseProvider implements IOauth_Provider {
 
     public function connect($options)
     {
-        $token = false;
-
-        // source oauth provider
-        $oauthProvider = $this->getProvider();
-
         switch($this->getOauthVersion())
         {
             case 2:
-                $this->connectOauth2();
+                return $this->connectOauth2($options);
                 break;
 
             case 1:
-                $this->connectOauth1();
+                return $this->connectOauth1($options);
                 break;
 
             default:
                 throw new \Exception("Couldn't handle connect for this provider because OAuth version is unknown.");
         }
-
-        return $token;
     }
 
-    public function connectOauth2()
+    public function connectOauth2($options)
     {
-        // google cancel
+        $token = false;
 
+        // source oauth provider
+        $oauthProvider = $this->getProvider();
+
+        // google cancel
         if(\Craft\craft()->request->getParam('error'))
         {
             throw new \Exception("An error occured: ".\Craft\craft()->request->getParam('error'));
@@ -125,12 +122,18 @@ abstract class BaseProvider implements IOauth_Provider {
                 'token' => $token,
             ], true), LogLevel::Info, true);
         }
+
+        return $token;
     }
 
-    public function connectOauth1()
+    public function connectOauth1($options)
     {
-        // twitter cancel
+        $token = false;
 
+        // source oauth provider
+        $oauthProvider = $this->getProvider();
+
+        // twitter cancel
         if(\Craft\craft()->request->getParam('denied'))
         {
             throw new \Exception("An error occured: ".\Craft\craft()->request->getParam('denied'));
@@ -180,6 +183,8 @@ abstract class BaseProvider implements IOauth_Provider {
                 'authorizationUrl' => $authorizationUrl,
             ], true), LogLevel::Info, true);
         }
+
+        return $token;
     }
 
     /**
