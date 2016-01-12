@@ -54,9 +54,9 @@ class OauthController extends BaseController
     {
         // OAuth Step 2
 
-        $error = false;
-        $success = false;
         $token = false;
+        $success = false;
+        $error = false;
         $errorMsg = false;
 
         try
@@ -70,42 +70,31 @@ class OauthController extends BaseController
                 craft()->httpSession->add('oauth.handle', $this->handle);
             }
 
-
             // session vars
             $this->scope = craft()->httpSession->get('oauth.scope');
             $this->authorizationOptions = craft()->httpSession->get('oauth.authorizationOptions');
             $this->referer = craft()->httpSession->get('oauth.referer');
 
-            OauthHelper::log('OAuth Connect - Step 2A'."\r\n".print_r([
-                    'handle' => $this->handle,
-                    'scope' => $this->scope,
-                    'authorizationOptions' => $this->authorizationOptions,
-                    'referer' => $this->referer,
-                ], true), LogLevel::Info, true);
-
-            // google cancel
-
-            if(craft()->request->getParam('error'))
-            {
-                throw new Exception("An error occured: ".craft()->request->getParam('error'));
-            }
-
-
-            // twitter cancel
-
-            if(craft()->request->getParam('denied'))
-            {
-                throw new Exception("An error occured: ".craft()->request->getParam('denied'));
-            }
+            OauthHelper::log('OAuth Connect - Step 2A'."\r\n".print_r([ 'handle' => $this->handle, 'scope' => $this->scope, 'authorizationOptions' => $this->authorizationOptions, 'referer' => $this->referer ], true), LogLevel::Info, true);
 
             // provider
             $provider = craft()->oauth->getProvider($this->handle);
 
             // connect
-            $token = $provider->connect([
+            $tokenResponse = $provider->connect([
                 'scope' => $this->scope,
                 'authorizationOptions' => $this->authorizationOptions,
             ]);
+
+            // token
+            if($tokenResponse)
+            {
+                $token = OauthHelper::realTokenToArray($tokenResponse);
+            }
+            else
+            {
+                throw new Exception("Error with token");
+            }
 
             $success = true;
         }
@@ -115,30 +104,17 @@ class OauthController extends BaseController
             $errorMsg = $e->getMessage();
         }
 
-        // we now have $token, build up response
 
-        $tokenArray = null;
-
-        if($token)
-        {
-            $tokenArray = OauthHelper::realTokenToArray($token);
-        }
-
-        if(!$error && !is_array($tokenArray))
-        {
-            throw new Exception("Error with token");
-        }
+        // build up response
 
         $response = array(
             'error' => $error,
             'errorMsg' => $errorMsg,
             'success' => $success,
-            'token' => $tokenArray,
+            'token' => $token,
         );
 
-        OauthHelper::log('OAuth Connect - Step 2B'."\r\n".print_r([
-                'response' => $response
-            ], true), LogLevel::Info, true);
+        OauthHelper::log('OAuth Connect - Step 2B'."\r\n".print_r([ 'response' => $response ], true), LogLevel::Info, true);
 
         craft()->httpSession->add('oauth.response', $response);
 
