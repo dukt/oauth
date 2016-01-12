@@ -88,7 +88,7 @@ class OauthPlugin extends BasePlugin
     public function registerCpRoutes()
     {
         return array(
-            'oauth' => array('action' => "oauth/index"),
+            'oauth' => array('action' => "oauth/providers/index"),
             'oauth/tokens' => array('action' => "oauth/tokens/index"),
             'oauth/providers/(?P<handle>.*)/tokens' => ['action' => 'oauth/tokens/providerTokens'],
             'oauth/providers/(?P<handle>.*)' => array('action' => "oauth/providerInfos"),
