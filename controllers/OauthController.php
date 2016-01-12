@@ -52,38 +52,37 @@ class OauthController extends BaseController
      */
     public function actionConnect()
     {
-        // OAuth Step 2
-
         $token = false;
         $success = false;
         $error = false;
         $errorMsg = false;
 
+
+        // handle
+        $providerHandle = craft()->httpSession->get('oauth.handle');
+
+        if(!$providerHandle)
+        {
+            $providerHandle = craft()->request->getParam('provider');
+            craft()->httpSession->add('oauth.handle', $providerHandle);
+        }
+
+        // session vars
+        $scope = craft()->httpSession->get('oauth.scope');
+        $authorizationOptions = craft()->httpSession->get('oauth.authorizationOptions');
+        $referer = craft()->httpSession->get('oauth.referer');
+
+        OauthHelper::log('OAuth Connect - Step 2A'."\r\n".print_r([ 'handle' => $providerHandle, 'scope' => $scope, 'authorizationOptions' => $authorizationOptions, 'referer' => $referer ], true), LogLevel::Info, true);
+
         try
         {
-            // handle
-            $this->handle = craft()->httpSession->get('oauth.handle');
-
-            if(!$this->handle)
-            {
-                $this->handle = craft()->request->getParam('provider');
-                craft()->httpSession->add('oauth.handle', $this->handle);
-            }
-
-            // session vars
-            $this->scope = craft()->httpSession->get('oauth.scope');
-            $this->authorizationOptions = craft()->httpSession->get('oauth.authorizationOptions');
-            $this->referer = craft()->httpSession->get('oauth.referer');
-
-            OauthHelper::log('OAuth Connect - Step 2A'."\r\n".print_r([ 'handle' => $this->handle, 'scope' => $this->scope, 'authorizationOptions' => $this->authorizationOptions, 'referer' => $this->referer ], true), LogLevel::Info, true);
-
             // provider
-            $provider = craft()->oauth->getProvider($this->handle);
+            $provider = craft()->oauth->getProvider($providerHandle);
 
             // connect
             $tokenResponse = $provider->connect([
-                'scope' => $this->scope,
-                'authorizationOptions' => $this->authorizationOptions,
+                'scope' => $scope,
+                'authorizationOptions' => $authorizationOptions,
             ]);
 
             // token
@@ -119,7 +118,7 @@ class OauthController extends BaseController
         craft()->httpSession->add('oauth.response', $response);
 
         // redirect
-        $this->redirect($this->referer);
+        $this->redirect($referer);
     }
 
     /**
