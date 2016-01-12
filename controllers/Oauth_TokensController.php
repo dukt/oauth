@@ -9,21 +9,22 @@ namespace Craft;
 
 class Oauth_TokensController extends BaseController
 {
-    // Properties
-    // =========================================================================
-
-    protected $allowAnonymous = array('actionConnect');
-    private $handle;
-    private $namespace;
-    private $scope;
-    private $redirect;
-    private $referer;
-
     // Public Methods
     // =========================================================================
 
     /**
-     * Connect
+     * Tokens Index
+     *
+     * @return null
+     */
+    public function actionIndex()
+    {
+        $variables['tokens'] = craft()->oauth->getTokens();
+        $this->renderTemplate('oauth/tokens/_index', $variables);
+    }
+
+    /**
+     * Provider Tokens
      *
      * @return null
      */

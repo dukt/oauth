@@ -89,6 +89,7 @@ class OauthPlugin extends BasePlugin
     {
         return array(
             'oauth' => array('action' => "oauth/index"),
+            'oauth/tokens' => array('action' => "oauth/tokens/index"),
             'oauth/providers/(?P<handle>.*)/tokens' => ['action' => 'oauth/tokens/providerTokens'],
             'oauth/providers/(?P<handle>.*)' => array('action' => "oauth/providerInfos"),
             'oauth/console' => array('action' => "oauth/console/index"),
