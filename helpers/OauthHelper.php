@@ -19,7 +19,7 @@ class OauthHelper
     {
         if(craft()->config->get('duktDevMode'))
         {
-            Craft::log($message, $level, $force, $category, $plugin);
+            OauthPlugin::log($message, $level, $force, $category, $plugin);
         }
     }
 
