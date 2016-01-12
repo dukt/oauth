@@ -1,7 +1,7 @@
 <?php
 /**
  * @link      https://dukt.net/craft/oauth/
- * @copyright Copyright (c) 2015, Dukt
+ * @copyright Copyright (c) 2016, Dukt
  * @license   https://dukt.net/craft/oauth/docs/license
  */
 
@@ -297,6 +297,17 @@ class OauthService extends BaseApplicationComponent
                 return $token;
             }
         }
+    }
+
+    /**
+     * Get tokens by provider
+     */
+    public function getTokens()
+    {
+        $conditions = '';
+        $params = array();
+        $records = Oauth_TokenRecord::model()->findAll($conditions, $params);
+        return Oauth_TokenModel::populateModels($records);
     }
 
     /**

@@ -8,10 +8,11 @@
     { label: "Plugins"|t, url: url('settings/plugins') }
 ] %}
 
-{% if craft.config.get('enableConsole', 'oauth') %}
+{% if craft.config.get('advancedMode', 'oauth') %}
 
     {% set tabs = {
         providers: { label: "Providers"|t, url: url('oauth') },
+        tokens: { label: "Tokens"|t, url: url('oauth/tokens') },
         console: { label: "Console"|t, url: url('oauth/console') },
     } %}
 

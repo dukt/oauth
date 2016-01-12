@@ -1,0 +1,47 @@
+{% extends "oauth/_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% set selectedTab = 'tokens' %}
+
+{% set content %}
+
+    <table id="fields" class="data fullwidth collapsible">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">{{ "Provider"|t }}</th>
+                <th scope="col">{{ "Plugin Handle"|t }}</th>
+                <th scope="col">{{ "Access Token"|t }}</th>
+                <th scope="col">{{ "Secret"|t }}</th>
+                <th scope="col">{{ "End Of Life"|t }}</th>
+                <th scope="col">{{ "Refresh Token"|t }}</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for token in tokens %}
+                <tr>
+                    <td>{{ token.id }}</td>
+                    <td>
+                        {% if token.provider %}
+                            {{ token.provider.name }}
+                        {% else %}
+                            {{ token.providerHandle }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ token.pluginHandle }}
+                    </td>
+                    <td>
+                        {{ token.accessToken|slice(0, 20) }}…
+                        <a href="#" class="btn small">Refresh Token</a>
+                    </td>
+                    <td>{{ token.secret }}</td>
+                    <td>{{ token.endOfLife }}</td>
+                    <td>{{ token.refreshToken }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endset %}

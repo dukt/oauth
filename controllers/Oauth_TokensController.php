@@ -1,7 +1,7 @@
 <?php
 /**
  * @link      https://dukt.net/craft/oauth/
- * @copyright Copyright (c) 2015, Dukt
+ * @copyright Copyright (c) 2016, Dukt
  * @license   https://dukt.net/craft/oauth/docs/license
  */
 
@@ -9,21 +9,22 @@ namespace Craft;
 
 class Oauth_TokensController extends BaseController
 {
-    // Properties
-    // =========================================================================
-
-    protected $allowAnonymous = array('actionConnect');
-    private $handle;
-    private $namespace;
-    private $scope;
-    private $redirect;
-    private $referer;
-
     // Public Methods
     // =========================================================================
 
     /**
-     * Connect
+     * Tokens Index
+     *
+     * @return null
+     */
+    public function actionIndex()
+    {
+        $variables['tokens'] = craft()->oauth->getTokens();
+        $this->renderTemplate('oauth/tokens/_index', $variables);
+    }
+
+    /**
+     * Provider Tokens
      *
      * @return null
      */
