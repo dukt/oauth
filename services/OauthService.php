@@ -302,6 +302,17 @@ class OauthService extends BaseApplicationComponent
     /**
      * Get tokens by provider
      */
+    public function getTokens()
+    {
+        $conditions = '';
+        $params = array();
+        $records = Oauth_TokenRecord::model()->findAll($conditions, $params);
+        return Oauth_TokenModel::populateModels($records);
+    }
+
+    /**
+     * Get tokens by provider
+     */
     public function getTokensByProvider($providerHandle)
     {
         $conditions = 'providerHandle=:providerHandle';
