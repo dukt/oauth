@@ -37,6 +37,9 @@ abstract class BaseProvider implements IOauth_Provider {
     // Public Methods
     // =========================================================================
 
+    /**
+     * OAuth Connect
+     */
     public function connect($options)
     {
         switch($this->getOauthVersion())
@@ -54,6 +57,9 @@ abstract class BaseProvider implements IOauth_Provider {
         }
     }
 
+    /**
+     * Connect OAuth 2.0
+     */
     public function connectOauth2($options)
     {
         $token = false;
@@ -126,6 +132,9 @@ abstract class BaseProvider implements IOauth_Provider {
         return $token;
     }
 
+    /**
+     * Connect OAuth 1.0
+     */
     public function connectOauth1($options)
     {
         $token = false;
