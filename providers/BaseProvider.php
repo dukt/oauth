@@ -83,7 +83,7 @@ abstract class BaseProvider implements IOauth_Provider {
 
             $oauthProvider->setScopes($options['scope']);
 
-            $options = $options['authorizationOptions'];
+            $authorizationOptions = $options['authorizationOptions'];
 
             if(!empty($options['authorizationOptions']['access_type']) && $options['authorizationOptions']['access_type'] == 'offline')
             {
@@ -91,7 +91,7 @@ abstract class BaseProvider implements IOauth_Provider {
                 $oauthProvider->setAccessType('offline');
             }
 
-            $authorizationUrl = $oauthProvider->getAuthorizationUrl($options);
+            $authorizationUrl = $oauthProvider->getAuthorizationUrl($authorizationOptions);
 
             \Craft\craft()->httpSession->add('oauth2state', $oauthProvider->state);
 
