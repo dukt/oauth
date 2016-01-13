@@ -89,7 +89,7 @@ class OauthService extends BaseApplicationComponent
             ));
 
             // OAuth Step 1
-            OauthHelper::log('OAuth Connect - Step 1'."\r\n".print_r([
+            OauthPlugin::log('OAuth Connect - Step 1'."\r\n".print_r([
                     'referer' => $referer,
                     'scope' => $scope,
                     'authorizationOptions' => $authorizationOptions,
@@ -108,7 +108,7 @@ class OauthService extends BaseApplicationComponent
             $response = craft()->httpSession->get('oauth.response');
             craft()->httpSession->remove('oauth.response');
 
-            OauthHelper::log('OAuth Connect - Step 3'."\r\n".print_r([
+            OauthPlugin::log('OAuth Connect - Step 3'."\r\n".print_r([
                     'response' => $response
                 ], true), LogLevel::Info, true);
 
@@ -160,7 +160,7 @@ class OauthService extends BaseApplicationComponent
                 $token->providerHandle = $variables['provider'];
                 $token->pluginHandle = $variables['plugin'];
 
-                OauthHelper::log('OAuth Connect - Step 4'."\r\n".print_r([
+                OauthPlugin::log('OAuth Connect - Step 4'."\r\n".print_r([
                         'response' => $response
                     ], true), LogLevel::Info, true);
 
@@ -291,7 +291,7 @@ class OauthService extends BaseApplicationComponent
                 }
                 catch(\Exception $e)
                 {
-                    OauthHelper::log("OAuth.Debug - Couldn't refresh token\r\n".$e->getMessage().'\r\n'.$e->getTraceAsString(), LogLevel::Error, true);
+                    OauthPlugin::log("OAuth.Debug - Couldn't refresh token\r\n".$e->getMessage().'\r\n'.$e->getTraceAsString(), LogLevel::Error, true);
                 }
 
                 return $token;

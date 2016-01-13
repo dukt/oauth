@@ -79,7 +79,7 @@ abstract class BaseProvider implements IOauth_Provider {
 
         if (is_null($code))
         {
-            OauthHelper::log('OAuth 2 Connect - Step 1', LogLevel::Info);
+            OauthPlugin::log('OAuth 2 Connect - Step 1', LogLevel::Info);
 
             $oauthProvider->setScopes($options['scope']);
 
@@ -95,7 +95,7 @@ abstract class BaseProvider implements IOauth_Provider {
 
             \Craft\craft()->httpSession->add('oauth2state', $oauthProvider->state);
 
-            OauthHelper::log('OAuth 2 Connect - Step 1 - Data'."\r\n".print_r([
+            OauthPlugin::log('OAuth 2 Connect - Step 1 - Data'."\r\n".print_r([
                 'authorizationUrl' => $authorizationUrl,
                 'oauth2state' => \Craft\craft()->httpSession->get('oauth2state')
             ], true), LogLevel::Info);
@@ -104,7 +104,7 @@ abstract class BaseProvider implements IOauth_Provider {
         }
         elseif (!$state || $state !== $oauth2state)
         {
-            OauthHelper::log('OAuth 2 Connect - Step 1.5'."\r\n".print_r([
+            OauthPlugin::log('OAuth 2 Connect - Step 1.5'."\r\n".print_r([
                 'error' => "Invalid state",
                 'state' => $state,
                 'oauth2state' => $oauth2state,
@@ -117,13 +117,13 @@ abstract class BaseProvider implements IOauth_Provider {
         }
         else
         {
-            OauthHelper::log('OAuth 2 Connect - Step 2', LogLevel::Info, true);
+            OauthPlugin::log('OAuth 2 Connect - Step 2', LogLevel::Info, true);
 
             $token = $oauthProvider->getAccessToken('authorization_code', [
                 'code' => $code
             ]);
 
-            OauthHelper::log('OAuth 2 Connect - Step 2 - Data'."\r\n".print_r([
+            OauthPlugin::log('OAuth 2 Connect - Step 2 - Data'."\r\n".print_r([
                 'code' => $code,
                 'token' => $token,
             ], true), LogLevel::Info, true);
@@ -155,7 +155,7 @@ abstract class BaseProvider implements IOauth_Provider {
 
         if ($oauth_token && $oauth_verifier)
         {
-            OauthHelper::log('OAuth 1 Connect - Step 2', LogLevel::Info, true);
+            OauthPlugin::log('OAuth 1 Connect - Step 2', LogLevel::Info, true);
 
             $temporaryCredentials = unserialize(\Craft\craft()->httpSession->get('temporary_credentials'));
 
@@ -163,7 +163,7 @@ abstract class BaseProvider implements IOauth_Provider {
 
             \Craft\craft()->httpSession->add('token_credentials', serialize($token));
 
-            OauthHelper::log('OAuth 1 Connect - Step 2 - Data'."\r\n".print_r([
+            OauthPlugin::log('OAuth 1 Connect - Step 2 - Data'."\r\n".print_r([
                 'temporaryCredentials' => $temporaryCredentials,
                 'oauth_token' => $oauth_token,
                 'oauth_verifier' => $oauth_verifier,
@@ -172,13 +172,13 @@ abstract class BaseProvider implements IOauth_Provider {
         }
         elseif ($denied)
         {
-            OauthHelper::log('OAuth 1 Connect - Step 1.5'."\r\n".print_r(["Client access denied by the user"], true), LogLevel::Info, true);
+            OauthPlugin::log('OAuth 1 Connect - Step 1.5'."\r\n".print_r(["Client access denied by the user"], true), LogLevel::Info, true);
 
             throw new \Exception("Client access denied by the user");
         }
         else
         {
-            OauthHelper::log('OAuth 1 Connect - Step 1', LogLevel::Info, true);
+            OauthPlugin::log('OAuth 1 Connect - Step 1', LogLevel::Info, true);
 
             $temporaryCredentials = $oauthProvider->getTemporaryCredentials();
 
@@ -187,7 +187,7 @@ abstract class BaseProvider implements IOauth_Provider {
             $authorizationUrl = $oauthProvider->getAuthorizationUrl($temporaryCredentials);
             \Craft\craft()->request->redirect($authorizationUrl);
 
-            OauthHelper::log('OAuth 1 Connect - Step 1 - Data'."\r\n".print_r([
+            OauthPlugin::log('OAuth 1 Connect - Step 1 - Data'."\r\n".print_r([
                 'temporaryCredentials' => $temporaryCredentials,
                 'authorizationUrl' => $authorizationUrl,
             ], true), LogLevel::Info, true);
