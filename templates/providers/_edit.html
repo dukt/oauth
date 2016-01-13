@@ -24,7 +24,7 @@
 
         {{ getCsrfInput() }}
 
-        <input type="hidden" name="action" value="oauth/providerSave">
+        <input type="hidden" name="action" value="oauth/providers/providerSave">
         <input type="hidden" name="redirect" value="oauth" />
         {% if infos %}<input type="hidden" name="providerId" value="{{ infos.id }}" />{% endif %}
         <input type="hidden" name="handle" value="{{ provider.handle }}" />
