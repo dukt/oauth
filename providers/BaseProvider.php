@@ -7,6 +7,7 @@
 
 namespace Dukt\OAuth\Providers;
 
+use Craft\OauthPlugin;
 use Craft\IOauth_Provider;
 use Craft\OauthHelper;
 use Craft\Oauth_ProviderInfosModel;
