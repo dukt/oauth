@@ -70,6 +70,14 @@ class OauthPlugin extends BasePlugin
     }
 
     /**
+     * Get Documentation URL
+     */
+    public function getDocumentationUrl()
+    {
+        return 'https://dukt.net/craft/oauth/docs/';
+    }
+
+    /**
      * Has CP Section
      */
     public function hasCpSection()
