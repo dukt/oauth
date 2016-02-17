@@ -78,6 +78,14 @@ class OauthPlugin extends BasePlugin
     }
 
     /**
+     * Get Release Feed URL
+     */
+    public function getReleaseFeedUrl()
+    {
+        return 'https://dukt.net/craft/oauth/updates.json';
+    }
+
+    /**
      * Has CP Section
      */
     public function hasCpSection()
