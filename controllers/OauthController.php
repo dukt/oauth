@@ -29,14 +29,21 @@ class OauthController extends BaseController
         $error = false;
         $errorMsg = false;
 
-
         // handle
         $providerHandle = craft()->httpSession->get('oauth.handle');
 
         if(!$providerHandle)
         {
             $providerHandle = craft()->request->getParam('provider');
-            craft()->httpSession->add('oauth.handle', $providerHandle);
+
+            if($providerHandle)
+            {
+                craft()->httpSession->add('oauth.handle', $providerHandle);
+            }
+            else
+            {
+                throw new Exception("Couldn’t retrieve OAuth provider.");
+            }
         }
 
         // session vars
@@ -45,6 +52,7 @@ class OauthController extends BaseController
         $referer = craft()->httpSession->get('oauth.referer');
 
         OauthPlugin::log('OAuth Connect - Step 2A'."\r\n".print_r([ 'handle' => $providerHandle, 'scope' => $scope, 'authorizationOptions' => $authorizationOptions, 'referer' => $referer ], true), LogLevel::Info, true);
+
 
         try
         {
