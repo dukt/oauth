@@ -3,10 +3,17 @@
 
 {% set title = "OAuth"|t %}
 
-{% set crumbs = [
-    { label: "Settings"|t, url: url('settings') },
-    { label: "Plugins"|t, url: url('settings/plugins') }
-] %}
+{% set settings = craft.oauth.getPluginSettings() %}
+{% set hasCpSection = settings.showCpSection %}
+
+{% if hasCpSection %}
+
+    {% set crumbs = [
+        { label: "Settings"|t, url: url('settings') },
+        { label: "Plugins"|t, url: url('settings/plugins') }
+    ] %}
+
+{% endif %}
 
 {% if craft.config.get('advancedMode', 'oauth') %}
 
@@ -14,12 +21,14 @@
         providers: { label: "Providers"|t, url: url('oauth') },
         tokens: { label: "Tokens"|t, url: url('oauth/tokens') },
         console: { label: "Console"|t, url: url('oauth/console') },
+        settings: { label: "Settings"|t, url: url('oauth/settings') },
     } %}
 
 {% else %}
 
     {% set tabs = {
         providers: { label: "Providers"|t, url: url('oauth') },
+        settings: { label: "Settings"|t, url: url('oauth/settings') },
     } %}
 
 {% endif %}

@@ -1,0 +1,29 @@
+{% extends "oauth/_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% set selectedTab = 'settings' %}
+
+{% set content %}
+
+    <form method="post" accept-charset="UTF-8" data-saveshortcut>
+
+        {{ getCsrfInput() }}
+
+        <input type="hidden" name="action" value="plugins/savePluginSettings">
+        <input type="hidden" name="pluginClass" value="Oauth">
+        <input type="hidden" name="redirect" value="oauth/settings">
+
+        {{ forms.lightswitchField({
+            first: true,
+            label: 'Show OAuth CP Section'|t,
+            name: 'settings[showCpSection]',
+            on: settings.showCpSection,
+        }) }}
+
+        <div class="buttons">
+            <input type="submit" class="btn submit force" value="{{'Save'|t}}">
+        </div>
+
+    </form>
+
+{% endset %}

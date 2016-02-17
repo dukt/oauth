@@ -82,7 +82,7 @@ class OauthPlugin extends BasePlugin
      */
     public function hasCpSection()
     {
-        if(craft()->config->get('showCpSection', 'oauth') === true)
+        if($this->settings->showCpSection)
         {
             return true;
         }
@@ -97,9 +97,13 @@ class OauthPlugin extends BasePlugin
     {
         return array(
             'oauth' => array('action' => "oauth/providers/index"),
+            'oauth/settings' => array('action' => "oauth/settings/index"),
+
             'oauth/tokens' => array('action' => "oauth/tokens/index"),
+
             'oauth/providers/(?P<handle>.*)/tokens' => ['action' => 'oauth/tokens/providerTokens'],
             'oauth/providers/(?P<handle>.*)' => array('action' => "oauth/providers/providerInfos"),
+
             'oauth/console' => array('action' => "oauth/console/index"),
             'oauth/console/(?P<providerHandle>.*)' => array('action' => "oauth/console/provider"),
         );
@@ -111,5 +115,12 @@ class OauthPlugin extends BasePlugin
     public function getSettingsUrl()
     {
         return 'oauth';
+    }
+
+   protected function defineSettings()
+    {
+        return array(
+            'showCpSection' => array(AttributeType::Bool, 'default' => true),
+        );
     }
 }

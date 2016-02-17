@@ -27,4 +27,14 @@ class OauthVariable
     {
         return craft()->oauth->getProviders($configuredOnly);
     }
+
+    /**
+     * Get Plugin Settings
+     */
+    public function getPluginSettings()
+    {
+        $plugin = craft()->plugins->getPlugin('oauth');
+
+        return $plugin->getSettings();
+    }
 }
