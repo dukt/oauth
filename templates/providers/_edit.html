@@ -4,9 +4,8 @@
 {% set title = provider.name~" Settings"|t %}
 
 {% set crumbs = [
-    { label: "Settings"|t, url: url('settings') },
-    { label: "Plugin"|t, url: url('settings/plugins') },
-    { label: "OAuth"|t, url: url('oauth') }
+    { label: "OAuth"|t, url: url('oauth') },
+    { label: "Providers"|t, url: url('oauth/providers') }
 ] %}
 
 {% macro configWarning(setting, file) -%}

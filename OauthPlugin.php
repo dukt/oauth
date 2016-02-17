@@ -90,7 +90,7 @@ class OauthPlugin extends BasePlugin
      */
     public function hasCpSection()
     {
-        if($this->settings->showCpSection)
+        if(craft()->config->get('showCpSection', 'oauth') === true)
         {
             return true;
         }
@@ -104,16 +104,17 @@ class OauthPlugin extends BasePlugin
     public function registerCpRoutes()
     {
         return array(
-            'oauth' => array('action' => "oauth/providers/index"),
-            'oauth/settings' => array('action' => "oauth/settings/index"),
+            'oauth' => ['action' => "oauth/providers/index"],
+            'oauth/settings' => ['action' => "oauth/settings/index"],
 
-            'oauth/tokens' => array('action' => "oauth/tokens/index"),
+            'oauth/tokens' => ['action' => "oauth/tokens/index"],
 
+            'oauth/providers' => ['action' => "oauth/providers/index"],
             'oauth/providers/(?P<handle>.*)/tokens' => ['action' => 'oauth/tokens/providerTokens'],
-            'oauth/providers/(?P<handle>.*)' => array('action' => "oauth/providers/providerInfos"),
+            'oauth/providers/(?P<handle>.*)' => ['action' => "oauth/providers/providerInfos"],
 
-            'oauth/console' => array('action' => "oauth/console/index"),
-            'oauth/console/(?P<providerHandle>.*)' => array('action' => "oauth/console/provider"),
+            'oauth/console' => ['action' => "oauth/console/index"],
+            'oauth/console/(?P<providerHandle>.*)' => ['action' => "oauth/console/provider"],
         );
     }
 
@@ -123,12 +124,5 @@ class OauthPlugin extends BasePlugin
     public function getSettingsUrl()
     {
         return 'oauth';
-    }
-
-   protected function defineSettings()
-    {
-        return array(
-            'showCpSection' => array(AttributeType::Bool, 'default' => true),
-        );
     }
 }
