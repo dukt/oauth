@@ -13,8 +13,9 @@
                 <th scope="col">{{ "Plugin Handle"|t }}</th>
                 <th scope="col">{{ "Access Token"|t }}</th>
                 <th scope="col">{{ "Secret"|t }}</th>
-                <th scope="col">{{ "End Of Life"|t }}</th>
                 <th scope="col">{{ "Refresh Token"|t }}</th>
+                <th scope="col">{{ "End Of Life"|t }}</th>
+                <th scope="col">{{ "Actions"|t }}</th>
             </tr>
         </thead>
 
@@ -34,11 +35,29 @@
                     </td>
                     <td>
                         {{ token.accessToken|slice(0, 20) }}…
-                        <a href="#" class="btn small">Refresh Token</a>
                     </td>
-                    <td>{{ token.secret }}</td>
-                    <td>{{ token.endOfLife }}</td>
-                    <td>{{ token.refreshToken }}</td>
+                    <td>
+                        {% if token.secret %}
+                            {{ token.secret|slice(0, 10) }}…
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if token.refreshToken %}
+                            {{ token.refreshToken|slice(0, 10) }}…
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>{{ token.endOfLife|date }}</td>
+                    <td>
+                        {% if token.refreshToken %}
+                            <a href="#" class="btn small">Refresh Token</a>
+                        {% else %}
+                            <a href="#" class="btn small disabled">Refresh Token</a>
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
