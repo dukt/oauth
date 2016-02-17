@@ -6,7 +6,7 @@
 {% set settings = craft.oauth.getPluginSettings() %}
 {% set hasCpSection = settings.showCpSection %}
 
-{% if hasCpSection %}
+{% if not hasCpSection %}
 
     {% set crumbs = [
         { label: "Settings"|t, url: url('settings') },
