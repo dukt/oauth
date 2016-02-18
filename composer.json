@@ -1,20 +1,9 @@
 {
     "config": {
-        "vendor-dir": "vendor/"
-    },
-    "autoload": {
-        "psr-4": {
-            "Craft\\": "etc/providers/",
-            "Dukt\\OAuth\\": "src/",
-            "Dukt\\OAuth\\Providers\\": "providers/"
-        }
+        "vendor-dir": "Source/oauth/vendor/"
     },
     "require": {
         "league/oauth1-client": "1.6.1@dev",
         "league/oauth2-client": "0.12.1@dev"
-    },
-    "scripts": {
-        "post-update-cmd": ["echo [WARNING] Delete all .git dirs", "rm -rf vendor/**/**/.git"],
-        "post-install-cmd": ["echo [WARNING] Delete all .git dirs", "rm -rf vendor/**/**/.git"]
     }
 }
