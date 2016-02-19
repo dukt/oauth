@@ -19,6 +19,12 @@ class OauthPlugin extends BasePlugin
      */
     public function getOauthProviders()
     {
+        require_once(CRAFT_PLUGINS_PATH.'oauth/providers/BaseProvider.php');
+        require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Facebook.php');
+        require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Google.php');
+        require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Twitter.php');
+        require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Vimeo.php');
+
         return [
             'Dukt\OAuth\Providers\Facebook',
             'Dukt\OAuth\Providers\Google',

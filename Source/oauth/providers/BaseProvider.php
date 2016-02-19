@@ -252,6 +252,7 @@ abstract class BaseProvider implements IOauth_Provider {
                 break;
 
             case 2:
+                require_once(CRAFT_PLUGINS_PATH.'oauth/src/Guzzle/Plugin/Oauth2Plugin.php');
 
                 return new \Dukt\OAuth\Guzzle\Plugin\Oauth2Plugin(array(
                     'consumer_key' => $infos->clientId,
