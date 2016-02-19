@@ -41,13 +41,22 @@ class OauthPlugin extends BasePlugin
         return Craft::t('OAuth');
     }
 
-    /**
-     * Get Version
-     */
-    function getVersion()
-    {
-        return '1.0.79';
-    }
+	/**
+	 * Get Version
+	 */
+	public function getVersion()
+	{
+		$path = CRAFT_PLUGINS_PATH.'oauth/Info.php';
+
+		if(IOHelper::fileExists($path))
+		{
+			require_once($path);
+
+			return OAUTH_VERSION;
+		}
+
+		return '1.0.0';
+	}
 
     /**
      * Get Schema Version
