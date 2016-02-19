@@ -1,7 +1,4 @@
 # Create git tag
-
-git config push.default current
-
 set -e
 
 if GIT_DIR=./.git git show-ref --tags | egrep -q "refs/tags/${PLUGIN_VERSION}"
