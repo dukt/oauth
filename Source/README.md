@@ -6,7 +6,7 @@ Helps Craft developers get their plugin connected to OAuth-enabled web services.
 
 ## Requirements
 
-- [Craft 2.5+](http://buildwithcraft.com/)
+- [Craft 2.5+](http://craftcms.com/)
 - **PHP 5.4+**
 
 ## Installation
