@@ -5,52 +5,67 @@
 
 {% set content %}
 
-    <table id="fields" class="data fullwidth collapsible">
+	<div id="notokens"{% if tokens|length == 0 %} class="hidden"{% endif %}>
+		<p>{{ "No tokens exist yet."|t }}</p>
+	</div>
+
+    <table id="tokens" class="data fullwidth collapsible">
         <thead>
             <tr>
-                <th scope="col">ID</th>
-                <th scope="col">{{ "Provider"|t }}</th>
-                <th scope="col">{{ "Plugin Handle"|t }}</th>
+                <th scope="col">{{ "Token ID"|t }}</th>
+                <th scope="col">{{ "Plugin"|t }}</th>
                 <th scope="col">{{ "Access Token"|t }}</th>
-                <th scope="col">{{ "Secret"|t }}</th>
-                <th scope="col">{{ "Refresh Token"|t }}</th>
+				<th scope="col">{{ "Provider"|t }}</th>
                 <th scope="col">{{ "End Of Life"|t }}</th>
-                <th scope="col">{{ "Actions"|t }}</th>
+                <th scope="col">{{ "Refresh Token"|t }}</th>
             </tr>
         </thead>
 
         <tbody>
             {% for token in tokens %}
-                <tr>
+				<tr data-id="{{ token.id }}" data-name="{{ "Token {id}"|t({ id: token.id }) }}">
                     <td>{{ token.id }}</td>
+					<td>
+						{% set plugin = craft.plugins.getPlugin(token.pluginHandle, false) %}
+
+						<div class="plugin-infos">
+							<div class="icon">
+								<img src="{{ craft.plugins.getPluginIconUrl(token.pluginHandle, 48) }}" width="24" height="24">
+							</div>
+
+							<div class="name">
+								{{ plugin.name }}
+								<span class="light">{{ plugin.getVersion() }}</span>
+							</div>
+						</div>
+					</td>
                     <td>
-                        {% if token.provider %}
-                            {{ token.provider.name }}
-                        {% else %}
-                            {{ token.providerHandle }}
-                        {% endif %}
+                        {{ token.accessToken|slice(0, 30) }}…
                     </td>
+					<td>
+						<div class="provider-infos">
+							{% if token.provider.iconUrl %}
+								<div class="icon">
+									<img src="{{ token.provider.iconUrl }}" height="20" />
+								</div>
+							{% endif %}
+
+							<div class="name">
+								{% if token.provider %}
+									{{ token.provider.name }}
+								{% else %}
+									{{ token.providerHandle }}
+								{% endif %}
+							</div>
+						</div>
+					</td>
                     <td>
-                        {{ token.pluginHandle }}
-                    </td>
-                    <td>
-                        {{ token.accessToken|slice(0, 20) }}…
-                    </td>
-                    <td>
-                        {% if token.secret %}
-                            {{ token.secret|slice(0, 10) }}…
-                        {% else %}
-                            —
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if token.refreshToken %}
-                            {{ token.refreshToken|slice(0, 10) }}…
-                        {% else %}
-                            —
-                        {% endif %}
-                    </td>
-                    <td>{{ token.endOfLife|date }}</td>
+						{% if token.endOfLife %}
+							{{ token.endOfLife|date }}
+						{% else %}
+							—
+						{% endif %}
+					</td>
                     <td>
                         {% if token.refreshToken %}
                             <a href="#" class="btn small">Refresh Token</a>
@@ -58,9 +73,18 @@
                             <a href="#" class="btn small disabled">Refresh Token</a>
                         {% endif %}
                     </td>
+					<td class="thin"><a class="delete icon" title="{{ 'Delete'|t }}" role="button"></a></td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
 
+	{% includejs %}
+		var adminTable = new Craft.AdminTable({
+			tableSelector: '#tokens',
+			noObjectsSelector: '#notokens',
+			deleteAction: 'oauth/tokens/deleteToken',
+			confirmDeleteMessage: '{{ "Are you sure you want to delete “{name}”?"|t }}',
+		});
+	{% endincludejs %}
 {% endset %}

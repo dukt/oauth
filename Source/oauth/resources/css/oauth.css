@@ -1,0 +1,12 @@
+.provider-infos .icon,
+.plugin-infos .icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 7px;
+}
+
+.provider-infos .name,
+.plugin-infos .name {
+    display: inline-block;
+    vertical-align: middle;
+}
