@@ -1,7 +1,11 @@
-{% extends "oauth/_layouts/cp" %}
+{% extends "_layouts/cp" %}
 {% import "_includes/forms" as forms %}
 
-{% set selectedTab = 'console' %}
+{% set crumbs = [
+	{ label: "OAuth"|t, url: url('oauth') }
+] %}
+
+{% set title = "Console"|t %}
 
 {% set content %}
 
@@ -15,11 +19,18 @@
             <th scope="col">{{ "Test Name"|t }}</th>
             <th scope="col">{{ "Status"|t }}</th>
             <th scope="col">{{ "OAuth Provider"|t }}</th>
+            <td class="thin"></td>
         </tr>
     </thead>
 
     <tbody>
         {% for provider in providers %}
+
+			{% set hasToken = false %}
+
+			{% if tokens[provider.handle] is defined %}
+				{% set hasToken = true %}
+			{% endif %}
 
             <tr>
                 <td><a href="{{ url('oauth/console/'~provider.handle) }}">{{provider.name}}</a></td>
@@ -38,6 +49,15 @@
                     {% else %}
                         <span class="status"></span><span class="light">{{ "Not Configured"|t }}</span>
                     {% endif %}
+                </td>
+
+                <td>
+					{% if hasToken %}
+						<p><a class="btn small" href="{{ actionUrl('oauth/console/disconnect', {provider:provider.handle}) }}">{{'Disconnect'|t}}</a></p>
+					{% else %}
+						<p><a class="btn small disabled">{{'Disconnect'|t}}</a></p>
+					{% endif %}
+
                 </td>
             </tr>
 

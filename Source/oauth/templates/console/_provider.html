@@ -14,8 +14,7 @@
 
         {% if token %}
 
-            {% set void = provider.setToken(token) %}
-            {% set account = provider.getAccount() %}
+            {% set account = provider.getAccount(token) %}
 
             <h2 class="first">{{'Connected'|t}}</h2>
             <p>{{'You are authenticated to {provider} with the following account'|t({provider:provider.name})}} :</p>
