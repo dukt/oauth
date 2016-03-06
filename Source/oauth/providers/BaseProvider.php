@@ -82,9 +82,14 @@ abstract class BaseProvider implements IOauth_Provider {
         {
             OauthPlugin::log('OAuth 2 Connect - Step 1', LogLevel::Info);
 
-            $oauthProvider->setScopes($options['scope']);
+            // $oauthProvider->setScopes($options['scope']);
 
             $authorizationOptions = $options['authorizationOptions'];
+
+	        if(count($options['scope']) > 0)
+	        {
+		        $authorizationOptions['scope'] = $options['scope'];
+	        }
 
             if(!empty($options['authorizationOptions']['access_type']) && $options['authorizationOptions']['access_type'] == 'offline')
             {
@@ -94,7 +99,9 @@ abstract class BaseProvider implements IOauth_Provider {
 
             $authorizationUrl = $oauthProvider->getAuthorizationUrl($authorizationOptions);
 
-            \Craft\craft()->httpSession->add('oauth2state', $oauthProvider->state);
+	        $state = $oauthProvider->getState();
+
+            \Craft\craft()->httpSession->add('oauth2state', $state);
 
             OauthPlugin::log('OAuth 2 Connect - Step 1 - Data'."\r\n".print_r([
                 'authorizationUrl' => $authorizationUrl,
@@ -287,9 +294,17 @@ abstract class BaseProvider implements IOauth_Provider {
 
         $realToken = OauthHelper::getRealToken($token);
 
-        $response = $provider->getUserDetails($realToken);
-
-        return $response->getArrayCopy();
+	    switch($this->getOauthVersion())
+	    {
+		    case 1:
+			    $response = $provider->getUserDetails($realToken);
+			    return $response->getArrayCopy();
+			    break;
+		    case 2:
+			    $response = $provider->getResourceOwner($realToken);
+			    return $response->toArray();
+			    break;
+	    }
     }
 
     protected function fetchProviderData($url, array $headers = [])

@@ -85,9 +85,9 @@ class OauthHelper
             break;
 
             case 'League\OAuth2\Client\Token\AccessToken':
-            $tokenArray['accessToken'] = $token->accessToken;
-            $tokenArray['refreshToken'] = $token->refreshToken;
-            $tokenArray['endOfLife'] = $token->expires;
+            $tokenArray['accessToken'] = $token->getToken();
+            $tokenArray['refreshToken'] = $token->getRefreshToken();
+            $tokenArray['endOfLife'] = $token->getExpires();
             break;
         }
 
