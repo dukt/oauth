@@ -444,14 +444,14 @@ class OauthService extends BaseApplicationComponent
 
                 if($newToken)
                 {
-                    $model->accessToken = $newToken->accessToken;
-                    $model->endOfLife = $newToken->expires;
+                    $model->accessToken = $newToken->getToken();
+                    $model->endOfLife = $newToken->getExpires();
 
-                    $newRefreshToken = $newToken->refreshToken;
+                    $newRefreshToken = $newToken->getRefreshToken();
 
                     if(!empty($newRefreshToken))
                     {
-                        $model->refreshToken = $newToken->refreshToken;
+                        $model->refreshToken = $newToken->getRefreshToken();
                     }
 
                     return true;

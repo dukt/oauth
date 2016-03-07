@@ -7,6 +7,7 @@
 
 namespace Dukt\OAuth\Providers;
 
+use Craft\Oauth_ResourceOwnerModel;
 use Craft\OauthPlugin;
 use Craft\IOauth_Provider;
 use Craft\OauthHelper;
@@ -90,12 +91,12 @@ abstract class BaseProvider implements IOauth_Provider {
 	        {
 		        $authorizationOptions['scope'] = $options['scope'];
 	        }
-
-            if(!empty($options['authorizationOptions']['access_type']) && $options['authorizationOptions']['access_type'] == 'offline')
-            {
-                unset($options['authorizationOptions']['access_type']);
-                $oauthProvider->setAccessType('offline');
-            }
+//
+//            if(!empty($options['authorizationOptions']['access_type']) && $options['authorizationOptions']['access_type'] == 'offline')
+//            {
+//                unset($options['authorizationOptions']['access_type']);
+//                $oauthProvider->setAccessType('offline');
+//            }
 
             $authorizationUrl = $oauthProvider->getAuthorizationUrl($authorizationOptions);
 
@@ -297,15 +298,28 @@ abstract class BaseProvider implements IOauth_Provider {
 	    switch($this->getOauthVersion())
 	    {
 		    case 1:
-			    $response = $provider->getUserDetails($realToken);
-			    return $response->getArrayCopy();
+			    $sourceOwner = $provider->getUserDetails($realToken);
 			    break;
 		    case 2:
-			    $response = $provider->getResourceOwner($realToken);
-			    return $response->toArray();
+			    $sourceOwner = $provider->getResourceOwner($realToken);
 			    break;
 	    }
+
+	    return $this->getResourceOwner($sourceOwner);
     }
+
+	private function getResourceOwner($sourceOwner)
+	{
+		$resourceOwner = new Oauth_ResourceOwnerModel;
+		$resourceOwner->id = $sourceOwner->getId();
+
+		if(method_exists($sourceOwner, 'getName'))
+		{
+			$resourceOwner->name = $sourceOwner->getName();
+		}
+
+		return $resourceOwner;
+	}
 
     protected function fetchProviderData($url, array $headers = [])
     {
