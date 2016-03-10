@@ -287,7 +287,7 @@ abstract class BaseProvider implements IOauth_Provider {
     }
 
     /**
-     * Get Account
+     * Get Resource Owner
      */
     public function getAccount($token)
     {
@@ -295,31 +295,25 @@ abstract class BaseProvider implements IOauth_Provider {
 
         $realToken = OauthHelper::getRealToken($token);
 
+	    $resourceOwner = new Oauth_ResourceOwnerModel;
+
 	    switch($this->getOauthVersion())
 	    {
 		    case 1:
 			    $sourceOwner = $provider->getUserDetails($realToken);
+			    $resourceOwner->id = $sourceOwner->uid;
+			    $resourceOwner->name = $sourceOwner->name;
 			    break;
 		    case 2:
 			    $sourceOwner = $provider->getResourceOwner($realToken);
+			    $resourceOwner->id = $sourceOwner->getId();
+			    $resourceOwner->name = $sourceOwner->getName();
 			    break;
 	    }
 
-	    return $this->getResourceOwner($sourceOwner);
+
+	    return $resourceOwner;
     }
-
-	private function getResourceOwner($sourceOwner)
-	{
-		$resourceOwner = new Oauth_ResourceOwnerModel;
-		$resourceOwner->id = $sourceOwner->getId();
-
-		if(method_exists($sourceOwner, 'getName'))
-		{
-			$resourceOwner->name = $sourceOwner->getName();
-		}
-
-		return $resourceOwner;
-	}
 
     protected function fetchProviderData($url, array $headers = [])
     {
