@@ -74,17 +74,4 @@ class Twitter extends BaseProvider
         return 'https://dev.twitter.com/apps';
     }
 
-    /**
-     * Get Account
-     */
-    public function getAccount($token)
-    {
-        $provider = $this->getProvider();
-
-        $realToken = OauthHelper::getRealToken($token);
-
-        $response = $provider->getUserDetails($realToken);
-
-        return $response->getIterator();
-    }
 }
