@@ -8,6 +8,7 @@
 namespace Dukt\OAuth\Providers;
 
 use Craft\UrlHelper;
+use Craft\Oauth_ResourceOwnerModel;
 
 class Facebook extends BaseProvider
 {
@@ -79,5 +80,18 @@ class Facebook extends BaseProvider
     public function getScopeDocsUrl()
     {
         return 'https://developers.facebook.com/docs/facebook-login/permissions/v2.5';
+    }
+    
+    public function getAccount($token)
+    {
+        $remoteResourceOwner = $this->getRemoteAccount($token);
+        
+        $resourceOwner = new Oauth_ResourceOwnerModel;
+        $resourceOwner->id = $remoteResourceOwner->getId();
+        $resourceOwner->email = $remoteResourceOwner->getEmail();
+        $resourceOwner->firstName = $remoteResourceOwner->getFirstName();
+        $resourceOwner->lastName = $remoteResourceOwner->getLastName();
+        
+        return $resourceOwner;
     }
 }

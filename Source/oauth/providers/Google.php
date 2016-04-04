@@ -8,6 +8,7 @@
 namespace Dukt\OAuth\Providers;
 
 use Craft\UrlHelper;
+use Craft\Oauth_ResourceOwnerModel;
 
 class Google extends BaseProvider
 {
@@ -78,5 +79,19 @@ class Google extends BaseProvider
     public function getScopeDocsUrl()
     {
         return 'https://developers.google.com/identity/protocols/googlescopes';
+    }
+    
+    public function getAccount($token)
+    {
+        $remoteResourceOwner = $this->getRemoteAccount($token);
+        
+        $resourceOwner = new Oauth_ResourceOwnerModel;
+        
+        $resourceOwner->id = $remoteResourceOwner->getId();
+        $resourceOwner->email = $remoteResourceOwner->getEmail();
+        $resourceOwner->firstName = $remoteResourceOwner->getFirstName();
+        $resourceOwner->lastName = $remoteResourceOwner->getLastName();
+        
+        return $resourceOwner;
     }
 }

@@ -9,6 +9,7 @@ namespace Dukt\OAuth\Providers;
 
 use Craft\UrlHelper;
 use Craft\OauthHelper;
+use Craft\Oauth_ResourceOwnerModel;
 
 class Twitter extends BaseProvider
 {
@@ -73,5 +74,17 @@ class Twitter extends BaseProvider
     {
         return 'https://dev.twitter.com/apps';
     }
-
+    
+    public function getAccount($token)
+    {
+        $remoteResourceOwner = $this->getRemoteAccount($token);
+        
+        $resourceOwner = new Oauth_ResourceOwnerModel;
+        
+        $resourceOwner->id = $remoteResourceOwner->uid;
+        $resourceOwner->email = $remoteResourceOwner->email;
+        $resourceOwner->name = $remoteResourceOwner->name;
+        
+        return $resourceOwner;
+    }
 }
