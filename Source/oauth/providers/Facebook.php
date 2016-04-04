@@ -82,7 +82,7 @@ class Facebook extends BaseProvider
         return 'https://developers.facebook.com/docs/facebook-login/permissions/v2.5';
     }
     
-    public function getAccount($token)
+    public function getResourceOwner($token)
     {
         $remoteResourceOwner = $this->getRemoteAccount($token);
         

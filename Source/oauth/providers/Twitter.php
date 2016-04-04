@@ -75,7 +75,7 @@ class Twitter extends BaseProvider
         return 'https://dev.twitter.com/apps';
     }
     
-    public function getAccount($token)
+    public function getResourceOwner($token)
     {
         $remoteResourceOwner = $this->getRemoteAccount($token);
         

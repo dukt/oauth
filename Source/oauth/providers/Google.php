@@ -81,7 +81,7 @@ class Google extends BaseProvider
         return 'https://developers.google.com/identity/protocols/googlescopes';
     }
     
-    public function getAccount($token)
+    public function getResourceOwner($token)
     {
         $remoteResourceOwner = $this->getRemoteAccount($token);
         

@@ -8,6 +8,7 @@
 namespace Dukt\OAuth\Providers;
 
 use Craft\UrlHelper;
+use Craft\Oauth_ResourceOwnerModel;
 
 class Vimeo extends BaseProvider
 {
@@ -23,7 +24,6 @@ class Vimeo extends BaseProvider
     {
         return 'Vimeo';
     }
-
 
     /**
      * Get Icon URL
@@ -80,5 +80,18 @@ class Vimeo extends BaseProvider
     public function getScopeDocsUrl()
     {
         return 'https://developer.vimeo.com/api/authentication#scopes';
+    }
+    
+    
+    public function getResourceOwner($token)
+    {
+        $remoteResourceOwner = $this->getRemoteAccount($token);
+        
+        $resourceOwner = new Oauth_ResourceOwnerModel;
+        
+        $resourceOwner->id = $remoteResourceOwner->getId();
+        $resourceOwner->name = $remoteResourceOwner->getName();
+        
+        return $resourceOwner;
     }
 }
