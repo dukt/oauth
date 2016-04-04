@@ -21,6 +21,9 @@ class Oauth_ResourceOwnerModel extends BaseModel
 	{
 		$attributes = array(
 			'id' => AttributeType::Number,
+			'email' => AttributeType::String,
+			'firstName' => AttributeType::String,
+			'lastName' => AttributeType::String,
 			'name' => AttributeType::String,
 		);
 
