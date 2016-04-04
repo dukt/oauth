@@ -34,22 +34,4 @@ class Oauth_ResourceOwnerModel extends BaseModel
 	{
 		return $this->id;
 	}
-
-	//	public function getId() {}
-	//	public function getName() {}
-	//	public function getFirstName() {}
-	//	public function getLastName() {}
-	//	public function getAvatar() {}
-	//	public function getBio() {}
-	//	public function getCoverPhotoUrl() {}
-	//	public function getEmail() {}
-	//	public function getGender() {}
-	//	public function getHometown() {}
-	//	public function getLink() {}
-	//	public function getLocale() {}
-	//	public function getNickname() {}
-	//	public function getPictureUrl() {}
-	//	public function getUrl() {}
-	//	public function isDefaultPicture() {}
-	//	public function setDomain($domain) {}
 }
