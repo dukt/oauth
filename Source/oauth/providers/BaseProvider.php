@@ -289,7 +289,7 @@ abstract class BaseProvider implements IOauth_Provider {
     /**
      * Get Resource Owner
      */
-    public function getRemoteAccount($token)
+    public function getRemoteResourceOwner($token)
     {
         $provider = $this->getProvider();
 

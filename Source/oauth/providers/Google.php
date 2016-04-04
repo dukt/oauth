@@ -83,7 +83,7 @@ class Google extends BaseProvider
     
     public function getResourceOwner($token)
     {
-        $remoteResourceOwner = $this->getRemoteAccount($token);
+        $remoteResourceOwner = $this->getRemoteResourceOwner($token);
         
         $resourceOwner = new Oauth_ResourceOwnerModel;
         
