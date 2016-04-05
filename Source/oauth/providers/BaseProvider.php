@@ -305,6 +305,12 @@ abstract class BaseProvider implements IOauth_Provider {
 			    break;
 	    }
     }
+    
+    public function getAccount($token)
+    {
+        // todo: to be depreacated
+        return $this->getResourceOwner($token);
+    }
 
     protected function fetchProviderData($url, array $headers = [])
     {
