@@ -9,9 +9,15 @@ namespace Craft;
 
 class Oauth_ResourceOwnerModel extends BaseModel
 {
-	private $sourceOwner;
-
 	// Public Methods
+	// =========================================================================
+
+	public function getUid()
+	{
+		return $this->id;
+	}
+	
+	// Protected Methods
 	// =========================================================================
 
 	/**
@@ -22,16 +28,10 @@ class Oauth_ResourceOwnerModel extends BaseModel
 		$attributes = array(
 			'id' => AttributeType::Number,
 			'email' => AttributeType::String,
-			'firstName' => AttributeType::String,
-			'lastName' => AttributeType::String,
 			'name' => AttributeType::String,
 		);
 
 		return $attributes;
 	}
 
-	public function getUid()
-	{
-		return $this->id;
-	}
 }

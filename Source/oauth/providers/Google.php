@@ -80,18 +80,23 @@ class Google extends BaseProvider
     {
         return 'https://developers.google.com/identity/protocols/googlescopes';
     }
-    
+
     public function getResourceOwner($token)
     {
         $remoteResourceOwner = $this->getRemoteResourceOwner($token);
-        
+
         $resourceOwner = new Oauth_ResourceOwnerModel;
-        
+
         $resourceOwner->id = $remoteResourceOwner->getId();
         $resourceOwner->email = $remoteResourceOwner->getEmail();
-        $resourceOwner->firstName = $remoteResourceOwner->getFirstName();
-        $resourceOwner->lastName = $remoteResourceOwner->getLastName();
-        
+
+        $name = trim($remoteResourceOwner->getFirstName()." ".$remoteResourceOwner->getLastName());
+
+        if(!empty($name))
+        {
+            $resourceOwner->name = $name;
+        }
+
         return $resourceOwner;
     }
 }
