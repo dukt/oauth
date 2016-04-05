@@ -12,9 +12,16 @@ class Oauth_ResourceOwnerModel extends BaseModel
 	// Public Methods
 	// =========================================================================
 
+	// todo: to be deprecated
+	public function getId()
+	{
+		return $this->remoteId;
+	}
+
+	// todo: to be deprecated
 	public function getUid()
 	{
-		return $this->id;
+		return $this->remoteId;
 	}
 	
 	// Protected Methods
@@ -26,7 +33,7 @@ class Oauth_ResourceOwnerModel extends BaseModel
 	protected function defineAttributes()
 	{
 		$attributes = array(
-			'id' => AttributeType::Number,
+			'remoteId' => AttributeType::Number,
 			'email' => AttributeType::String,
 			'name' => AttributeType::String,
 		);
