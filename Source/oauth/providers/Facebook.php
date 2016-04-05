@@ -81,22 +81,4 @@ class Facebook extends BaseProvider
     {
         return 'https://developers.facebook.com/docs/facebook-login/permissions/v2.5';
     }
-    
-    public function getResourceOwner($token)
-    {
-        $remoteResourceOwner = $this->getRemoteResourceOwner($token);
-        
-        $resourceOwner = new Oauth_ResourceOwnerModel;
-        $resourceOwner->id = $remoteResourceOwner->getId();
-        $resourceOwner->email = $remoteResourceOwner->getEmail();
-        
-        $name = trim($remoteResourceOwner->getFirstName()." ".$remoteResourceOwner->getLastName());
-
-        if(!empty($name))
-        {
-            $resourceOwner->name = $name;
-        }
-        
-        return $resourceOwner;
-    }
 }

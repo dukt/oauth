@@ -81,7 +81,7 @@ class Twitter extends BaseProvider
         
         $resourceOwner = new Oauth_ResourceOwnerModel;
         
-        $resourceOwner->id = $remoteResourceOwner->uid;
+        $resourceOwner->remoteId = $remoteResourceOwner->uid;
         $resourceOwner->email = $remoteResourceOwner->email;
         $resourceOwner->name = $remoteResourceOwner->name;
         

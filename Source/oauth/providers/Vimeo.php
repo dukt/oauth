@@ -81,17 +81,4 @@ class Vimeo extends BaseProvider
     {
         return 'https://developer.vimeo.com/api/authentication#scopes';
     }
-    
-    
-    public function getResourceOwner($token)
-    {
-        $remoteResourceOwner = $this->getRemoteResourceOwner($token);
-        
-        $resourceOwner = new Oauth_ResourceOwnerModel;
-        
-        $resourceOwner->id = $remoteResourceOwner->getId();
-        $resourceOwner->name = $remoteResourceOwner->getName();
-        
-        return $resourceOwner;
-    }
 }

@@ -306,6 +306,40 @@ abstract class BaseProvider implements IOauth_Provider {
 	    }
     }
     
+    public function getResourceOwner($token)
+    {
+        $remoteResourceOwner = $this->getRemoteResourceOwner($token);
+        
+        $resourceOwner = new Oauth_ResourceOwnerModel;
+        $resourceOwner->remoteId = $remoteResourceOwner->getId();
+        
+        // email
+        if(method_exists($remoteResourceOwner, 'getEmail'))
+        {
+            $resourceOwner->email = $remoteResourceOwner->getEmail();
+        }
+        
+        // name
+        if(method_exists($remoteResourceOwner, 'getName'))
+        {
+            $resourceOwner->name = $remoteResourceOwner->getName();
+        }
+        elseif(method_exists($remoteResourceOwner, 'getFirstName') && method_exists($remoteResourceOwner, 'getLastName'))
+        {
+            $resourceOwner->name = trim($remoteResourceOwner->getFirstName()." ".$remoteResourceOwner->getLastName());
+        }
+        elseif(method_exists($remoteResourceOwner, 'getFirstName'))
+        {
+            $resourceOwner->name = $remoteResourceOwner->getFirstName();
+        }
+        elseif(method_exists($remoteResourceOwner, 'getLasttName'))
+        {
+            $resourceOwner->name = $remoteResourceOwner->getLasttName();
+        }
+        
+        return $resourceOwner;
+    }
+    
     public function getAccount($token)
     {
         // todo: to be depreacated
