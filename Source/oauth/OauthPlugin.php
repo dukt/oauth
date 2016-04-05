@@ -42,6 +42,14 @@ class OauthPlugin extends BasePlugin
         return Craft::t('OAuth');
     }
 
+    /**
+     * Get Description
+     */
+    public function getDescription()
+    {
+        return Craft::t('Consume OAuth-based web services.');
+    }
+    
 	/**
 	 * Get Version
 	 */
