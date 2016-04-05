@@ -24,14 +24,14 @@ class m130907_140340_oauth_renameOauth_providersProviderClassToClass extends Bas
 		if ($providersTable)
 		{
 			if($this->renameColumn('{{oauth_providers}}', 'providerClass', 'class')) {
-				Craft::log('Renamed `{{oauth_providers}}`.`providerClass` to `{{oauth_providers}}`.`class`.', LogLevel::Info, true);
+				OauthPlugin::log('Renamed `{{oauth_providers}}`.`providerClass` to `{{oauth_providers}}`.`class`.', LogLevel::Info, true);
 			} else {
-				Craft::log('Couldn\'t rename `{{oauth_providers}}`.`providerClass` to `{{oauth_providers}}`.`class`.', LogLevel::Warning);
+				OauthPlugin::log('Couldn\'t rename `{{oauth_providers}}`.`providerClass` to `{{oauth_providers}}`.`class`.', LogLevel::Warning);
 			}
 		}
 		else
 		{
-			Craft::log('Could not find an `{{oauth_providers}}` table. Wut?', LogLevel::Error);
+			OauthPlugin::log('Could not find an `{{oauth_providers}}` table. Wut?', LogLevel::Error);
 		}
 
 		return true;

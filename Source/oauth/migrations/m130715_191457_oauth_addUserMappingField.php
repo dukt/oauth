@@ -25,20 +25,20 @@ class m130715_191457_oauth_addUserMappingField extends BaseMigration
 		{
 			if (($userMappingColumn = $tokensTable->getColumn('userMapping')) == null)
 			{
-				Craft::log('Adding `userMapping` column to the `oauth_tokens` table.', LogLevel::Info, true);
+				OauthPlugin::log('Adding `userMapping` column to the `oauth_tokens` table.', LogLevel::Info, true);
 
 				$this->addColumnAfter('oauth_tokens', 'userMapping', array(AttributeType::String, 'required' => false), 'userId');
 
-				Craft::log('Added `userMapping` column to the `oauth_tokens` table.', LogLevel::Info, true);
+				OauthPlugin::log('Added `userMapping` column to the `oauth_tokens` table.', LogLevel::Info, true);
 			}
 			else
 			{
-				Craft::log('Tried to add a `userMapping` column to the `oauth_tokens` table, but there is already one there.', LogLevel::Warning);
+				OauthPlugin::log('Tried to add a `userMapping` column to the `oauth_tokens` table, but there is already one there.', LogLevel::Warning);
 			}
 		}
 		else
 		{
-			Craft::log('Could not find an `oauth_tokens` table. Wut?', LogLevel::Error);
+			OauthPlugin::log('Could not find an `oauth_tokens` table. Wut?', LogLevel::Error);
 		}
 
 		return true;

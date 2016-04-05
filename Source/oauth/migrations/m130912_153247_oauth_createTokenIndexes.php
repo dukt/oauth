@@ -31,7 +31,7 @@ class m130912_153247_oauth_createTokenIndexes extends BaseMigration
 		}
 		else
 		{
-			Craft::log('Could not find an `'.$tableName.'` table. Wut?', LogLevel::Error);
+			OauthPlugin::log('Could not find an `'.$tableName.'` table. Wut?', LogLevel::Error);
 		}
 
 
@@ -52,7 +52,7 @@ class m130912_153247_oauth_createTokenIndexes extends BaseMigration
 		}
 		else
 		{
-			Craft::log('Could not find an `'.$tableName.'` table. Wut?', LogLevel::Error);
+			OauthPlugin::log('Could not find an `'.$tableName.'` table. Wut?', LogLevel::Error);
 		}
 
 
@@ -73,7 +73,7 @@ class m130912_153247_oauth_createTokenIndexes extends BaseMigration
 		}
 		else
 		{
-			Craft::log('Could not find an `'.$tableName.'` table. Wut?', LogLevel::Error);
+			OauthPlugin::log('Could not find an `'.$tableName.'` table. Wut?', LogLevel::Error);
 		}
 
 		return true;

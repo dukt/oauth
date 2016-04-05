@@ -51,11 +51,11 @@ class m150112_220705_oauth_add_token_columns extends BaseMigration
             }
         }
 
-        Craft::log('Dropping the encodedToken column from the structures table...', LogLevel::Info, true);
+        OauthPlugin::log('Dropping the encodedToken column from the structures table...', LogLevel::Info, true);
 
         $this->dropColumn('oauth_tokens', 'encodedToken');
 
-        Craft::log('Done dropping the encodedToken column from the structures table.', LogLevel::Info, true);
+        OauthPlugin::log('Done dropping the encodedToken column from the structures table.', LogLevel::Info, true);
 
 
 
