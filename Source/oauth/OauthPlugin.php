@@ -8,6 +8,8 @@
 namespace Craft;
 
 require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
+require_once(CRAFT_PLUGINS_PATH.'oauth/etc/providers/IOauth_Provider.php');
+require_once(CRAFT_PLUGINS_PATH.'oauth/providers/BaseProvider.php');
 
 class OauthPlugin extends BasePlugin
 {
@@ -19,7 +21,6 @@ class OauthPlugin extends BasePlugin
      */
     public function getOauthProviders()
     {
-        require_once(CRAFT_PLUGINS_PATH.'oauth/providers/BaseProvider.php');
         require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Facebook.php');
         require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Google.php');
         require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Twitter.php');

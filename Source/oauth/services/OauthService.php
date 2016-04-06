@@ -536,8 +536,6 @@ class OauthService extends BaseApplicationComponent
             return;
         }
 
-        require_once(CRAFT_PLUGINS_PATH.'oauth/etc/providers/IOauth_Provider.php');
-
         $providerSources = $this->_getProviders();
 
         foreach($providerSources as $providerSource)
