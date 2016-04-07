@@ -286,10 +286,14 @@ abstract class BaseProvider implements IOauth_Provider {
         return false;
     }
 
-    /**
-     * Get Resource Owner
-     */
-    public function getRemoteResourceOwner($token)
+	/**
+	 * Returns the remote resource owner.
+	 *
+	 * @param $token
+	 *
+	 * @return mixed
+	 */
+	public function getRemoteResourceOwner($token)
     {
         $provider = $this->getProvider();
 
@@ -305,8 +309,15 @@ abstract class BaseProvider implements IOauth_Provider {
 			    break;
 	    }
     }
-    
-    public function getResourceOwner($token)
+
+	/**
+	 * Returns the resource owner.
+	 *
+	 * @param $token
+	 *
+	 * @return Oauth_ResourceOwnerModel
+	 */
+	public function getResourceOwner($token)
     {
         $remoteResourceOwner = $this->getRemoteResourceOwner($token);
         
@@ -339,14 +350,28 @@ abstract class BaseProvider implements IOauth_Provider {
         
         return $resourceOwner;
     }
-    
-    public function getAccount($token)
+
+	/**
+	 * Alias for getResourceOwner()
+	 *
+	 * @param $token
+	 *
+	 * @return Oauth_ResourceOwnerModel
+	 */
+	public function getAccount($token)
     {
-        // todo: to be depreacated
         return $this->getResourceOwner($token);
     }
 
-    protected function fetchProviderData($url, array $headers = [])
+	/**
+	 * Fetch provider data
+	 *
+	 * @param       $url
+	 * @param array $headers
+	 *
+	 * @return mixed
+	 */
+	protected function fetchProviderData($url, array $headers = [])
     {
         $client = $this->getProvider()->getHttpClient();
         $client->setBaseUrl($url);
@@ -362,25 +387,22 @@ abstract class BaseProvider implements IOauth_Provider {
         return $response;
     }
 
-    public function getUserDetails()
-    {
-        $token = OauthHelper::getRealToken($this->token);
-
-        return $this->getProvider()->getUserDetails($token);
-    }
-
-    /**
-     * Get Redirect URI
-     */
-    public function getRedirectUri()
+	/**
+	 * Returns the redirect URI
+	 *
+	 * @return array|string
+	 */
+	public function getRedirectUri()
     {
         return OauthHelper::getSiteActionUrl('oauth/connect');
     }
 
-    /**
-     * Get Handle
-     */
-    public function getHandle()
+	/**
+	 * Returns the provider handle based on its class name.
+	 *
+	 * @return string
+	 */
+	public function getHandle()
     {
         $class = $this->getClass();
 
@@ -389,13 +411,15 @@ abstract class BaseProvider implements IOauth_Provider {
         return $handle;
     }
 
-    /**
-     * Get provider class
-     *
-     * from : Dukt\OAuth\Providers\Dribbble
-     * to : Dribbble
-     */
-    public function getClass()
+	/**
+	 * Get provider class
+	 *
+	 * from : Dukt\OAuth\Providers\Dribbble
+	 * to : Dribbble
+	 *
+	 * @return string
+	 */
+	public function getClass()
     {
         $nsClass = get_class($this);
 
@@ -404,10 +428,12 @@ abstract class BaseProvider implements IOauth_Provider {
         return $class;
     }
 
-    /**
-     * Get Tokens
-     */
-    public function getTokens()
+	/**
+	 * Get provider's tokens
+	 *
+	 * @return array
+	 */
+	public function getTokens()
     {
         return \Craft\craft()->oauth->getTokensByProvider($this->getHandle());
     }

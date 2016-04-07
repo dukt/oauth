@@ -12,13 +12,11 @@ class Oauth_ResourceOwnerModel extends BaseModel
 	// Public Methods
 	// =========================================================================
 
-	// todo: to be deprecated
 	public function getId()
 	{
 		return $this->remoteId;
 	}
-
-	// todo: to be deprecated
+	
 	public function getUid()
 	{
 		return $this->remoteId;
