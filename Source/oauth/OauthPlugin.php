@@ -25,7 +25,6 @@ class OauthPlugin extends BasePlugin
         require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Google.php');
         require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Twitter.php');
         require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Vimeo.php');
-        require_once(CRAFT_PLUGINS_PATH.'oauth/src/OAuth2/Client/Provider/VimeoResourceOwner.php');
 
         return [
             'Dukt\OAuth\Providers\Facebook',
