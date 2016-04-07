@@ -17,7 +17,6 @@
                 <th scope="col">{{ "Access Token"|t }}</th>
 				<th scope="col">{{ "Provider"|t }}</th>
                 <th scope="col">{{ "End Of Life"|t }}</th>
-                <th scope="col">{{ "Refresh Token"|t }}</th>
             </tr>
         </thead>
 
@@ -66,13 +65,6 @@
 							—
 						{% endif %}
 					</td>
-                    <td>
-                        {% if token.refreshToken %}
-                            <a href="#" class="btn small">Refresh Token</a>
-                        {% else %}
-                            <a href="#" class="btn small disabled">Refresh Token</a>
-                        {% endif %}
-                    </td>
 					<td class="thin"><a class="delete icon" title="{{ 'Delete'|t }}" role="button"></a></td>
                 </tr>
             {% endfor %}
