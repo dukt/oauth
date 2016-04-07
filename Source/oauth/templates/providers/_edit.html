@@ -42,11 +42,18 @@
 
         <p>{{ "Once created, configure the application with the following settings. You might not need to use all of them."|t }}</p>
 
-        <ul>
-            <li><strong>{{ "Web Origin"|t }}:</strong> {{siteUrl}}</li>
-            <li><strong>{{ "Redirect URI"|t }}:</strong> {{ provider.redirectUri }}</li>
-        </ul>
+        {{ forms.textField({
+            label: 'Web Origin'|t,
+            value: siteUrl,
+            readonly: true,
+        }) }}
 
+        {{ forms.textField({
+            label: 'Redirect URI'|t,
+            value: provider.redirectUri,
+            readonly: true,
+        }) }}
+        
         <hr>
 
         <h2>{{ "Client ID & Secret"|t }}</h2>
