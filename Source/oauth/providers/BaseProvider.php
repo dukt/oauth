@@ -87,10 +87,10 @@ abstract class BaseProvider implements IOauth_Provider {
 
             $authorizationOptions = $options['authorizationOptions'];
 
-	        if(count($options['scope']) > 0)
-	        {
-		        $authorizationOptions['scope'] = $options['scope'];
-	        }
+            if(count($options['scope']) > 0)
+            {
+                $authorizationOptions['scope'] = $options['scope'];
+            }
 //
 //            if(!empty($options['authorizationOptions']['access_type']) && $options['authorizationOptions']['access_type'] == 'offline')
 //            {
@@ -100,7 +100,7 @@ abstract class BaseProvider implements IOauth_Provider {
 
             $authorizationUrl = $oauthProvider->getAuthorizationUrl($authorizationOptions);
 
-	        $state = $oauthProvider->getState();
+            $state = $oauthProvider->getState();
 
             \Craft\craft()->httpSession->add('oauth2state', $state);
 
@@ -286,50 +286,50 @@ abstract class BaseProvider implements IOauth_Provider {
         return false;
     }
 
-	/**
-	 * Returns the remote resource owner.
-	 *
-	 * @param $token
-	 *
-	 * @return mixed
-	 */
-	public function getRemoteResourceOwner($token)
+    /**
+     * Returns the remote resource owner.
+     *
+     * @param $token
+     *
+     * @return mixed
+     */
+    public function getRemoteResourceOwner($token)
     {
         $provider = $this->getProvider();
 
         $realToken = OauthHelper::getRealToken($token);
 
-	    switch($this->getOauthVersion())
-	    {
-		    case 1:
+        switch($this->getOauthVersion())
+        {
+            case 1:
                 return $provider->getUserDetails($realToken);
-			    break;
-		    case 2:
+                break;
+            case 2:
                 return $provider->getResourceOwner($realToken);
-			    break;
-	    }
+                break;
+        }
     }
 
-	/**
-	 * Returns the resource owner.
-	 *
-	 * @param $token
-	 *
-	 * @return Oauth_ResourceOwnerModel
-	 */
-	public function getResourceOwner($token)
+    /**
+     * Returns the resource owner.
+     *
+     * @param $token
+     *
+     * @return Oauth_ResourceOwnerModel
+     */
+    public function getResourceOwner($token)
     {
         $remoteResourceOwner = $this->getRemoteResourceOwner($token);
-        
+
         $resourceOwner = new Oauth_ResourceOwnerModel;
         $resourceOwner->remoteId = $remoteResourceOwner->getId();
-        
+
         // email
         if(method_exists($remoteResourceOwner, 'getEmail'))
         {
             $resourceOwner->email = $remoteResourceOwner->getEmail();
         }
-        
+
         // name
         if(method_exists($remoteResourceOwner, 'getName'))
         {
@@ -347,31 +347,31 @@ abstract class BaseProvider implements IOauth_Provider {
         {
             $resourceOwner->name = $remoteResourceOwner->getLasttName();
         }
-        
+
         return $resourceOwner;
     }
 
-	/**
-	 * Alias for getResourceOwner()
-	 *
-	 * @param $token
-	 *
-	 * @return Oauth_ResourceOwnerModel
-	 */
-	public function getAccount($token)
+    /**
+     * Alias for getResourceOwner()
+     *
+     * @param $token
+     *
+     * @return Oauth_ResourceOwnerModel
+     */
+    public function getAccount($token)
     {
         return $this->getResourceOwner($token);
     }
 
-	/**
-	 * Fetch provider data
-	 *
-	 * @param       $url
-	 * @param array $headers
-	 *
-	 * @return mixed
-	 */
-	protected function fetchProviderData($url, array $headers = [])
+    /**
+     * Fetch provider data
+     *
+     * @param       $url
+     * @param array $headers
+     *
+     * @return mixed
+     */
+    protected function fetchProviderData($url, array $headers = [])
     {
         $client = $this->getProvider()->getHttpClient();
         $client->setBaseUrl($url);
@@ -387,22 +387,22 @@ abstract class BaseProvider implements IOauth_Provider {
         return $response;
     }
 
-	/**
-	 * Returns the redirect URI
-	 *
-	 * @return array|string
-	 */
-	public function getRedirectUri()
+    /**
+     * Returns the redirect URI
+     *
+     * @return array|string
+     */
+    public function getRedirectUri()
     {
         return OauthHelper::getSiteActionUrl('oauth/connect');
     }
 
-	/**
-	 * Returns the provider handle based on its class name.
-	 *
-	 * @return string
-	 */
-	public function getHandle()
+    /**
+     * Returns the provider handle based on its class name.
+     *
+     * @return string
+     */
+    public function getHandle()
     {
         $class = $this->getClass();
 
@@ -411,15 +411,15 @@ abstract class BaseProvider implements IOauth_Provider {
         return $handle;
     }
 
-	/**
-	 * Get provider class
-	 *
-	 * from : Dukt\OAuth\Providers\Dribbble
-	 * to : Dribbble
-	 *
-	 * @return string
-	 */
-	public function getClass()
+    /**
+     * Get provider class
+     *
+     * from : Dukt\OAuth\Providers\Dribbble
+     * to : Dribbble
+     *
+     * @return string
+     */
+    public function getClass()
     {
         $nsClass = get_class($this);
 
@@ -428,12 +428,12 @@ abstract class BaseProvider implements IOauth_Provider {
         return $class;
     }
 
-	/**
-	 * Get provider's tokens
-	 *
-	 * @return array
-	 */
-	public function getTokens()
+    /**
+     * Get provider's tokens
+     *
+     * @return array
+     */
+    public function getTokens()
     {
         return \Craft\craft()->oauth->getTokensByProvider($this->getHandle());
     }

@@ -6,13 +6,13 @@ namespace Craft;
  */
 class m140623_130304_oauth_new_tokens_table extends BaseMigration
 {
-	/**
-	 * Any migration code in here is wrapped inside of a transaction.
-	 *
-	 * @return bool
-	 */
-	public function safeUp()
-	{
+    /**
+     * Any migration code in here is wrapped inside of a transaction.
+     *
+     * @return bool
+     */
+    public function safeUp()
+    {
         // move current token table to old
 
         if (craft()->db->tableExists('oauth_tokens'))
@@ -31,6 +31,6 @@ class m140623_130304_oauth_new_tokens_table extends BaseMigration
             ), null, true);
         }
 
-		return true;
-	}
+        return true;
+    }
 }

@@ -50,22 +50,22 @@ class OauthPlugin extends BasePlugin
         return Craft::t('Consume OAuth-based web services.');
     }
     
-	/**
-	 * Get Version
-	 */
-	public function getVersion()
-	{
-		$path = CRAFT_PLUGINS_PATH.'oauth/Info.php';
+    /**
+     * Get Version
+     */
+    public function getVersion()
+    {
+        $path = CRAFT_PLUGINS_PATH.'oauth/Info.php';
 
-		if(IOHelper::fileExists($path))
-		{
-			require_once($path);
+        if(IOHelper::fileExists($path))
+        {
+            require_once($path);
 
-			return OAUTH_VERSION;
-		}
+            return OAUTH_VERSION;
+        }
 
-		return '2.0.0';
-	}
+        return '2.0.0';
+    }
 
     /**
      * Get Schema Version

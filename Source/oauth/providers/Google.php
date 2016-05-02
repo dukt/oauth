@@ -58,7 +58,7 @@ class Google extends BaseProvider
             'redirectUri' => $this->getRedirectUri(),
         ];
 
-	    return new \League\OAuth2\Client\Provider\Google($config);
+        return new \League\OAuth2\Client\Provider\Google($config);
     }
 
     /**

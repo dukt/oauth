@@ -2,7 +2,7 @@
 {% import "_includes/forms" as forms %}
 
 {% set crumbs = [
-	{ label: "OAuth"|t, url: url('oauth') }
+    { label: "OAuth"|t, url: url('oauth') }
 ] %}
 
 {% set title = "Console"|t %}
@@ -26,11 +26,11 @@
     <tbody>
         {% for provider in providers %}
 
-			{% set hasToken = false %}
+            {% set hasToken = false %}
 
-			{% if tokens[provider.handle] is defined %}
-				{% set hasToken = true %}
-			{% endif %}
+            {% if tokens[provider.handle] is defined %}
+                {% set hasToken = true %}
+            {% endif %}
 
             <tr>
                 <td><a href="{{ url('oauth/console/'~provider.handle) }}">{{provider.name}}</a></td>
@@ -52,11 +52,11 @@
                 </td>
 
                 <td>
-					{% if hasToken %}
-						<p><a class="btn small" href="{{ actionUrl('oauth/console/disconnect', {provider:provider.handle}) }}">{{'Disconnect'|t}}</a></p>
-					{% else %}
-						<p><a class="btn small disabled">{{'Disconnect'|t}}</a></p>
-					{% endif %}
+                    {% if hasToken %}
+                        <p><a class="btn small" href="{{ actionUrl('oauth/console/disconnect', {provider:provider.handle}) }}">{{'Disconnect'|t}}</a></p>
+                    {% else %}
+                        <p><a class="btn small disabled">{{'Disconnect'|t}}</a></p>
+                    {% endif %}
 
                 </td>
             </tr>
