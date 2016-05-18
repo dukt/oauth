@@ -27,36 +27,45 @@
                     <td>
                         {% set plugin = craft.plugins.getPlugin(token.pluginHandle, false) %}
 
-                        <div class="plugin-infos">
-                            <div class="icon">
-                                <img src="{{ craft.plugins.getPluginIconUrl(token.pluginHandle, 48) }}" width="24" height="24">
-                            </div>
+                        {% if plugin %}
+                            <div class="plugin-infos">
+                                <div class="icon">
+                                    <img src="{{ craft.plugins.getPluginIconUrl(token.pluginHandle, 48) }}" width="24" height="24">
+                                </div>
 
-                            <div class="name">
-                                {{ plugin.name }}
-                                <span class="light">{{ plugin.getVersion() }}</span>
+                                <div class="name">
+                                    {{ plugin.name }}
+                                    <span class="light">{{ plugin.getVersion() }}</span>
+                                </div>
                             </div>
-                        </div>
+                        {% else%}
+                            <span class="light">{{ "Unknown plugin"|t }}</span>
+                        {% endif %}
                     </td>
                     <td>
                         {{ token.accessToken|slice(0, 30) }}…
                     </td>
                     <td>
-                        <div class="provider-infos">
-                            {% if token.provider.iconUrl %}
-                                <div class="icon">
-                                    <img src="{{ token.provider.iconUrl }}" height="20" />
-                                </div>
-                            {% endif %}
+                        {% if token.provider %}
+                            <div class="provider-infos">
 
-                            <div class="name">
-                                {% if token.provider %}
-                                    {{ token.provider.name }}
-                                {% else %}
-                                    {{ token.providerHandle }}
+                                {% if token.provider.iconUrl %}
+                                    <div class="icon">
+                                        <img src="{{ token.provider.iconUrl }}" height="20" />
+                                    </div>
                                 {% endif %}
+
+                                <div class="name">
+                                    {% if token.provider %}
+                                        {{ token.provider.name }}
+                                    {% else %}
+                                        {{ token.providerHandle }}
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
+                        {% else %}
+                            <span class="light">{{ "Unknown provider"|t }}</span>
+                        {% endif %}
                     </td>
                     <td>
                         {% if token.endOfLife %}
