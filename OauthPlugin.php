@@ -55,15 +55,6 @@ class OauthPlugin extends BasePlugin
      */
     public function getVersion()
     {
-        $path = CRAFT_PLUGINS_PATH.'oauth/Info.php';
-
-        if(IOHelper::fileExists($path))
-        {
-            require_once($path);
-
-            return OAUTH_VERSION;
-        }
-
         return '2.0.0';
     }
 
