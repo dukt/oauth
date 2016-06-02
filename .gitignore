@@ -1,4 +1,3 @@
 *.log
 .DS_Store
 composer.lock
-/Source/oauth/vendor/

@@ -1,7 +1,4 @@
 {
-    "config": {
-        "vendor-dir": "Source/oauth/vendor/"
-    },
     "require": {
         "league/oauth1-client": "1.6.1@dev",
         "league/oauth2-client": "1.4.1@dev",
