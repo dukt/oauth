@@ -7,15 +7,19 @@
 
 namespace Craft;
 
-require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
-require_once(CRAFT_PLUGINS_PATH.'oauth/etc/providers/IOauth_Provider.php');
-require_once(CRAFT_PLUGINS_PATH.'oauth/providers/BaseProvider.php');
-
 class OauthPlugin extends BasePlugin
 {
     // Public Methods
     // =========================================================================
 
+    public function init()
+    {
+        require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
+        require_once(CRAFT_PLUGINS_PATH.'oauth/etc/providers/IOauth_Provider.php');
+        require_once(CRAFT_PLUGINS_PATH.'oauth/providers/BaseProvider.php');
+        
+        parent::init();
+    }
     /**
      * Get OAuth Providers
      */
