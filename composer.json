@@ -1,5 +1,15 @@
 {
+    "name": "dukt/craft-oauth",
+    "description": "OAuth Plugin for Craft CMS",
+    "authors": [
+        {
+            "name": "Benjamin David",
+            "email": "ben@dukt.net"
+        }
+    ],
+    "type": "craft-plugin",
     "require": {
+        "composer/installers": "~1.0",
         "league/oauth1-client": "1.6.1@dev",
         "league/oauth2-client": "1.4.1@dev",
         "league/oauth2-facebook": "1.4.1@dev",
