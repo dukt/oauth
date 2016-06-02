@@ -1,0 +1,28 @@
+{
+    "name": "dukt/oauth2-vimeo",
+    "description": "Vimeo OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Benjamin David",
+            "email": "ben@dukt.net",
+            "homepage": "https://github.com/benjamindavid"
+        }
+    ],
+    "keywords": [
+        "oauth",
+        "oauth2",
+        "client",
+        "authorization",
+        "authorisation",
+        "vimeo"
+    ],
+    "require": {
+        "league/oauth2-client": "~1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dukt\\OAuth2\\Client\\": "src/"
+        }
+    }
+}
