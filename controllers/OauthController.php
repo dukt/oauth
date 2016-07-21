@@ -77,6 +77,17 @@ class OauthController extends BaseController
 
             $success = true;
         }
+        catch(\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e)
+        {
+	        $error = true;
+
+        	$errorMsg = $e->getMessage();
+
+	        if($errorMsg == 'invalid_client')
+	        {
+		        $errorMsg = Craft::t("Invalid OAuth client ID or secret.");
+	        }
+        }
         catch(\Exception $e)
         {
             $error = true;
