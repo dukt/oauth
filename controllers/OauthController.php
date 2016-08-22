@@ -51,7 +51,14 @@ class OauthController extends BaseController
         $authorizationOptions = craft()->httpSession->get('oauth.authorizationOptions');
         $referer = craft()->httpSession->get('oauth.referer');
 
-        OauthPlugin::log('OAuth Connect - Step 2A'."\r\n".print_r([ 'handle' => $providerHandle, 'scope' => $scope, 'authorizationOptions' => $authorizationOptions, 'referer' => $referer ], true), LogLevel::Info, true);
+        OauthPlugin::log('OAuth Connect - Connect with `'.$providerHandle.'` OAuth provider'."\r\n".
+
+	        'Session Data: '.print_r([
+		        'oauth.referer' => $referer,
+		        'oauth.scope' => $scope,
+		        'oauth.authorizationOptions' => $authorizationOptions
+	        ], true)."\r\n"
+	    , LogLevel::Info);
 
 
         try
@@ -104,7 +111,11 @@ class OauthController extends BaseController
             'token' => $token,
         );
 
-        OauthPlugin::log('OAuth Connect - Step 2B'."\r\n".print_r([ 'response' => $response ], true), LogLevel::Info, true);
+        OauthPlugin::log("OAuth Connect - Response\r\n".
+	        'Session Data: '.print_r([
+		        'oauth.response' => $response,
+	        ], true)."\r\n"
+	    , LogLevel::Info);
 
         craft()->httpSession->add('oauth.response', $response);
 

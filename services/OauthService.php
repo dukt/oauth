@@ -88,29 +88,35 @@ class OauthService extends BaseApplicationComponent
                 'provider' => $variables['provider']
             ));
 
-            // OAuth Step 1
-            OauthPlugin::log('OAuth Connect - Step 1'."\r\n".print_r([
-                    'referer' => $referer,
-                    'scope' => $scope,
-                    'authorizationOptions' => $authorizationOptions,
-                    'redirectTo' => $redirectUrl
-                ], true), LogLevel::Info, true);
+            OauthPlugin::log('Redirect to OAuth Connect'."\r\n".
+
+	            'Redirect to: '.$redirectUrl."\r\n".
+
+	            'Session Data: '.print_r([
+		            'oauth.referer' => $referer,
+		            'oauth.scope' => $scope,
+		            'oauth.authorizationOptions' => $authorizationOptions
+	            ], true)."\r\n"
+
+	            , LogLevel::Info);
 
             // redirect
             craft()->request->redirect($redirectUrl);
         }
         else
         {
-            // OAuth Step 3
-
             // populate token object from response
 
             $response = craft()->httpSession->get('oauth.response');
             craft()->httpSession->remove('oauth.response');
 
-            OauthPlugin::log('OAuth Connect - Step 3'."\r\n".print_r([
-                    'response' => $response
-                ], true), LogLevel::Info, true);
+            OauthPlugin::log('OAuth Connect - Retrieve token from response'."\r\n".
+
+	            'Session Data: '.print_r([
+		            'oauth.response' => $response,
+	            ], true)."\r\n"
+
+	        , LogLevel::Info);
 
             if($response['token'])
             {
@@ -160,9 +166,10 @@ class OauthService extends BaseApplicationComponent
                 $token->providerHandle = $variables['provider'];
                 $token->pluginHandle = $variables['plugin'];
 
-                OauthPlugin::log('OAuth Connect - Step 4'."\r\n".print_r([
-                        'response' => $response
-                    ], true), LogLevel::Info, true);
+                OauthPlugin::log('OAuth Connect - Token'."\r\n".print_r([
+						"Token: \r\n".
+						print_r($token->getAttributes(), true)
+                    ], true), LogLevel::Info);
 
                 $response['token'] = $token;
             }

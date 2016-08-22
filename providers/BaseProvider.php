@@ -81,8 +81,6 @@ abstract class BaseProvider implements IOauth_Provider {
 
         if (is_null($code))
         {
-            OauthPlugin::log('OAuth 2 Connect - Step 1', LogLevel::Info);
-
             $authorizationOptions = $options['authorizationOptions'];
 
             if(count($options['scope']) > 0)
@@ -96,20 +94,19 @@ abstract class BaseProvider implements IOauth_Provider {
 
             \Craft\craft()->httpSession->add('oauth2state', $state);
 
-            OauthPlugin::log('OAuth 2 Connect - Step 1 - Data'."\r\n".print_r([
-                'authorizationUrl' => $authorizationUrl,
-                'oauth2state' => \Craft\craft()->httpSession->get('oauth2state')
-            ], true), LogLevel::Info);
+            OauthPlugin::log('OAuth 2.0 Connect - Redirect to the authorization URL'."\r\n".
+	            "authorizationUrl: ".$authorizationUrl."\r\n".
+	            "oauth2state: ".\Craft\craft()->httpSession->get('oauth2state')
+	        , LogLevel::Info);
 
             \Craft\craft()->request->redirect($authorizationUrl);
         }
         elseif (!$state || $state !== $oauth2state)
         {
-            OauthPlugin::log('OAuth 2 Connect - Step 1.5'."\r\n".print_r([
-                'error' => "Invalid state",
+            OauthPlugin::log('OAuth 2.0 Connect - Invalid State'."\r\n".print_r([
                 'state' => $state,
                 'oauth2state' => $oauth2state,
-            ], true), LogLevel::Info, true);
+            ], true), LogLevel::Info);
 
             \Craft\craft()->httpSession->remove('oauth2state');
 
@@ -118,16 +115,16 @@ abstract class BaseProvider implements IOauth_Provider {
         }
         else
         {
-            OauthPlugin::log('OAuth 2 Connect - Step 2', LogLevel::Info, true);
+            OauthPlugin::log('OAuth 2.0 Connect - Authorization code retrieved: '.$code, LogLevel::Info);
 
             $token = $oauthProvider->getAccessToken('authorization_code', [
                 'code' => $code
             ]);
 
-            OauthPlugin::log('OAuth 2 Connect - Step 2 - Data'."\r\n".print_r([
-                'code' => $code,
-                'token' => $token,
-            ], true), LogLevel::Info, true);
+            OauthPlugin::log("OAuth 2.0 Connect - Get Access Token\r\n".
+	            "Access token: \r\n".
+	            print_r($token, true)
+	        , LogLevel::Info);
         }
 
         return $token;
@@ -156,31 +153,29 @@ abstract class BaseProvider implements IOauth_Provider {
 
         if ($oauth_token && $oauth_verifier)
         {
-            OauthPlugin::log('OAuth 1 Connect - Step 2', LogLevel::Info, true);
-
             $temporaryCredentials = unserialize(\Craft\craft()->httpSession->get('temporary_credentials'));
 
             $token = $oauthProvider->getTokenCredentials($temporaryCredentials, $oauth_token, $oauth_verifier);
 
             \Craft\craft()->httpSession->add('token_credentials', serialize($token));
 
-            OauthPlugin::log('OAuth 1 Connect - Step 2 - Data'."\r\n".print_r([
+            OauthPlugin::log('OAuth 1.0 Connect - Get token credentials'."\r\n".print_r([
                 'temporaryCredentials' => $temporaryCredentials,
                 'oauth_token' => $oauth_token,
                 'oauth_verifier' => $oauth_verifier,
                 'token' => $token,
-            ], true), LogLevel::Info, true);
+            ], true), LogLevel::Info);
         }
         elseif ($denied)
         {
-            OauthPlugin::log('OAuth 1 Connect - Step 1.5'."\r\n".print_r(["Client access denied by the user"], true), LogLevel::Info, true);
+        	$errorMsg = "Client access denied by user";
 
-            throw new \Exception("Client access denied by the user");
+            OauthPlugin::log('OAuth 1.0 Connect - '.$errorMsg, LogLevel::Info);
+
+            throw new \Exception($errorMsg);
         }
         else
         {
-            OauthPlugin::log('OAuth 1 Connect - Step 1', LogLevel::Info, true);
-
             $temporaryCredentials = $oauthProvider->getTemporaryCredentials();
 
             \Craft\craft()->httpSession->add('temporary_credentials', serialize($temporaryCredentials));
@@ -188,10 +183,11 @@ abstract class BaseProvider implements IOauth_Provider {
             $authorizationUrl = $oauthProvider->getAuthorizationUrl($temporaryCredentials);
             \Craft\craft()->request->redirect($authorizationUrl);
 
-            OauthPlugin::log('OAuth 1 Connect - Step 1 - Data'."\r\n".print_r([
-                'temporaryCredentials' => $temporaryCredentials,
+
+	        OauthPlugin::log('OAuth 1.0 Connect - Redirect to the authorization URL'."\r\n".print_r([
+		        'temporaryCredentials' => $temporaryCredentials,
                 'authorizationUrl' => $authorizationUrl,
-            ], true), LogLevel::Info, true);
+		    ], true), LogLevel::Info);
         }
 
         return $token;
