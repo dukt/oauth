@@ -83,20 +83,12 @@ abstract class BaseProvider implements IOauth_Provider {
         {
             OauthPlugin::log('OAuth 2 Connect - Step 1', LogLevel::Info);
 
-            // $oauthProvider->setScopes($options['scope']);
-
             $authorizationOptions = $options['authorizationOptions'];
 
             if(count($options['scope']) > 0)
             {
                 $authorizationOptions['scope'] = $options['scope'];
             }
-//
-//            if(!empty($options['authorizationOptions']['access_type']) && $options['authorizationOptions']['access_type'] == 'offline')
-//            {
-//                unset($options['authorizationOptions']['access_type']);
-//                $oauthProvider->setAccessType('offline');
-//            }
 
             $authorizationUrl = $oauthProvider->getAuthorizationUrl($authorizationOptions);
 
