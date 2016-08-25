@@ -4,11 +4,11 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInita4e0e39f2ca63bbd5a86f937229b8cd5
+class ComposerStaticInite1dff25c0b12360e20a0e1a12827e5c4
 {
     public static $files = array (
-        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
+        'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
     );
 
@@ -46,8 +46,8 @@ class ComposerStaticInita4e0e39f2ca63bbd5a86f937229b8cd5
         'League\\OAuth2\\Client\\' => 
         array (
             0 => __DIR__ . '/..' . '/league/oauth2-client/src',
-            1 => __DIR__ . '/..' . '/dukt/oauth2-google/src',
-            2 => __DIR__ . '/..' . '/league/oauth2-facebook/src',
+            1 => __DIR__ . '/..' . '/league/oauth2-facebook/src',
+            2 => __DIR__ . '/..' . '/league/oauth2-google/src',
         ),
         'League\\OAuth1\\' => 
         array (
@@ -67,7 +67,8 @@ class ComposerStaticInita4e0e39f2ca63bbd5a86f937229b8cd5
         ),
         'Dukt\\OAuth2\\Client\\' => 
         array (
-            0 => __DIR__ . '/..' . '/dukt/oauth2-vimeo/src',
+            0 => __DIR__ . '/..' . '/dukt/oauth2-google/src',
+            1 => __DIR__ . '/..' . '/dukt/oauth2-vimeo/src',
         ),
         'Composer\\Installers\\' => 
         array (
@@ -95,9 +96,9 @@ class ComposerStaticInita4e0e39f2ca63bbd5a86f937229b8cd5
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInita4e0e39f2ca63bbd5a86f937229b8cd5::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInita4e0e39f2ca63bbd5a86f937229b8cd5::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInita4e0e39f2ca63bbd5a86f937229b8cd5::$prefixesPsr0;
+            $loader->prefixLengthsPsr4 = ComposerStaticInite1dff25c0b12360e20a0e1a12827e5c4::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInite1dff25c0b12360e20a0e1a12827e5c4::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInite1dff25c0b12360e20a0e1a12827e5c4::$prefixesPsr0;
 
         }, null, ClassLoader::class);
     }

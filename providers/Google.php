@@ -48,7 +48,7 @@ class Google extends BaseProvider
     /**
      * Create Provider
      *
-     * @return Dukt\OAuth\OAuth2\Client\Provider\Google
+     * @return Dukt\OAuth2\Client\Provider\Google
      */
     public function createProvider()
     {
@@ -58,7 +58,7 @@ class Google extends BaseProvider
             'redirectUri' => $this->getRedirectUri(),
         ];
 
-        return new \League\OAuth2\Client\Provider\Google($config);
+        return new \Dukt\OAuth2\Client\Provider\Google($config);
     }
 
     /**

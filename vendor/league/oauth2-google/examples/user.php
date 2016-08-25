@@ -14,10 +14,10 @@ if (empty($token)) {
 try {
 
     // We got an access token, let's now get the user's details
-    $userDetails = $provider->getResourceOwner($token);
+    $userDetails = $provider->getUserDetails($token);
 
     // Use these details to create a new profile
-    printf('Hello %s!<br/>', $userDetails->getFirstname());
+    printf('Hello %s!', $userDetails->firstName);
 
 } catch (Exception $e) {
 
@@ -27,10 +27,10 @@ try {
 }
 
 // Use this to interact with an API on the users behalf
-echo $token->getToken()."<br/>";
+echo $token->accessToken;
 
 // Use this to get a new access token if the old one expires
-echo $token->getRefreshToken()."<br/>";
+echo $token->refreshToken;
 
 // Number of seconds until the access token will expire, and need refreshing
-echo $token->getExpires()."<br/>";
+echo $token->expires;

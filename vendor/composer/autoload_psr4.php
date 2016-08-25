@@ -7,11 +7,11 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
-    'League\\OAuth2\\Client\\' => array($vendorDir . '/league/oauth2-client/src', $vendorDir . '/dukt/oauth2-google/src', $vendorDir . '/league/oauth2-facebook/src'),
+    'League\\OAuth2\\Client\\' => array($vendorDir . '/league/oauth2-client/src', $vendorDir . '/league/oauth2-facebook/src', $vendorDir . '/league/oauth2-google/src'),
     'League\\OAuth1\\' => array($vendorDir . '/league/oauth1-client/src'),
     'GuzzleHttp\\Psr7\\' => array($vendorDir . '/guzzlehttp/psr7/src'),
     'GuzzleHttp\\Promise\\' => array($vendorDir . '/guzzlehttp/promises/src'),
     'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
-    'Dukt\\OAuth2\\Client\\' => array($vendorDir . '/dukt/oauth2-vimeo/src'),
+    'Dukt\\OAuth2\\Client\\' => array($vendorDir . '/dukt/oauth2-google/src', $vendorDir . '/dukt/oauth2-vimeo/src'),
     'Composer\\Installers\\' => array($vendorDir . '/composer/installers/src/Composer/Installers'),
 );

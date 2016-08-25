@@ -1,8 +1,6 @@
 <?php
 
-namespace Dukt\OAuth2\Client\Provider;
-
-use League\OAuth2\Client\Provider\ResourceOwnerInterface;
+namespace League\OAuth2\Client\Provider;
 
 class GoogleUser implements ResourceOwnerInterface
 {
@@ -31,7 +29,7 @@ class GoogleUser implements ResourceOwnerInterface
      */
     public function getName()
     {
-        return $this->response['name'];
+        return $this->response['displayName'];
     }
 
     /**
@@ -41,7 +39,7 @@ class GoogleUser implements ResourceOwnerInterface
      */
     public function getFirstName()
     {
-        return $this->response['given_name'];
+        return $this->response['name']['givenName'];
     }
 
     /**
@@ -51,7 +49,7 @@ class GoogleUser implements ResourceOwnerInterface
      */
     public function getLastName()
     {
-        return $this->response['family_name'];
+        return $this->response['name']['familyName'];
     }
 
     /**
@@ -61,8 +59,8 @@ class GoogleUser implements ResourceOwnerInterface
      */
     public function getEmail()
     {
-        if (!empty($this->response['email'])) {
-            return $this->response['email'];
+        if (!empty($this->response['emails'])) {
+            return $this->response['emails'][0]['value'];
         }
     }
 
@@ -73,8 +71,8 @@ class GoogleUser implements ResourceOwnerInterface
      */
     public function getAvatar()
     {
-        if (!empty($this->response['picture'])) {
-            return $this->response['picture'];
+        if (!empty($this->response['image']['url'])) {
+            return $this->response['image']['url'];
         }
     }
 
