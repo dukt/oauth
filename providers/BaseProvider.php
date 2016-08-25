@@ -69,7 +69,7 @@ abstract class BaseProvider implements IOauth_Provider {
         // source oauth provider
         $oauthProvider = $this->getProvider();
 
-        // google cancel
+        // error
         if(\Craft\craft()->request->getParam('error'))
         {
             throw new \Exception("An error occured: ".\Craft\craft()->request->getParam('error'));
@@ -140,7 +140,7 @@ abstract class BaseProvider implements IOauth_Provider {
         // source oauth provider
         $oauthProvider = $this->getProvider();
 
-        // twitter cancel
+        // denied
         if(\Craft\craft()->request->getParam('denied'))
         {
             throw new \Exception("An error occured: ".\Craft\craft()->request->getParam('denied'));
