@@ -14,6 +14,6 @@
         "league/oauth2-client": "1.4.1@dev",
         "league/oauth2-facebook": "1.4.1@dev",
         "dukt/oauth2-google": "~1.0",
-        "dukt/oauth2-vimeo": "1.0.4@dev"
+        "dukt/oauth2-vimeo": "~1.0"
     }
 }
