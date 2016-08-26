@@ -13,6 +13,10 @@ class ComposerStaticInite1dff25c0b12360e20a0e1a12827e5c4
     );
 
     public static $prefixLengthsPsr4 = array (
+        'S' => 
+        array (
+            'Saf33r\\OAuth2\\Client\\' => 21,
+        ),
         'P' => 
         array (
             'Psr\\Http\\Message\\' => 17,
@@ -39,6 +43,10 @@ class ComposerStaticInite1dff25c0b12360e20a0e1a12827e5c4
     );
 
     public static $prefixDirsPsr4 = array (
+        'Saf33r\\OAuth2\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/saf33r/oauth2-vimeo/src',
+        ),
         'Psr\\Http\\Message\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/http-message/src',
@@ -68,7 +76,6 @@ class ComposerStaticInite1dff25c0b12360e20a0e1a12827e5c4
         'Dukt\\OAuth2\\Client\\' => 
         array (
             0 => __DIR__ . '/..' . '/dukt/oauth2-google/src',
-            1 => __DIR__ . '/..' . '/dukt/oauth2-vimeo/src',
         ),
         'Composer\\Installers\\' => 
         array (
