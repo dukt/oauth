@@ -84,7 +84,7 @@ class OauthHelper
             $tokenArray['secret'] = $token->getSecret();
             break;
 
-            case 'League\OAuth2\Client\Token\AccessToken':
+            default:
             $tokenArray['accessToken'] = $token->getToken();
             $tokenArray['refreshToken'] = $token->getRefreshToken();
             $tokenArray['endOfLife'] = $token->getExpires();
