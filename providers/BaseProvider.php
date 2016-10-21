@@ -15,9 +15,6 @@ use Craft\Oauth_ProviderInfosModel;
 use Craft\Oauth_TokenModel;
 use Craft\LogLevel;
 
-use Guzzle\Http\Client;
-use Guzzle\Http\Exception\RequestException;
-
 /**
  * Provider is the base class for classes representing providers in terms of objects.
  *
@@ -382,7 +379,18 @@ abstract class BaseProvider implements IOauth_Provider {
      */
     public function getRedirectUri()
     {
-        return OauthHelper::getSiteActionUrl('oauth/connect');
+        // Force `addTrailingSlashesToUrls` to `false` while we generate the redirectUri
+        $addTrailingSlashesToUrls = \Craft\craft()->config->get('addTrailingSlashesToUrls');
+        \Craft\craft()->config->set('addTrailingSlashesToUrls', false);
+
+        $redirectUri = OauthHelper::getSiteActionUrl('oauth/connect');
+
+        // Set `addTrailingSlashesToUrls` back to its original value
+        \Craft\craft()->config->set('addTrailingSlashesToUrls', $addTrailingSlashesToUrls);
+
+        OauthPlugin::log('Redirect URI: '. $redirectUri, LogLevel::Info);
+
+        return $redirectUri;
     }
 
     /**
