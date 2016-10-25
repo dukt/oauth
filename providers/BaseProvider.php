@@ -36,6 +36,17 @@ abstract class BaseProvider implements IOauth_Provider {
     // Public Methods
     // =========================================================================
 
+
+    /**
+     * Get API Manager URL
+     *
+     * @return string
+     */
+    public function getManagerUrl()
+    {
+        return null;
+    }
+
     public function getAccessTokenClass()
     {
         switch($this->getOauthVersion())
