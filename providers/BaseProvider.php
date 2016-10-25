@@ -36,6 +36,23 @@ abstract class BaseProvider implements IOauth_Provider {
     // Public Methods
     // =========================================================================
 
+    public function getAccessTokenClass()
+    {
+        switch($this->getOauthVersion())
+        {
+            case 2:
+                return "\\League\\OAuth2\\Client\\Token\\AccessToken";
+                break;
+
+            case 1:
+                return "\\League\\OAuth1\\Client\\Credentials\\TokenCredentials";
+                break;
+
+            default:
+                throw new \Exception("Couldn't get access token class because OAuth version is unknown.");
+        }
+    }
+
     /**
      * OAuth Connect
      */

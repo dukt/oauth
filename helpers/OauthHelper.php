@@ -21,27 +21,24 @@ class OauthHelper
 
         if($provider)
         {
+            $tokenClass = $provider->getAccessTokenClass();
+
             switch($provider->getOauthVersion())
             {
                 case 1:
-                $realToken = new \League\OAuth1\Client\Credentials\TokenCredentials();
-                $realToken->setIdentifier($token->accessToken);
-                $realToken->setSecret($token->secret);
-                break;
-
+                    $realToken = new $tokenClass();
+                    $realToken->setIdentifier($token->accessToken);
+                    $realToken->setSecret($token->secret);
+                    return $realToken;
 
                 case 2:
-                $realToken = new \League\OAuth2\Client\Token\AccessToken([
-                    'access_token' => $token->accessToken,
-                    'refresh_token' => $token->refreshToken,
-                    'secret' => $token->secret,
-                    'expires' => $token->endOfLife,
-                ]);
-
-                break;
+                    return new $tokenClass([
+                        'access_token' => $token->accessToken,
+                        'refresh_token' => $token->refreshToken,
+                        'secret' => $token->secret,
+                        'expires' => $token->endOfLife,
+                    ]);
             }
-
-            return $realToken;
         }
     }
 
@@ -77,18 +74,18 @@ class OauthHelper
             // 'extraParams' => $token->getExtraParams(),
         );
 
-        switch($class)
+        if(get_class($token) === 'League\OAuth1\Client\Credentials\TokenCredentials' || is_subclass_of($token, '\League\OAuth1\Client\Credentials\TokenCredentials'))
         {
-            case 'League\OAuth1\Client\Credentials\TokenCredentials':
+            // OAuth 1.0
             $tokenArray['identifier'] = $token->getIdentifier();
             $tokenArray['secret'] = $token->getSecret();
-            break;
-
-            case 'League\OAuth2\Client\Token\AccessToken':
+        }
+        elseif(get_class($token) === 'League\OAuth2\Client\Token\AccessToken' || is_subclass_of($token, '\League\OAuth2\Client\Token\AccessToken'))
+        {
+            // OAuth 2.0
             $tokenArray['accessToken'] = $token->getToken();
             $tokenArray['refreshToken'] = $token->getRefreshToken();
             $tokenArray['endOfLife'] = $token->getExpires();
-            break;
         }
 
         return $tokenArray;
