@@ -21,18 +21,16 @@ class OauthHelper
 
         if($provider)
         {
-            $tokenClass = $provider->getAccessTokenClass();
-
             switch($provider->getOauthVersion())
             {
                 case 1:
-                    $realToken = new $tokenClass();
-                    $realToken->setIdentifier($token->accessToken);
-                    $realToken->setSecret($token->secret);
-                    return $realToken;
+                    return $provider->createAccessToken([
+                        'identifier' => $token->accessToken,
+                        'secret' => $token->secret,
+                    ]);
 
                 case 2:
-                    return new $tokenClass([
+                    return $provider->createAccessToken([
                         'access_token' => $token->accessToken,
                         'refresh_token' => $token->refreshToken,
                         'secret' => $token->secret,

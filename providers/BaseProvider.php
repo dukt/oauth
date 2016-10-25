@@ -47,20 +47,20 @@ abstract class BaseProvider implements IOauth_Provider {
         return null;
     }
 
-    public function getAccessTokenClass()
+    public function createAccessToken(array $response)
     {
         switch($this->getOauthVersion())
         {
-            case 2:
-                return "\\League\\OAuth2\\Client\\Token\\AccessToken";
-                break;
-
             case 1:
-                return "\\League\\OAuth1\\Client\\Credentials\\TokenCredentials";
-                break;
+                $tokenClass = "\\League\\OAuth1\\Client\\Credentials\\TokenCredentials";
+                $realToken = new $tokenClass();
+                $realToken->setIdentifier($response['identifier']);
+                $realToken->setSecret($response['secret']);
+                return $realToken;
 
-            default:
-                throw new \Exception("Couldn't get access token class because OAuth version is unknown.");
+            case 2:
+                $tokenClass = "\\League\\OAuth2\\Client\\Token\\AccessToken";
+                return new $tokenClass($response);
         }
     }
 
