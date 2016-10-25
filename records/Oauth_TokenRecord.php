@@ -29,10 +29,10 @@ class Oauth_TokenRecord extends BaseRecord
             'providerHandle' => array(AttributeType::String, 'required' => true),
             'pluginHandle' => array(AttributeType::String, 'required' => true),
 
-            'accessToken' => AttributeType::String,
-            'secret' => AttributeType::String,
+            'accessToken' => array(AttributeType::String, 'column' => ColumnType::Text),
+            'secret' => array(AttributeType::String, 'column' => ColumnType::Text),
             'endOfLife' => AttributeType::String,
-            'refreshToken' => AttributeType::String,
+            'refreshToken' => array(AttributeType::String, 'column' => ColumnType::Text),
         );
     }
 }
