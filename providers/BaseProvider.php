@@ -411,10 +411,13 @@ abstract class BaseProvider implements IOauth_Provider {
         $addTrailingSlashesToUrls = \Craft\craft()->config->get('addTrailingSlashesToUrls');
         \Craft\craft()->config->set('addTrailingSlashesToUrls', false);
 
-        $redirectUri = OauthHelper::getSiteActionUrl('oauth/connect');
+        $redirectUri = \Craft\UrlHelper::getActionUrl('oauth/connect');
 
         // Set `addTrailingSlashesToUrls` back to its original value
         \Craft\craft()->config->set('addTrailingSlashesToUrls', $addTrailingSlashesToUrls);
+
+        // We don't want the CP trigger showing in the action URL.
+        $redirectUri =  str_replace(\Craft\craft()->config->get('cpTrigger').'/', '', $redirectUri);
 
         OauthPlugin::log('Redirect URI: '. $redirectUri, LogLevel::Info);
 
