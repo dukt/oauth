@@ -50,7 +50,7 @@
 
         {{ forms.textField({
             label: 'Redirect URI'|t,
-            value: provider.redirectUri,
+            value: provider.getRedirectUri(),
             readonly: true,
         }) }}
         
