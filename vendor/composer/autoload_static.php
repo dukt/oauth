@@ -53,9 +53,9 @@ class ComposerStaticInit15d9a1800f164f924bc4e8f8663c3a6b
         ),
         'League\\OAuth2\\Client\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/oauth2-client/src',
-            1 => __DIR__ . '/..' . '/league/oauth2-facebook/src',
-            2 => __DIR__ . '/..' . '/league/oauth2-google/src',
+            0 => __DIR__ . '/..' . '/league/oauth2-google/src',
+            1 => __DIR__ . '/..' . '/league/oauth2-client/src',
+            2 => __DIR__ . '/..' . '/league/oauth2-facebook/src',
         ),
         'League\\OAuth1\\' => 
         array (
