@@ -79,6 +79,6 @@ class Facebook extends BaseProvider
      */
     public function getScopeDocsUrl()
     {
-        return 'https://developers.facebook.com/docs/facebook-login/permissions/v2.5';
+        return 'https://developers.facebook.com/docs/facebook-login/permissions';
     }
 }
