@@ -56,7 +56,7 @@ class Facebook extends BaseProvider
             'clientId' => $this->providerInfos->clientId,
             'clientSecret' => $this->providerInfos->clientSecret,
             'redirectUri' => $this->getRedirectUri(),
-            'graphApiVersion' => 'v2.5'
+            'graphApiVersion' => 'v2.8'
         ];
 
         return new \League\OAuth2\Client\Provider\Facebook($config);
