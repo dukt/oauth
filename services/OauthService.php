@@ -572,6 +572,11 @@ class OauthService extends BaseApplicationComponent
                 {
                     $providerInfos->clientSecret = $oauthConfig[$providerSource->getHandle()]['clientSecret'];
                 }
+
+                if(!empty($oauthConfig[$providerSource->getHandle()]['config']))
+                {
+                    $providerInfos->config = $oauthConfig[$providerSource->getHandle()]['config'];
+                }
             }
 
             $providerSource->setInfos($providerInfos);

@@ -54,6 +54,7 @@ class Oauth_ProviderInfosModel extends BaseModel
                 'class' => array(AttributeType::String, 'required' => true),
                 'clientId' => array(AttributeType::String, 'required' => false),
                 'clientSecret' => array(AttributeType::String, 'required' => false),
+                'config' => array(AttributeType::Mixed)
             );
 
         return $attributes;
