@@ -252,20 +252,20 @@ class OauthService extends BaseApplicationComponent
         }
         else
         {
-            $allProviderInfos = craft()->config->get('providerInfos', 'oauth');
+            $configProviderInfos = craft()->config->get('providerInfos', 'oauth');
 
-            if(isset($allProviderInfos[$handle]))
+            if(isset($configProviderInfos[$handle]))
             {
                 $attributes = [];
 
-                if(isset($allProviderInfos[$handle]['clientId']))
+                if(isset($configProviderInfos[$handle]['clientId']))
                 {
-                    $attributes['clientId'] = $allProviderInfos[$handle]['clientId'];
+                    $attributes['clientId'] = $configProviderInfos[$handle]['clientId'];
                 }
 
-                if(isset($allProviderInfos[$handle]['clientSecret']))
+                if(isset($configProviderInfos[$handle]['clientSecret']))
                 {
-                    $attributes['clientSecret'] = $allProviderInfos[$handle]['clientSecret'];
+                    $attributes['clientSecret'] = $configProviderInfos[$handle]['clientSecret'];
                 }
 
                 return Oauth_ProviderInfosModel::populateModel($attributes);
