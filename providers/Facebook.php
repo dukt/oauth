@@ -52,11 +52,18 @@ class Facebook extends BaseProvider
      */
     public function createProvider()
     {
+        $graphApiVersion = 'v2.8';
+
+        if(!empty($this->providerInfos->config['graphApiVersion']))
+        {
+            $graphApiVersion = $this->providerInfos->config['graphApiVersion'];
+        }
+
         $config = [
             'clientId' => $this->providerInfos->clientId,
             'clientSecret' => $this->providerInfos->clientSecret,
             'redirectUri' => $this->getRedirectUri(),
-            'graphApiVersion' => 'v2.8'
+            'graphApiVersion' => $graphApiVersion
         ];
 
         return new \League\OAuth2\Client\Provider\Facebook($config);
