@@ -8,7 +8,7 @@
 namespace Dukt\OAuth\Providers;
 
 use Craft\UrlHelper;
-use Craft\OauthHelper;
+use Craft\Oauth_TokenModel;
 use Craft\Oauth_ResourceOwnerModel;
 
 class Twitter extends BaseProvider
@@ -86,5 +86,17 @@ class Twitter extends BaseProvider
         $resourceOwner->name = $remoteResourceOwner->name;
         
         return $resourceOwner;
+    }
+    public function createSubscriber(Oauth_TokenModel $token)
+    {
+        $infos = $this->getInfos();
+
+        return new \Guzzle\Plugin\Oauth\OauthPlugin(array(
+            'consumer_key' => $infos->clientId,
+            'consumer_secret' => $infos->clientSecret,
+            'token' => $token->accessToken,
+            'token_secret' => $token->secret,
+            'oauth_signature_method' => 'HMAC-SHA1'
+        ));
     }
 }
