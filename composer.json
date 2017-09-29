@@ -2,10 +2,11 @@
     "name": "dukt/craft-oauth",
     "description": "OAuth Plugin for Craft CMS",
     "type": "craft-plugin",
+    "license": "MIT",
     "authors": [
         {
-            "name": "Benjamin David",
-            "email": "ben@dukt.net"
+            "name": "Dukt",
+            "homepage": "https://dukt.net/"
         }
     ],
     "require": {
