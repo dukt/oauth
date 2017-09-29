@@ -1,0 +1,64 @@
+[
+  {
+    "version": "2.0.3",
+    "downloadUrl": "https://github.com/dukt/oauth/archive/2.0.3.zip",
+    "date": "2017-01-10T15:09:15",
+    "notes": [
+      "[Added] Facebook API version can now be customized with the `providerInfos.facebook.config.graphApiVersion` config",
+      "[Added] Added a `config` attribute to `Oauth_ProviderInfosModel`",
+      "[Improved] Renamed `$allProviderInfos` to `$configProviderInfos` in `OauthService::getProviderInfos()`",
+      "[Fixed] Fixed a bug where the Twitter subscriber was not providing the proper `HMAC-SHA1` OAuth signature method"
+    ]
+  },
+  {
+    "version": "2.0.2",
+    "downloadUrl": "https://github.com/dukt/oauth/archive/2.0.2.zip",
+    "date": "2016-11-08T09:39:48",
+    "notes": [
+      "[Improved] Removed the `cpTrigger` from the action URL for redirect URIs",
+      "[Improved] The plugin is now using Facebook API v2.8",
+      "[Improved] Updated `oauth2-facebook` dependency to `1.4.4`",
+      "[Improved] Updated `oauth2-client` dependency to `1.4.2`",
+      "[Fixed] Fixed Facebook's scope docs URL"
+    ]
+  },
+  {
+    "version": "2.0.1",
+    "downloadUrl": "https://github.com/dukt/oauth/archive/2.0.1.zip",
+    "date": "2016-10-26T15:53:56",
+    "notes": [
+      "[Added] Added `BaseProvider::getManagerUrl()` which returns `null`",
+      "[Added] OAuth providers can provide a `createAccessToken()` to customize access token instantiation",
+      "[Improved] Updated schema version to  `1.0.1`",
+      "[Improved] Altered accessToken, secret and refreshToken columns to text for oauth_tokens",
+      "[Improved] Forcing `addTrailingSlashesToUrls` config to `false` when redirectUri is getting generated",
+      "[Improved] Improved error handling when the OAuth client ID or secret is invalid",
+      "[Improved] Updated `dukt\/oauth2-google` dependency to `1.0.0`",
+      "[Improved] Updated `league\/oauth1-client` dependency to `1.7.0`",
+      "[Improved] Updated Vimeo dependency to `saf33r\/oauth2-vimeo` `0.1.0`"
+    ]
+  },
+  {
+    "version": "2.0.0",
+    "downloadUrl": "https://github.com/dukt/oauth/archive/2.0.0.zip",
+    "date": "2016-06-03T14:25:54",
+    "notes": [
+      "# Dependencies",
+      "[Added] Added dukt\/oauth2-google 1.0.1",
+      "[Added] Added dukt\/oauth2-vimeo 1.0.4",
+      "[Added] Added league\/oauth2-facebook 1.4.1",
+      "[Improved] Updated league\/oauth2-client to 1.4.1",
+      "# Dev",
+      "[Added] Added BaseProvider::getRemoteResourceOwner()",
+      "[Added] Added BaseProvider::getResourceOwner()",
+      "[Added] Added name, description, authors and type to composer.json",
+      "[Added] Added Oauth_ResourceOwnerModel",
+      "[Added] Added OauthPlugin::getDescription()",
+      "[Fixed] Fixed a bug when tokens couldn't be listed if the token plugin or token provider are not set",
+      "[Improved] getAccount() is now an alias for getResourceOwner() for OAuth providers retro compatibility",
+      "[Improved] Now providing `graphApiVersion` parameter when instantiating a Facebook provider",
+      "[Improved] Now using text fields to show Web Origin and Redirect URI to make in order to make copy pasting easier",
+      "[Improved] Requiring files from OauthPlugin::init()"
+    ]
+  }
+]
