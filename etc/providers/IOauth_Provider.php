@@ -1,4 +1,5 @@
 <?php
+
 namespace Craft;
 
 interface IOauth_Provider

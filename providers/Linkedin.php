@@ -1,9 +1,4 @@
 <?php
-/**
- * @link      https://dukt.net/craft/linkedin/
- * @copyright Copyright (c) 2017, Dukt
- * @license   https://dukt.net/craft/linkedin/docs/license
- */
 
 namespace Dukt\OAuth\Providers;
 

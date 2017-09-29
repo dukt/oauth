@@ -1,9 +1,4 @@
 <?php
-/**
- * @link      https://dukt.net/craft/slack/
- * @copyright Copyright (c) 2017, Dukt
- * @license   https://dukt.net/craft/slack/docs/license
- */
 
 namespace Dukt\OAuth\Guzzle\Subscribers;
 
