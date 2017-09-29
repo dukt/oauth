@@ -18,7 +18,8 @@
         "dukt/oauth2-google": "~1.0",
         "league/oauth2-github": "0.2.1@dev",
         "league/oauth2-linkedin": "0.4.0@dev",
-        "adam-paterson/oauth2-slack": "1.1.2@dev"
+        "adam-paterson/oauth2-slack": "1.1.2@dev",
+        "league/oauth2-instagram": "0.2.2"
     },
     "autoload": {
         "psr-4": {

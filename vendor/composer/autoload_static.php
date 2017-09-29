@@ -10,6 +10,7 @@ class ComposerStaticInit15d9a1800f164f924bc4e8f8663c3a6b
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
+        'b45b351e6b6f7487d819961fef2fda77' => __DIR__ . '/..' . '/jakeasmith/http_build_url/src/http_build_url.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -63,6 +64,7 @@ class ComposerStaticInit15d9a1800f164f924bc4e8f8663c3a6b
             2 => __DIR__ . '/..' . '/league/oauth2-facebook/src',
             3 => __DIR__ . '/..' . '/league/oauth2-github/src',
             4 => __DIR__ . '/..' . '/league/oauth2-linkedin/src',
+            5 => __DIR__ . '/..' . '/league/oauth2-instagram/src',
         ),
         'League\\OAuth1\\' => 
         array (

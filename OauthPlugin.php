@@ -15,6 +15,7 @@ class OauthPlugin extends BasePlugin
         require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Facebook.php');
         require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Github.php');
         require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Google.php');
+        require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Instagram.php');
         require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Linkedin.php');
         require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Slack.php');
         require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Twitter.php');
@@ -24,6 +25,7 @@ class OauthPlugin extends BasePlugin
             'Dukt\OAuth\Providers\Facebook',
             'Dukt\OAuth\Providers\Github',
             'Dukt\OAuth\Providers\Google',
+            'Dukt\OAuth\Providers\Instagram',
             'Dukt\OAuth\Providers\Linkedin',
             'Dukt\OAuth\Providers\Slack',
             'Dukt\OAuth\Providers\Twitter',

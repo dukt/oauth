@@ -972,5 +972,99 @@
             "slack",
             "slack api"
         ]
+    },
+    {
+        "name": "jakeasmith/http_build_url",
+        "version": "1.0.1",
+        "version_normalized": "1.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/jakeasmith/http_build_url.git",
+            "reference": "93c273e77cb1edead0cf8bcf8cd2003428e74e37"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/jakeasmith/http_build_url/zipball/93c273e77cb1edead0cf8bcf8cd2003428e74e37",
+            "reference": "93c273e77cb1edead0cf8bcf8cd2003428e74e37",
+            "shasum": ""
+        },
+        "time": "2017-05-01T15:36:40+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "src/http_build_url.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Jake A. Smith",
+                "email": "theman@jakeasmith.com"
+            }
+        ],
+        "description": "Provides functionality for http_build_url() to environments without pecl_http."
+    },
+    {
+        "name": "league/oauth2-instagram",
+        "version": "0.2.2",
+        "version_normalized": "0.2.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/thephpleague/oauth2-instagram.git",
+            "reference": "f973049ded5f819e88a94d84a77b6a875da750bd"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/thephpleague/oauth2-instagram/zipball/f973049ded5f819e88a94d84a77b6a875da750bd",
+            "reference": "f973049ded5f819e88a94d84a77b6a875da750bd",
+            "shasum": ""
+        },
+        "require": {
+            "jakeasmith/http_build_url": "^1.0",
+            "league/oauth2-client": "~1.0",
+            "php": ">=5.5.0"
+        },
+        "require-dev": {
+            "mockery/mockery": "~0.9",
+            "phpunit/phpunit": "~4.0",
+            "squizlabs/php_codesniffer": "~2.0"
+        },
+        "time": "2016-04-14T02:15:44+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "League\\OAuth2\\Client\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Steven Maguire",
+                "email": "stevenmaguire@gmail.com",
+                "homepage": "https://github.com/stevenmaguire"
+            }
+        ],
+        "description": "Instagram OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
+        "keywords": [
+            "authorisation",
+            "authorization",
+            "client",
+            "instagram",
+            "oauth",
+            "oauth2"
+        ]
     }
 ]
