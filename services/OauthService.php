@@ -599,6 +599,10 @@ class OauthService extends BaseApplicationComponent
      */
     private function _getProviders()
     {
+        require_once(CRAFT_PLUGINS_PATH.'oauth/vendor/autoload.php');
+        require_once(CRAFT_PLUGINS_PATH.'oauth/etc/providers/IOauth_Provider.php');
+        require_once(CRAFT_PLUGINS_PATH.'oauth/providers/BaseProvider.php');
+
         // fetch all OAuth provider types
 
         $oauthProviderTypes = array();
