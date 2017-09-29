@@ -1,5 +1,13 @@
 [
   {
+    "version": "2.1.1",
+    "downloadUrl": "https://github.com/dukt/oauth/archive/2.1.1.zip",
+    "date": "2017-09-29T13:49:00",
+    "notes": [
+      "[Added] Added Instagram provider"
+    ]
+  },
+  {
     "version": "2.1.0",
     "downloadUrl": "https://github.com/dukt/oauth/archive/2.1.0.zip",
     "date": "2017-09-29T13:49:00",
@@ -11,7 +19,7 @@
       "[Improved] Updated release feed URL",
       "[Improved] Changed composer package name to `dukt/oauth`",
       "[Fixed] Fixed a bug where providers were not properly alphabetically sorted",
-      "[Fixed] Fixed a bug where a plugin using OAuth could get its provider classes initialized before the OAuth plugin is ready for it",
+      "[Fixed] Fixed a bug where a plugin using OAuth could get its provider classes initialized before the OAuth plugin is ready for it"
     ]
   },
   {
