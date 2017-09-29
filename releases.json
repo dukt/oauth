@@ -1,5 +1,19 @@
 [
   {
+    "version": "2.1.0",
+    "downloadUrl": "https://github.com/dukt/oauth/archive/2.1.0.zip",
+    "date": "2017-09-29T13:49:00",
+    "notes": [
+      "[Added] Added GitHub provider",
+      "[Added] Added LinkedIn provider",
+      "[Added] Added Slack provider",
+      "[Added] releases.json file",
+      "[Added] Updated release feed URL",
+      "[Fixed] Fixed a bug where providers were not properly alphabetically sorted",
+      "[Fixed] Fixed a bug where a plugin using OAuth could get its provider classes initialized before the OAuth plugin is ready for it",
+    ]
+  },
+  {
     "version": "2.0.3",
     "downloadUrl": "https://github.com/dukt/oauth/archive/2.0.3.zip",
     "date": "2017-01-10T15:09:15",
