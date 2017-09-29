@@ -8,7 +8,8 @@
       "[Added] Added LinkedIn provider",
       "[Added] Added Slack provider",
       "[Added] releases.json file",
-      "[Added] Updated release feed URL",
+      "[Improved] Updated release feed URL",
+      "[Improved] Changed composer package name to `dukt/oauth`",
       "[Fixed] Fixed a bug where providers were not properly alphabetically sorted",
       "[Fixed] Fixed a bug where a plugin using OAuth could get its provider classes initialized before the OAuth plugin is ready for it",
     ]

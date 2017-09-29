@@ -1,5 +1,5 @@
 {
-    "name": "dukt/craft-oauth",
+    "name": "dukt/oauth",
     "description": "OAuth Plugin for Craft CMS",
     "type": "craft-plugin",
     "license": "MIT",
