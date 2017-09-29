@@ -1,19 +1,27 @@
 {
     "name": "dukt/craft-oauth",
     "description": "OAuth Plugin for Craft CMS",
+    "type": "craft-plugin",
     "authors": [
         {
             "name": "Benjamin David",
             "email": "ben@dukt.net"
         }
     ],
-    "type": "craft-plugin",
     "require": {
         "composer/installers": "~1.0",
         "league/oauth1-client": "1.7.0@dev",
         "league/oauth2-client": "1.4.2@dev",
         "league/oauth2-facebook": "1.4.4@dev",
         "saf33r/oauth2-vimeo": "~0.1",
-        "dukt/oauth2-google": "~1.0"
+        "dukt/oauth2-google": "~1.0",
+        "league/oauth2-github": "0.2.1@dev",
+        "league/oauth2-linkedin": "0.4.0@dev",
+        "adam-paterson/oauth2-slack": "1.1.2@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dukt\\OAuth\\Guzzle\\Subscribers\\": "subscribers/"
+        }
     }
 }

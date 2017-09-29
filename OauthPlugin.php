@@ -18,13 +18,19 @@ class OauthPlugin extends BasePlugin
     public function getOauthProviders()
     {
         require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Facebook.php');
+        require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Github.php');
         require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Google.php');
+        require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Linkedin.php');
+        require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Slack.php');
         require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Twitter.php');
         require_once(CRAFT_PLUGINS_PATH.'oauth/providers/Vimeo.php');
 
         return [
             'Dukt\OAuth\Providers\Facebook',
+            'Dukt\OAuth\Providers\Github',
             'Dukt\OAuth\Providers\Google',
+            'Dukt\OAuth\Providers\Linkedin',
+            'Dukt\OAuth\Providers\Slack',
             'Dukt\OAuth\Providers\Twitter',
             'Dukt\OAuth\Providers\Vimeo'
         ];
@@ -33,7 +39,7 @@ class OauthPlugin extends BasePlugin
     /**
      * Get Name
      */
-    function getName()
+    public function getName()
     {
         return Craft::t('OAuth');
     }
@@ -67,7 +73,7 @@ class OauthPlugin extends BasePlugin
     /**
      * Get Developer
      */
-    function getDeveloper()
+    public function getDeveloper()
     {
         return 'Dukt';
     }
@@ -75,7 +81,7 @@ class OauthPlugin extends BasePlugin
     /**
      * Get Developer URL
      */
-    function getDeveloperUrl()
+    public function getDeveloperUrl()
     {
         return 'https://dukt.net/';
     }

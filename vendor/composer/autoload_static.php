@@ -34,11 +34,16 @@ class ComposerStaticInit15d9a1800f164f924bc4e8f8663c3a6b
         ),
         'D' => 
         array (
+            'Dukt\\OAuth\\Guzzle\\Subscribers\\' => 30,
             'Dukt\\OAuth2\\Client\\' => 19,
         ),
         'C' => 
         array (
             'Composer\\Installers\\' => 20,
+        ),
+        'A' => 
+        array (
+            'AdamPaterson\\OAuth2\\Client\\' => 27,
         ),
     );
 
@@ -56,6 +61,8 @@ class ComposerStaticInit15d9a1800f164f924bc4e8f8663c3a6b
             0 => __DIR__ . '/..' . '/league/oauth2-google/src',
             1 => __DIR__ . '/..' . '/league/oauth2-client/src',
             2 => __DIR__ . '/..' . '/league/oauth2-facebook/src',
+            3 => __DIR__ . '/..' . '/league/oauth2-github/src',
+            4 => __DIR__ . '/..' . '/league/oauth2-linkedin/src',
         ),
         'League\\OAuth1\\' => 
         array (
@@ -73,6 +80,10 @@ class ComposerStaticInit15d9a1800f164f924bc4e8f8663c3a6b
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
+        'Dukt\\OAuth\\Guzzle\\Subscribers\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/subscribers',
+        ),
         'Dukt\\OAuth2\\Client\\' => 
         array (
             0 => __DIR__ . '/..' . '/dukt/oauth2-google/src',
@@ -80,6 +91,10 @@ class ComposerStaticInit15d9a1800f164f924bc4e8f8663c3a6b
         'Composer\\Installers\\' => 
         array (
             0 => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers',
+        ),
+        'AdamPaterson\\OAuth2\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/adam-paterson/oauth2-slack/src',
         ),
     );
 

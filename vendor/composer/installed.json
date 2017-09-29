@@ -800,5 +800,177 @@
             "rest",
             "web service"
         ]
+    },
+    {
+        "name": "league/oauth2-github",
+        "version": "0.2.1",
+        "version_normalized": "0.2.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/thephpleague/oauth2-github.git",
+            "reference": "0c8b940e63f04167e60c7c61b67a4c925803afb0"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/thephpleague/oauth2-github/zipball/0c8b940e63f04167e60c7c61b67a4c925803afb0",
+            "reference": "0c8b940e63f04167e60c7c61b67a4c925803afb0",
+            "shasum": ""
+        },
+        "require": {
+            "league/oauth2-client": "~1.0",
+            "php": ">=5.5.0"
+        },
+        "require-dev": {
+            "mockery/mockery": "~0.9",
+            "phpunit/phpunit": "~4.0",
+            "squizlabs/php_codesniffer": "~2.0"
+        },
+        "time": "2016-04-14T01:57:14+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "League\\OAuth2\\Client\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Steven Maguire",
+                "email": "stevenmaguire@gmail.com",
+                "homepage": "https://github.com/stevenmaguire"
+            }
+        ],
+        "description": "Github OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
+        "keywords": [
+            "authorisation",
+            "authorization",
+            "client",
+            "github",
+            "oauth",
+            "oauth2"
+        ]
+    },
+    {
+        "name": "league/oauth2-linkedin",
+        "version": "0.4.0",
+        "version_normalized": "0.4.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/thephpleague/oauth2-linkedin.git",
+            "reference": "04d30e7c59963396156daf39aa84e8521ca470e1"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/thephpleague/oauth2-linkedin/zipball/04d30e7c59963396156daf39aa84e8521ca470e1",
+            "reference": "04d30e7c59963396156daf39aa84e8521ca470e1",
+            "shasum": ""
+        },
+        "require": {
+            "league/oauth2-client": "~1.0",
+            "php": ">=5.5.0"
+        },
+        "require-dev": {
+            "mockery/mockery": "~0.9",
+            "phpunit/phpunit": "~4.0",
+            "squizlabs/php_codesniffer": "~2.0"
+        },
+        "time": "2015-08-20T14:59:40+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "League\\OAuth2\\Client\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Steven Maguire",
+                "email": "stevenmaguire@gmail.com",
+                "homepage": "https://github.com/stevenmaguire"
+            }
+        ],
+        "description": "LinkedIn OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
+        "keywords": [
+            "authorisation",
+            "authorization",
+            "client",
+            "linkedin",
+            "oauth",
+            "oauth2"
+        ]
+    },
+    {
+        "name": "adam-paterson/oauth2-slack",
+        "version": "1.1.2",
+        "version_normalized": "1.1.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/adam-paterson/oauth2-slack.git",
+            "reference": "0ca93518910f91e64de8cc9d92777df89092a952"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/adam-paterson/oauth2-slack/zipball/0ca93518910f91e64de8cc9d92777df89092a952",
+            "reference": "0ca93518910f91e64de8cc9d92777df89092a952",
+            "shasum": ""
+        },
+        "require": {
+            "league/oauth2-client": "^1.0",
+            "php": ">=5.5.0"
+        },
+        "require-dev": {
+            "mockery/mockery": "~0.9",
+            "phpunit/phpunit": "~4.0",
+            "squizlabs/php_codesniffer": "~2.0"
+        },
+        "time": "2015-09-22T19:06:36+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "AdamPaterson\\OAuth2\\Client\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Adam Paterson",
+                "email": "hello@adampaterson.co.uk"
+            }
+        ],
+        "description": "Slack OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
+        "keywords": [
+            "Authentication",
+            "SSO",
+            "authorization",
+            "identity",
+            "idp",
+            "oauth",
+            "oauth2",
+            "single sign on",
+            "slack",
+            "slack api"
+        ]
     }
 ]
