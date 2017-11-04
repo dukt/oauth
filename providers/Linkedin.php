@@ -53,7 +53,7 @@ class Linkedin extends BaseProvider
     /**
      * Create Linkedin Provider
      *
-     * @return Linkedin
+     * @return \League\OAuth2\Client\Provider\LinkedIn
      */
     public function createProvider()
     {
@@ -63,6 +63,6 @@ class Linkedin extends BaseProvider
             'redirectUri' => $this->getRedirectUri(),
         ];
 
-        return new \League\OAuth2\Client\Provider\Linkedin($config);
+        return new \League\OAuth2\Client\Provider\LinkedIn($config);
     }
 }
