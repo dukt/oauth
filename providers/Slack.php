@@ -29,7 +29,7 @@ class Slack extends BaseProvider
      */
     public function getIconUrl()
     {
-        return UrlHelper::getResourceUrl('slack/icon.svg');
+        return UrlHelper::getResourceUrl('oauth/providers/slack.svg');
     }
 
     /**
