@@ -14,6 +14,8 @@
       "[Improved] Updated `league/oauth2-linkedin` dependency to `^3.0`.",
       "[Improved] Updated `adam-paterson/oauth2-slack` dependency to `^1.0`.",
       "[Improved] Updated `league/oauth2-instagram` dependency to `^2.0`.",
+      "[Fixed] Fixed a bug LinkedIn OAuth provider which had `Linkedin` instead of `LinkedIn` as a class name.",
+      "[Fixed] Fixed a bug where the icon for Slack could not be found."
     ]
   },
   {
