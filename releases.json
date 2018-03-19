@@ -1,5 +1,22 @@
 [
   {
+    "version": "2.1.2",
+    "downloadUrl": "https://github.com/dukt/oauth/archive/2.1.2.zip",
+    "date": "2018-03-19T15:43:00",
+    "notes": [
+      "[Improved] Replaced `saf33r/oauth2-vimeo` with `dukt/oauth2-vimeo`.",
+      "[Improved] Updated `league/oauth1-client` dependency to `^1.7`.",
+      "[Improved] Updated `league/oauth2-client` dependency to `^2.0`.",
+      "[Improved] Updated `league/oauth2-facebook` dependency to `^2.0`.",
+      "[Improved] Updated `dukt/oauth2-vimeo` dependency to `^2.0`.",
+      "[Improved] Updated `dukt/oauth2-google` dependency to `^2.0`.",
+      "[Improved] Updated `league/oauth2-github` dependency to `^2.0`.",
+      "[Improved] Updated `league/oauth2-linkedin` dependency to `^3.0`.",
+      "[Improved] Updated `adam-paterson/oauth2-slack` dependency to `^1.0`.",
+      "[Improved] Updated `league/oauth2-instagram` dependency to `^2.0`.",
+    ]
+  },
+  {
     "version": "2.1.1",
     "downloadUrl": "https://github.com/dukt/oauth/archive/2.1.1.zip",
     "date": "2017-09-29T15:43:00",
