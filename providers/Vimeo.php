@@ -53,7 +53,7 @@ class Vimeo extends BaseProvider
             'redirectUri' => $this->getRedirectUri(),
         ];
 
-        return new \Saf33r\OAuth2\Client\Provider\Vimeo($config);
+        return new \Dukt\OAuth2\Client\Provider\Vimeo($config);
     }
 
     /**
