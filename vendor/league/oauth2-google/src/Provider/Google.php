@@ -42,6 +42,12 @@ class Google extends AbstractProvider
      */
     protected $userFields = [];
 
+    /**
+     * Use OpenID Connect endpoints for getting the user info/resource owner
+     * @var bool
+     */
+    protected $useOidcMode = false;
+
     public function getBaseAuthorizationUrl()
     {
         return 'https://accounts.google.com/o/oauth2/auth';
@@ -49,11 +55,15 @@ class Google extends AbstractProvider
 
     public function getBaseAccessTokenUrl(array $params)
     {
-        return 'https://accounts.google.com/o/oauth2/token';
+        return 'https://www.googleapis.com/oauth2/v4/token';
     }
 
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
+        if ($this->useOidcMode) {
+            // OIDC endpoints can be found https://accounts.google.com/.well-known/openid-configuration
+            return 'https://www.googleapis.com/oauth2/v3/userinfo';
+        }
         $fields = array_merge($this->defaultUserFields, $this->userFields);
         return 'https://www.googleapis.com/plus/v1/people/me?' . http_build_query([
             'fields' => implode(',', $fields),

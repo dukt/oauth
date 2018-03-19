@@ -26,8 +26,6 @@ use League\OAuth2\Client\Tool\QueryBuilderTrait;
 use League\OAuth2\Client\Tool\RequestFactory;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use RandomLib\Factory as RandomFactory;
-use RandomLib\Generator as RandomGenerator;
 use UnexpectedValueException;
 
 /**
@@ -91,11 +89,6 @@ abstract class AbstractProvider
     protected $httpClient;
 
     /**
-     * @var RandomFactory
-     */
-    protected $randomFactory;
-
-    /**
      * Constructs an OAuth 2.0 service provider.
      *
      * @param array $options An array of options to set on this provider.
@@ -103,7 +96,7 @@ abstract class AbstractProvider
      *     Individual providers may introduce more options, as needed.
      * @param array $collaborators An array of collaborators that may be used to
      *     override this provider's default behavior. Collaborators include
-     *     `grantFactory`, `requestFactory`, `httpClient`, and `randomFactory`.
+     *     `grantFactory`, `requestFactory`, and `httpClient`.
      *     Individual providers may introduce more collaborators, as needed.
      */
     public function __construct(array $options = [], array $collaborators = [])
@@ -132,15 +125,10 @@ abstract class AbstractProvider
             );
         }
         $this->setHttpClient($collaborators['httpClient']);
-
-        if (empty($collaborators['randomFactory'])) {
-            $collaborators['randomFactory'] = new RandomFactory();
-        }
-        $this->setRandomFactory($collaborators['randomFactory']);
     }
 
     /**
-     * Return the list of options that can be passed to the HttpClient
+     * Returns the list of options that can be passed to the HttpClient
      *
      * @param array $options An array of options to set on this provider.
      *     Options include `clientId`, `clientSecret`, `redirectUri`, and `state`.
@@ -151,7 +139,7 @@ abstract class AbstractProvider
     {
         $client_options = ['timeout', 'proxy'];
 
-        // Only allow turning off ssl verification is it's for a proxy
+        // Only allow turning off ssl verification if it's for a proxy
         if (!empty($options['proxy'])) {
             $client_options[] = 'verify';
         }
@@ -229,29 +217,6 @@ abstract class AbstractProvider
     }
 
     /**
-     * Sets the instance of the CSPRNG random generator factory.
-     *
-     * @param  RandomFactory $factory
-     * @return self
-     */
-    public function setRandomFactory(RandomFactory $factory)
-    {
-        $this->randomFactory = $factory;
-
-        return $this;
-    }
-
-    /**
-     * Returns the current CSPRNG random generator factory instance.
-     *
-     * @return RandomFactory
-     */
-    public function getRandomFactory()
-    {
-        return $this->randomFactory;
-    }
-
-    /**
      * Returns the current value of the state parameter.
      *
      * This can be accessed by the redirect handler during authorization.
@@ -299,11 +264,9 @@ abstract class AbstractProvider
      */
     protected function getRandomState($length = 32)
     {
-        $generator = $this
-            ->getRandomFactory()
-            ->getMediumStrengthGenerator();
-
-        return $generator->generateString($length, RandomGenerator::CHAR_ALNUM);
+        // Converting bytes to hex will always double length. Hence, we can reduce
+        // the amount of bytes by half to produce the correct length.
+        return bin2hex(random_bytes($length / 2));
     }
 
     /**
@@ -356,9 +319,13 @@ abstract class AbstractProvider
         // Store the state as it may need to be accessed later on.
         $this->state = $options['state'];
 
+        // Business code layer might set a different redirect_uri parameter
+        // depending on the context, leave it as-is
+        if (!isset($options['redirect_uri'])) {
+            $options['redirect_uri'] = $this->redirectUri;
+        }
+
         $options['client_id'] = $this->clientId;
-        $options['redirect_uri'] = $this->redirectUri;
-        $options['state'] = $this->state;
 
         return $options;
     }
@@ -423,7 +390,8 @@ abstract class AbstractProvider
         $query = trim($query, '?&');
 
         if ($query) {
-            return $url . '?' . $query;
+            $glue = strstr($url, '?') === false ? '?' : '&';
+            return $url . $glue . $query;
         }
 
         return $url;
@@ -557,13 +525,12 @@ abstract class AbstractProvider
 
         $params   = $grant->prepareRequestParameters($params, $options);
         $request  = $this->getAccessTokenRequest($params);
-        $response = $this->getResponse($request);
+        $response = $this->getParsedResponse($request);
         $prepared = $this->prepareAccessTokenResponse($response);
         $token    = $this->createAccessToken($prepared, $grant);
 
         return $token;
     }
-
 
     /**
      * Returns a PSR-7 request instance that is not authenticated.
@@ -613,21 +580,18 @@ abstract class AbstractProvider
         return $factory->getRequestWithOptions($method, $url, $options);
     }
 
-
     /**
      * Sends a request instance and returns a response instance.
+     *
+     * WARNING: This method does not attempt to catch exceptions caused by HTTP
+     * errors! It is recommended to wrap this method in a try/catch block.
      *
      * @param  RequestInterface $request
      * @return ResponseInterface
      */
-    protected function sendRequest(RequestInterface $request)
+    public function getResponse(RequestInterface $request)
     {
-        try {
-            $response = $this->getHttpClient()->send($request);
-        } catch (BadResponseException $e) {
-            $response = $e->getResponse();
-        }
-        return $response;
+        return $this->getHttpClient()->send($request);
     }
 
     /**
@@ -636,16 +600,20 @@ abstract class AbstractProvider
      * @param  RequestInterface $request
      * @return mixed
      */
-    public function getResponse(RequestInterface $request)
+    public function getParsedResponse(RequestInterface $request)
     {
-        $response = $this->sendRequest($request);
+        try {
+            $response = $this->getResponse($request);
+        } catch (BadResponseException $e) {
+            $response = $e->getResponse();
+        }
+
         $parsed = $this->parseResponse($response);
 
         $this->checkResponse($response, $parsed);
 
         return $parsed;
     }
-
 
     /**
      * Attempts to parse a JSON response.
@@ -704,6 +672,14 @@ abstract class AbstractProvider
         } catch (UnexpectedValueException $e) {
             if (strpos($type, 'json') !== false) {
                 throw $e;
+            }
+
+            if ($response->getStatusCode() == 500) {
+                throw new UnexpectedValueException(
+                    'An OAuth server error was encountered that did not contain a JSON body',
+                    0,
+                    $e
+                );
             }
 
             return $content;
@@ -790,7 +766,15 @@ abstract class AbstractProvider
 
         $request = $this->getAuthenticatedRequest(self::METHOD_GET, $url, $token);
 
-        return $this->getResponse($request);
+        $response = $this->getParsedResponse($request);
+
+        if (false === is_array($response)) {
+            throw new UnexpectedValueException(
+                'Invalid response received from Authorization Server. Expected JSON.'
+            );
+        }
+
+        return $response;
     }
 
     /**

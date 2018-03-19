@@ -4,20 +4,17 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit15d9a1800f164f924bc4e8f8663c3a6b
+class ComposerStaticInita2b9e72101e8cc668d4f0683320de741
 {
     public static $files = array (
-        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
+        'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
+        '5255c38a0faeba867671b61dfda6d864' => __DIR__ . '/..' . '/paragonie/random_compat/lib/random.php',
         'b45b351e6b6f7487d819961fef2fda77' => __DIR__ . '/..' . '/jakeasmith/http_build_url/src/http_build_url.php',
     );
 
     public static $prefixLengthsPsr4 = array (
-        'S' => 
-        array (
-            'Saf33r\\OAuth2\\Client\\' => 21,
-        ),
         'P' => 
         array (
             'Psr\\Http\\Message\\' => 17,
@@ -49,22 +46,18 @@ class ComposerStaticInit15d9a1800f164f924bc4e8f8663c3a6b
     );
 
     public static $prefixDirsPsr4 = array (
-        'Saf33r\\OAuth2\\Client\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/saf33r/oauth2-vimeo/src',
-        ),
         'Psr\\Http\\Message\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'League\\OAuth2\\Client\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/oauth2-google/src',
-            1 => __DIR__ . '/..' . '/league/oauth2-client/src',
-            2 => __DIR__ . '/..' . '/league/oauth2-facebook/src',
-            3 => __DIR__ . '/..' . '/league/oauth2-github/src',
-            4 => __DIR__ . '/..' . '/league/oauth2-linkedin/src',
-            5 => __DIR__ . '/..' . '/league/oauth2-instagram/src',
+            0 => __DIR__ . '/..' . '/league/oauth2-client/src',
+            1 => __DIR__ . '/..' . '/league/oauth2-facebook/src',
+            2 => __DIR__ . '/..' . '/league/oauth2-github/src',
+            3 => __DIR__ . '/..' . '/league/oauth2-google/src',
+            4 => __DIR__ . '/..' . '/league/oauth2-instagram/src',
+            5 => __DIR__ . '/..' . '/league/oauth2-linkedin/src',
         ),
         'League\\OAuth1\\' => 
         array (
@@ -89,6 +82,7 @@ class ComposerStaticInit15d9a1800f164f924bc4e8f8663c3a6b
         'Dukt\\OAuth2\\Client\\' => 
         array (
             0 => __DIR__ . '/..' . '/dukt/oauth2-google/src',
+            1 => __DIR__ . '/..' . '/dukt/oauth2-vimeo/src',
         ),
         'Composer\\Installers\\' => 
         array (
@@ -100,29 +94,11 @@ class ComposerStaticInit15d9a1800f164f924bc4e8f8663c3a6b
         ),
     );
 
-    public static $prefixesPsr0 = array (
-        'S' => 
-        array (
-            'SecurityLib' => 
-            array (
-                0 => __DIR__ . '/..' . '/ircmaxell/security-lib/lib',
-            ),
-        ),
-        'R' => 
-        array (
-            'RandomLib' => 
-            array (
-                0 => __DIR__ . '/..' . '/ircmaxell/random-lib/lib',
-            ),
-        ),
-    );
-
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit15d9a1800f164f924bc4e8f8663c3a6b::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit15d9a1800f164f924bc4e8f8663c3a6b::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit15d9a1800f164f924bc4e8f8663c3a6b::$prefixesPsr0;
+            $loader->prefixLengthsPsr4 = ComposerStaticInita2b9e72101e8cc668d4f0683320de741::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInita2b9e72101e8cc668d4f0683320de741::$prefixDirsPsr4;
 
         }, null, ClassLoader::class);
     }

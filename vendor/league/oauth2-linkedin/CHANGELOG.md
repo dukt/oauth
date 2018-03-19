@@ -1,6 +1,96 @@
 # Changelog
 All Notable changes to `oauth2-linkedin` will be documented in this file
 
+## 3.0.0 - 2018-03-17
+
+### Added
+- Explicit support for resource owner fields definition
+- Support for accessing resource owner details using dot notation
+
+### Deprecated
+- Nothing
+
+### Fixed
+- Nothing
+
+### Removed
+- Public access to $fields property on League\OAuth2\Client\Provider\LinkedIn instances
+
+### Security
+- Nothing
+
+## 2.1.0 - 2017-09-11
+
+### Added
+- Updated authorization urls - thanks @iisisrael
+
+### Deprecated
+- Nothing
+
+### Fixed
+- Nothing
+
+### Removed
+- Nothing
+
+### Security
+- Nothing
+
+## 2.0.0 - 2017-01-25
+
+### Added
+- PHP 7.1 Support
+
+### Deprecated
+- Nothing
+
+### Fixed
+- Nothing
+
+### Removed
+- PHP 5.5 Support
+
+### Security
+- Nothing
+
+## 1.0.0 - 2017-01-25
+
+Bump for base package parity
+
+## 0.4.2 - 2016-11-09
+
+### Added
+- Nothing
+
+### Deprecated
+- Nothing
+
+### Fixed
+- Check if index is set in response during method call
+
+### Removed
+- Nothing
+
+### Security
+- Nothing
+
+## 0.4.1 - 2016-08-06
+
+### Added
+- Update name of resource owner methods to follow "convention".
+
+### Deprecated
+- Nothing
+
+### Fixed
+- Nothing
+
+### Removed
+- Nothing
+
+### Security
+- Nothing
+
 ## 0.4.0 - 2015-08-20
 
 ### Added

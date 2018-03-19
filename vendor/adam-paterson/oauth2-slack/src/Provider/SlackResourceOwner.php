@@ -6,6 +6,7 @@ use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 
 /**
  * Class SlackResourceOwner
+ *
  * @author Adam Paterson <hello@adampaterson.co.uk>
  *
  * @package AdamPaterson\OAuth2\Client\Provider

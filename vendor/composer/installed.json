@@ -1,91 +1,34 @@
 [
     {
-        "name": "psr/http-message",
-        "version": "1.0.1",
-        "version_normalized": "1.0.1.0",
+        "name": "adam-paterson/oauth2-slack",
+        "version": "1.1.3",
+        "version_normalized": "1.1.3.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/php-fig/http-message.git",
-            "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363"
+            "url": "https://github.com/adam-paterson/oauth2-slack.git",
+            "reference": "ccc329eb3036a89d110227a4137e15d4a5661678"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/php-fig/http-message/zipball/f6561bf28d520154e4b0ec72be95418abe6d9363",
-            "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363",
+            "url": "https://api.github.com/repos/adam-paterson/oauth2-slack/zipball/ccc329eb3036a89d110227a4137e15d4a5661678",
+            "reference": "ccc329eb3036a89d110227a4137e15d4a5661678",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.3.0"
-        },
-        "time": "2016-08-06T14:39:51+00:00",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "1.0.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Psr\\Http\\Message\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "PHP-FIG",
-                "homepage": "http://www.php-fig.org/"
-            }
-        ],
-        "description": "Common interface for HTTP messages",
-        "homepage": "https://github.com/php-fig/http-message",
-        "keywords": [
-            "http",
-            "http-message",
-            "psr",
-            "psr-7",
-            "request",
-            "response"
-        ]
-    },
-    {
-        "name": "league/oauth1-client",
-        "version": "1.7.0",
-        "version_normalized": "1.7.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/thephpleague/oauth1-client.git",
-            "reference": "fca5f160650cb74d23fc11aa570dd61f86dcf647"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/thephpleague/oauth1-client/zipball/fca5f160650cb74d23fc11aa570dd61f86dcf647",
-            "reference": "fca5f160650cb74d23fc11aa570dd61f86dcf647",
-            "shasum": ""
-        },
-        "require": {
-            "guzzlehttp/guzzle": "^6.0",
-            "php": ">=5.5.0"
+            "league/oauth2-client": "1.*|2.*",
+            "php": ">=5.6.0"
         },
         "require-dev": {
-            "mockery/mockery": "^0.9",
-            "phpunit/phpunit": "^4.0",
-            "squizlabs/php_codesniffer": "^2.0"
+            "mockery/mockery": "~0.9",
+            "phpunit/phpunit": "5.6",
+            "squizlabs/php_codesniffer": "~2.0"
         },
-        "time": "2016-08-17T00:36:58+00:00",
+        "time": "2017-06-20T14:43:31+00:00",
         "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "1.0-dev"
-            }
-        },
         "installation-source": "dist",
         "autoload": {
             "psr-4": {
-                "League\\OAuth1\\": "src/"
+                "AdamPaterson\\OAuth2\\Client\\": "src/"
             }
         },
         "notification-url": "https://packagist.org/downloads/",
@@ -94,420 +37,37 @@
         ],
         "authors": [
             {
-                "name": "Ben Corlett",
-                "email": "bencorlett@me.com",
-                "homepage": "http://www.webcomm.com.au",
-                "role": "Developer"
+                "name": "Adam Paterson",
+                "email": "hello@adampaterson.co.uk"
             }
         ],
-        "description": "OAuth 1.0 Client Library",
+        "description": "Slack OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
         "keywords": [
             "Authentication",
             "SSO",
             "authorization",
-            "bitbucket",
             "identity",
             "idp",
             "oauth",
-            "oauth1",
+            "oauth2",
             "single sign on",
-            "trello",
-            "tumblr",
-            "twitter"
-        ]
-    },
-    {
-        "name": "ircmaxell/security-lib",
-        "version": "v1.1.0",
-        "version_normalized": "1.1.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/ircmaxell/SecurityLib.git",
-            "reference": "f3db6de12c20c9bcd1aa3db4353a1bbe0e44e1b5"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/ircmaxell/SecurityLib/zipball/f3db6de12c20c9bcd1aa3db4353a1bbe0e44e1b5",
-            "reference": "f3db6de12c20c9bcd1aa3db4353a1bbe0e44e1b5",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.2"
-        },
-        "require-dev": {
-            "mikey179/vfsstream": "1.1.*"
-        },
-        "time": "2015-03-20T14:31:23+00:00",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "1.0.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "SecurityLib": "lib"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Anthony Ferrara",
-                "email": "ircmaxell@ircmaxell.com",
-                "homepage": "http://blog.ircmaxell.com"
-            }
-        ],
-        "description": "A Base Security Library",
-        "homepage": "https://github.com/ircmaxell/SecurityLib"
-    },
-    {
-        "name": "ircmaxell/random-lib",
-        "version": "v1.2.0",
-        "version_normalized": "1.2.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/ircmaxell/RandomLib.git",
-            "reference": "e9e0204f40e49fa4419946c677eccd3fa25b8cf4"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/ircmaxell/RandomLib/zipball/e9e0204f40e49fa4419946c677eccd3fa25b8cf4",
-            "reference": "e9e0204f40e49fa4419946c677eccd3fa25b8cf4",
-            "shasum": ""
-        },
-        "require": {
-            "ircmaxell/security-lib": "^1.1",
-            "php": ">=5.3.2"
-        },
-        "require-dev": {
-            "friendsofphp/php-cs-fixer": "^1.11",
-            "mikey179/vfsstream": "^1.6",
-            "phpunit/phpunit": "^4.8|^5.0"
-        },
-        "time": "2016-09-07T15:52:06+00:00",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "1.1.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "RandomLib": "lib"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Anthony Ferrara",
-                "email": "ircmaxell@ircmaxell.com",
-                "homepage": "http://blog.ircmaxell.com"
-            }
-        ],
-        "description": "A Library For Generating Secure Random Numbers",
-        "homepage": "https://github.com/ircmaxell/RandomLib",
-        "keywords": [
-            "cryptography",
-            "random",
-            "random-numbers",
-            "random-strings"
-        ]
-    },
-    {
-        "name": "saf33r/oauth2-vimeo",
-        "version": "0.1.0",
-        "version_normalized": "0.1.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/saf33r/oauth2-vimeo.git",
-            "reference": "e15beb00912d326fa15c3944506dac55fa6a90f8"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/saf33r/oauth2-vimeo/zipball/e15beb00912d326fa15c3944506dac55fa6a90f8",
-            "reference": "e15beb00912d326fa15c3944506dac55fa6a90f8",
-            "shasum": ""
-        },
-        "require": {
-            "league/oauth2-client": "~1.4",
-            "php": ">=5.5.0"
-        },
-        "require-dev": {
-            "mockery/mockery": "~0.9",
-            "phpunit/phpunit": "~4.0",
-            "squizlabs/php_codesniffer": "~2.0"
-        },
-        "time": "2016-08-05T17:14:22+00:00",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "1.0.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Saf33r\\OAuth2\\Client\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Safeer Ahmed",
-                "homepage": "http://safeerahmed.uk"
-            }
-        ],
-        "description": "Vimeo Client Provider for The PHP League OAuth 2.0 Client",
-        "keywords": [
-            "authorisation",
-            "authorization",
-            "client",
-            "oauth",
-            "oauth2",
-            "vimeo"
-        ]
-    },
-    {
-        "name": "league/oauth2-google",
-        "version": "1.0.1",
-        "version_normalized": "1.0.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/thephpleague/oauth2-google.git",
-            "reference": "4788fcef5cf0fdb65e0322c3f4d4632d8f1f3e82"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/thephpleague/oauth2-google/zipball/4788fcef5cf0fdb65e0322c3f4d4632d8f1f3e82",
-            "reference": "4788fcef5cf0fdb65e0322c3f4d4632d8f1f3e82",
-            "shasum": ""
-        },
-        "require": {
-            "league/oauth2-client": "~1.0"
-        },
-        "require-dev": {
-            "mockery/mockery": "~0.9",
-            "phpunit/phpunit": "~4.0",
-            "squizlabs/php_codesniffer": "~2.0"
-        },
-        "time": "2015-08-28T18:33:30+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "League\\OAuth2\\Client\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Woody Gilk",
-                "email": "woody.gilk@gmail.com",
-                "homepage": "http://shadowhand.me"
-            }
-        ],
-        "description": "Google OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
-        "keywords": [
-            "Authentication",
-            "authorization",
-            "client",
-            "google",
-            "oauth",
-            "oauth2"
-        ]
-    },
-    {
-        "name": "dukt/oauth2-google",
-        "version": "1.0.0",
-        "version_normalized": "1.0.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/dukt/oauth2-google.git",
-            "reference": "9a925afaeb5c3a54f555925a66e67099b01d8a65"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/dukt/oauth2-google/zipball/9a925afaeb5c3a54f555925a66e67099b01d8a65",
-            "reference": "9a925afaeb5c3a54f555925a66e67099b01d8a65",
-            "shasum": ""
-        },
-        "require": {
-            "league/oauth2-google": "~1.0"
-        },
-        "time": "2016-08-25T21:52:25+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Dukt\\OAuth2\\Client\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Benjamin David",
-                "email": "ben@dukt.net",
-                "homepage": "https://dukt.net"
-            }
-        ],
-        "description": "Google OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
-        "keywords": [
-            "Authentication",
-            "authorization",
-            "client",
-            "google",
-            "oauth",
-            "oauth2"
-        ]
-    },
-    {
-        "name": "league/oauth2-client",
-        "version": "1.4.2",
-        "version_normalized": "1.4.2.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/thephpleague/oauth2-client.git",
-            "reference": "01f955b85040b41cf48885b078f7fd39a8be5411"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/thephpleague/oauth2-client/zipball/01f955b85040b41cf48885b078f7fd39a8be5411",
-            "reference": "01f955b85040b41cf48885b078f7fd39a8be5411",
-            "shasum": ""
-        },
-        "require": {
-            "ext-curl": "*",
-            "guzzlehttp/guzzle": "~6.0",
-            "ircmaxell/random-lib": "~1.1",
-            "php": ">=5.5.0"
-        },
-        "require-dev": {
-            "jakub-onderka/php-parallel-lint": "0.8.*",
-            "mockery/mockery": "~0.9",
-            "phpunit/phpunit": "~4.0",
-            "satooshi/php-coveralls": "0.6.*",
-            "squizlabs/php_codesniffer": "~2.0"
-        },
-        "time": "2016-07-28T13:20:43+00:00",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "1.0.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "League\\OAuth2\\Client\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Alex Bilbie",
-                "email": "hello@alexbilbie.com",
-                "homepage": "http://www.alexbilbie.com",
-                "role": "Developer"
-            }
-        ],
-        "description": "OAuth 2.0 Client Library",
-        "keywords": [
-            "Authentication",
-            "SSO",
-            "authorization",
-            "identity",
-            "idp",
-            "oauth",
-            "oauth2",
-            "single sign on"
-        ]
-    },
-    {
-        "name": "league/oauth2-facebook",
-        "version": "1.4.4",
-        "version_normalized": "1.4.4.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/thephpleague/oauth2-facebook.git",
-            "reference": "c1af92b501649f99bd7670abd0c8153bed8d3d47"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/thephpleague/oauth2-facebook/zipball/c1af92b501649f99bd7670abd0c8153bed8d3d47",
-            "reference": "c1af92b501649f99bd7670abd0c8153bed8d3d47",
-            "shasum": ""
-        },
-        "require": {
-            "league/oauth2-client": "~1.0",
-            "php": ">=5.5.0"
-        },
-        "require-dev": {
-            "mockery/mockery": "~0.9",
-            "phpunit/phpunit": "~4.0",
-            "squizlabs/php_codesniffer": "~2.0"
-        },
-        "time": "2016-10-21T00:54:37+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "League\\OAuth2\\Client\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Sammy Kaye Powers",
-                "email": "me@sammyk.me",
-                "homepage": "http://www.sammyk.me"
-            }
-        ],
-        "description": "Facebook OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
-        "keywords": [
-            "Authentication",
-            "authorization",
-            "client",
-            "facebook",
-            "oauth",
-            "oauth2"
+            "slack",
+            "slack api"
         ]
     },
     {
         "name": "composer/installers",
-        "version": "v1.4.0",
-        "version_normalized": "1.4.0.0",
+        "version": "v1.5.0",
+        "version_normalized": "1.5.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/composer/installers.git",
-            "reference": "9ce17fb70e9a38dd8acff0636a29f5cf4d575c1b"
+            "reference": "049797d727261bf27f2690430d935067710049c2"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/composer/installers/zipball/9ce17fb70e9a38dd8acff0636a29f5cf4d575c1b",
-            "reference": "9ce17fb70e9a38dd8acff0636a29f5cf4d575c1b",
+            "url": "https://api.github.com/repos/composer/installers/zipball/049797d727261bf27f2690430d935067710049c2",
+            "reference": "049797d727261bf27f2690430d935067710049c2",
             "shasum": ""
         },
         "require": {
@@ -519,9 +79,9 @@
         },
         "require-dev": {
             "composer/composer": "1.0.*@dev",
-            "phpunit/phpunit": "4.1.*"
+            "phpunit/phpunit": "^4.8.36"
         },
-        "time": "2017-08-09T07:53:48+00:00",
+        "time": "2017-12-29T09:13:20+00:00",
         "type": "composer-plugin",
         "extra": {
             "class": "Composer\\Installers\\Plugin",
@@ -592,15 +152,18 @@
             "lavalite",
             "lithium",
             "magento",
+            "majima",
             "mako",
             "mediawiki",
             "modulework",
+            "modx",
             "moodle",
             "osclass",
             "phpbb",
             "piwik",
             "ppi",
             "puppet",
+            "pxcms",
             "reindex",
             "roundcube",
             "shopware",
@@ -615,45 +178,30 @@
         ]
     },
     {
-        "name": "guzzlehttp/psr7",
-        "version": "1.4.2",
-        "version_normalized": "1.4.2.0",
+        "name": "dukt/oauth2-google",
+        "version": "2.0.0",
+        "version_normalized": "2.0.0.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/guzzle/psr7.git",
-            "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c"
+            "url": "https://github.com/dukt/oauth2-google.git",
+            "reference": "610ea5e1f7e5197778cb80ea4942c20dfdc1bc79"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/guzzle/psr7/zipball/f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
-            "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
+            "url": "https://api.github.com/repos/dukt/oauth2-google/zipball/610ea5e1f7e5197778cb80ea4942c20dfdc1bc79",
+            "reference": "610ea5e1f7e5197778cb80ea4942c20dfdc1bc79",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.4.0",
-            "psr/http-message": "~1.0"
+            "league/oauth2-google": "^2.0"
         },
-        "provide": {
-            "psr/http-message-implementation": "1.0"
-        },
-        "require-dev": {
-            "phpunit/phpunit": "~4.0"
-        },
-        "time": "2017-03-20T17:10:46+00:00",
+        "time": "2017-03-24T14:45:00+00:00",
         "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "1.4-dev"
-            }
-        },
         "installation-source": "dist",
         "autoload": {
             "psr-4": {
-                "GuzzleHttp\\Psr7\\": "src/"
-            },
-            "files": [
-                "src/functions_include.php"
-            ]
+                "Dukt\\OAuth2\\Client\\": "src/"
+            }
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
@@ -661,62 +209,46 @@
         ],
         "authors": [
             {
-                "name": "Michael Dowling",
-                "email": "mtdowling@gmail.com",
-                "homepage": "https://github.com/mtdowling"
-            },
-            {
-                "name": "Tobias Schultze",
-                "homepage": "https://github.com/Tobion"
+                "name": "Benjamin David",
+                "email": "ben@dukt.net",
+                "homepage": "https://dukt.net"
             }
         ],
-        "description": "PSR-7 message implementation that also provides common utility methods",
+        "description": "Google OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
         "keywords": [
-            "http",
-            "message",
-            "request",
-            "response",
-            "stream",
-            "uri",
-            "url"
+            "Authentication",
+            "authorization",
+            "client",
+            "google",
+            "oauth",
+            "oauth2"
         ]
     },
     {
-        "name": "guzzlehttp/promises",
-        "version": "v1.3.1",
-        "version_normalized": "1.3.1.0",
+        "name": "dukt/oauth2-vimeo",
+        "version": "2.0.0",
+        "version_normalized": "2.0.0.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/guzzle/promises.git",
-            "reference": "a59da6cf61d80060647ff4d3eb2c03a2bc694646"
+            "url": "https://github.com/dukt/oauth2-vimeo.git",
+            "reference": "fb9bbbfe546a082edef508a04e881f732b18f530"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/guzzle/promises/zipball/a59da6cf61d80060647ff4d3eb2c03a2bc694646",
-            "reference": "a59da6cf61d80060647ff4d3eb2c03a2bc694646",
+            "url": "https://api.github.com/repos/dukt/oauth2-vimeo/zipball/fb9bbbfe546a082edef508a04e881f732b18f530",
+            "reference": "fb9bbbfe546a082edef508a04e881f732b18f530",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.5.0"
+            "league/oauth2-client": "^2.0"
         },
-        "require-dev": {
-            "phpunit/phpunit": "^4.0"
-        },
-        "time": "2016-12-20T10:07:11+00:00",
+        "time": "2017-04-06T13:13:14+00:00",
         "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "1.4-dev"
-            }
-        },
         "installation-source": "dist",
         "autoload": {
             "psr-4": {
-                "GuzzleHttp\\Promise\\": "src/"
-            },
-            "files": [
-                "src/functions_include.php"
-            ]
+                "Dukt\\OAuth2\\Client\\": "src/"
+            }
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
@@ -724,14 +256,19 @@
         ],
         "authors": [
             {
-                "name": "Michael Dowling",
-                "email": "mtdowling@gmail.com",
-                "homepage": "https://github.com/mtdowling"
+                "name": "Benjamin David",
+                "email": "ben@dukt.net",
+                "homepage": "https://github.com/benjamindavid"
             }
         ],
-        "description": "Guzzle promises library",
+        "description": "Vimeo OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
         "keywords": [
-            "promise"
+            "authorisation",
+            "authorization",
+            "client",
+            "oauth",
+            "oauth2",
+            "vimeo"
         ]
     },
     {
@@ -802,41 +339,41 @@
         ]
     },
     {
-        "name": "league/oauth2-github",
-        "version": "0.2.1",
-        "version_normalized": "0.2.1.0",
+        "name": "guzzlehttp/promises",
+        "version": "v1.3.1",
+        "version_normalized": "1.3.1.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/thephpleague/oauth2-github.git",
-            "reference": "0c8b940e63f04167e60c7c61b67a4c925803afb0"
+            "url": "https://github.com/guzzle/promises.git",
+            "reference": "a59da6cf61d80060647ff4d3eb2c03a2bc694646"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/thephpleague/oauth2-github/zipball/0c8b940e63f04167e60c7c61b67a4c925803afb0",
-            "reference": "0c8b940e63f04167e60c7c61b67a4c925803afb0",
+            "url": "https://api.github.com/repos/guzzle/promises/zipball/a59da6cf61d80060647ff4d3eb2c03a2bc694646",
+            "reference": "a59da6cf61d80060647ff4d3eb2c03a2bc694646",
             "shasum": ""
         },
         "require": {
-            "league/oauth2-client": "~1.0",
             "php": ">=5.5.0"
         },
         "require-dev": {
-            "mockery/mockery": "~0.9",
-            "phpunit/phpunit": "~4.0",
-            "squizlabs/php_codesniffer": "~2.0"
+            "phpunit/phpunit": "^4.0"
         },
-        "time": "2016-04-14T01:57:14+00:00",
+        "time": "2016-12-20T10:07:11+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.0.x-dev"
+                "dev-master": "1.4-dev"
             }
         },
         "installation-source": "dist",
         "autoload": {
             "psr-4": {
-                "League\\OAuth2\\Client\\": "src/"
-            }
+                "GuzzleHttp\\Promise\\": "src/"
+            },
+            "files": [
+                "src/functions_include.php"
+            ]
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
@@ -844,57 +381,56 @@
         ],
         "authors": [
             {
-                "name": "Steven Maguire",
-                "email": "stevenmaguire@gmail.com",
-                "homepage": "https://github.com/stevenmaguire"
+                "name": "Michael Dowling",
+                "email": "mtdowling@gmail.com",
+                "homepage": "https://github.com/mtdowling"
             }
         ],
-        "description": "Github OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
+        "description": "Guzzle promises library",
         "keywords": [
-            "authorisation",
-            "authorization",
-            "client",
-            "github",
-            "oauth",
-            "oauth2"
+            "promise"
         ]
     },
     {
-        "name": "league/oauth2-linkedin",
-        "version": "0.4.0",
-        "version_normalized": "0.4.0.0",
+        "name": "guzzlehttp/psr7",
+        "version": "1.4.2",
+        "version_normalized": "1.4.2.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/thephpleague/oauth2-linkedin.git",
-            "reference": "04d30e7c59963396156daf39aa84e8521ca470e1"
+            "url": "https://github.com/guzzle/psr7.git",
+            "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/thephpleague/oauth2-linkedin/zipball/04d30e7c59963396156daf39aa84e8521ca470e1",
-            "reference": "04d30e7c59963396156daf39aa84e8521ca470e1",
+            "url": "https://api.github.com/repos/guzzle/psr7/zipball/f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
+            "reference": "f5b8a8512e2b58b0071a7280e39f14f72e05d87c",
             "shasum": ""
         },
         "require": {
-            "league/oauth2-client": "~1.0",
-            "php": ">=5.5.0"
+            "php": ">=5.4.0",
+            "psr/http-message": "~1.0"
+        },
+        "provide": {
+            "psr/http-message-implementation": "1.0"
         },
         "require-dev": {
-            "mockery/mockery": "~0.9",
-            "phpunit/phpunit": "~4.0",
-            "squizlabs/php_codesniffer": "~2.0"
+            "phpunit/phpunit": "~4.0"
         },
-        "time": "2015-08-20T14:59:40+00:00",
+        "time": "2017-03-20T17:10:46+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "1.0.x-dev"
+                "dev-master": "1.4-dev"
             }
         },
         "installation-source": "dist",
         "autoload": {
             "psr-4": {
-                "League\\OAuth2\\Client\\": "src/"
-            }
+                "GuzzleHttp\\Psr7\\": "src/"
+            },
+            "files": [
+                "src/functions_include.php"
+            ]
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
@@ -902,75 +438,24 @@
         ],
         "authors": [
             {
-                "name": "Steven Maguire",
-                "email": "stevenmaguire@gmail.com",
-                "homepage": "https://github.com/stevenmaguire"
-            }
-        ],
-        "description": "LinkedIn OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
-        "keywords": [
-            "authorisation",
-            "authorization",
-            "client",
-            "linkedin",
-            "oauth",
-            "oauth2"
-        ]
-    },
-    {
-        "name": "adam-paterson/oauth2-slack",
-        "version": "1.1.2",
-        "version_normalized": "1.1.2.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/adam-paterson/oauth2-slack.git",
-            "reference": "0ca93518910f91e64de8cc9d92777df89092a952"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/adam-paterson/oauth2-slack/zipball/0ca93518910f91e64de8cc9d92777df89092a952",
-            "reference": "0ca93518910f91e64de8cc9d92777df89092a952",
-            "shasum": ""
-        },
-        "require": {
-            "league/oauth2-client": "^1.0",
-            "php": ">=5.5.0"
-        },
-        "require-dev": {
-            "mockery/mockery": "~0.9",
-            "phpunit/phpunit": "~4.0",
-            "squizlabs/php_codesniffer": "~2.0"
-        },
-        "time": "2015-09-22T19:06:36+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "AdamPaterson\\OAuth2\\Client\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
+                "name": "Michael Dowling",
+                "email": "mtdowling@gmail.com",
+                "homepage": "https://github.com/mtdowling"
+            },
             {
-                "name": "Adam Paterson",
-                "email": "hello@adampaterson.co.uk"
+                "name": "Tobias Schultze",
+                "homepage": "https://github.com/Tobion"
             }
         ],
-        "description": "Slack OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
+        "description": "PSR-7 message implementation that also provides common utility methods",
         "keywords": [
-            "Authentication",
-            "SSO",
-            "authorization",
-            "identity",
-            "idp",
-            "oauth",
-            "oauth2",
-            "single sign on",
-            "slack",
-            "slack api"
+            "http",
+            "message",
+            "request",
+            "response",
+            "stream",
+            "uri",
+            "url"
         ]
     },
     {
@@ -1009,31 +494,327 @@
         "description": "Provides functionality for http_build_url() to environments without pecl_http."
     },
     {
-        "name": "league/oauth2-instagram",
-        "version": "0.2.2",
-        "version_normalized": "0.2.2.0",
+        "name": "league/oauth1-client",
+        "version": "1.7.0",
+        "version_normalized": "1.7.0.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/thephpleague/oauth2-instagram.git",
-            "reference": "f973049ded5f819e88a94d84a77b6a875da750bd"
+            "url": "https://github.com/thephpleague/oauth1-client.git",
+            "reference": "fca5f160650cb74d23fc11aa570dd61f86dcf647"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/thephpleague/oauth2-instagram/zipball/f973049ded5f819e88a94d84a77b6a875da750bd",
-            "reference": "f973049ded5f819e88a94d84a77b6a875da750bd",
+            "url": "https://api.github.com/repos/thephpleague/oauth1-client/zipball/fca5f160650cb74d23fc11aa570dd61f86dcf647",
+            "reference": "fca5f160650cb74d23fc11aa570dd61f86dcf647",
             "shasum": ""
         },
         "require": {
-            "jakeasmith/http_build_url": "^1.0",
-            "league/oauth2-client": "~1.0",
+            "guzzlehttp/guzzle": "^6.0",
             "php": ">=5.5.0"
+        },
+        "require-dev": {
+            "mockery/mockery": "^0.9",
+            "phpunit/phpunit": "^4.0",
+            "squizlabs/php_codesniffer": "^2.0"
+        },
+        "time": "2016-08-17T00:36:58+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "League\\OAuth1\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Ben Corlett",
+                "email": "bencorlett@me.com",
+                "homepage": "http://www.webcomm.com.au",
+                "role": "Developer"
+            }
+        ],
+        "description": "OAuth 1.0 Client Library",
+        "keywords": [
+            "Authentication",
+            "SSO",
+            "authorization",
+            "bitbucket",
+            "identity",
+            "idp",
+            "oauth",
+            "oauth1",
+            "single sign on",
+            "trello",
+            "tumblr",
+            "twitter"
+        ]
+    },
+    {
+        "name": "league/oauth2-client",
+        "version": "2.3.0",
+        "version_normalized": "2.3.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/thephpleague/oauth2-client.git",
+            "reference": "aa2e3df188f0bfd87f7880cc880e906e99923580"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/thephpleague/oauth2-client/zipball/aa2e3df188f0bfd87f7880cc880e906e99923580",
+            "reference": "aa2e3df188f0bfd87f7880cc880e906e99923580",
+            "shasum": ""
+        },
+        "require": {
+            "guzzlehttp/guzzle": "^6.0",
+            "paragonie/random_compat": "^1|^2",
+            "php": "^5.6|^7.0"
+        },
+        "require-dev": {
+            "eloquent/liberator": "^2.0",
+            "eloquent/phony-phpunit": "^1.0|^3.0",
+            "jakub-onderka/php-parallel-lint": "^0.9.2",
+            "phpunit/phpunit": "^5.7|^6.0",
+            "squizlabs/php_codesniffer": "^2.3|^3.0"
+        },
+        "time": "2018-01-13T05:27:58+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-2.x": "2.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "League\\OAuth2\\Client\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Alex Bilbie",
+                "email": "hello@alexbilbie.com",
+                "homepage": "http://www.alexbilbie.com",
+                "role": "Developer"
+            },
+            {
+                "name": "Woody Gilk",
+                "homepage": "https://github.com/shadowhand",
+                "role": "Contributor"
+            }
+        ],
+        "description": "OAuth 2.0 Client Library",
+        "keywords": [
+            "Authentication",
+            "SSO",
+            "authorization",
+            "identity",
+            "idp",
+            "oauth",
+            "oauth2",
+            "single sign on"
+        ]
+    },
+    {
+        "name": "league/oauth2-facebook",
+        "version": "2.0.1",
+        "version_normalized": "2.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/thephpleague/oauth2-facebook.git",
+            "reference": "bcbcd540fb66ae16b4f82671c8ae7752b6a89556"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/thephpleague/oauth2-facebook/zipball/bcbcd540fb66ae16b4f82671c8ae7752b6a89556",
+            "reference": "bcbcd540fb66ae16b4f82671c8ae7752b6a89556",
+            "shasum": ""
+        },
+        "require": {
+            "league/oauth2-client": "^2.0",
+            "php": "^5.6 || ^7.0"
         },
         "require-dev": {
             "mockery/mockery": "~0.9",
             "phpunit/phpunit": "~4.0",
             "squizlabs/php_codesniffer": "~2.0"
         },
-        "time": "2016-04-14T02:15:44+00:00",
+        "time": "2017-07-22T01:25:00+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "League\\OAuth2\\Client\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Sammy Kaye Powers",
+                "email": "me@sammyk.me",
+                "homepage": "http://www.sammyk.me"
+            }
+        ],
+        "description": "Facebook OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
+        "keywords": [
+            "Authentication",
+            "authorization",
+            "client",
+            "facebook",
+            "oauth",
+            "oauth2"
+        ]
+    },
+    {
+        "name": "league/oauth2-github",
+        "version": "2.0.0",
+        "version_normalized": "2.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/thephpleague/oauth2-github.git",
+            "reference": "e63d64f3ec167c09232d189c6b0c397458a99357"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/thephpleague/oauth2-github/zipball/e63d64f3ec167c09232d189c6b0c397458a99357",
+            "reference": "e63d64f3ec167c09232d189c6b0c397458a99357",
+            "shasum": ""
+        },
+        "require": {
+            "league/oauth2-client": "^2.0"
+        },
+        "require-dev": {
+            "mockery/mockery": "~0.9",
+            "phpunit/phpunit": "~4.0",
+            "squizlabs/php_codesniffer": "~2.0"
+        },
+        "time": "2017-01-26T01:14:51+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "League\\OAuth2\\Client\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Steven Maguire",
+                "email": "stevenmaguire@gmail.com",
+                "homepage": "https://github.com/stevenmaguire"
+            }
+        ],
+        "description": "Github OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
+        "keywords": [
+            "authorisation",
+            "authorization",
+            "client",
+            "github",
+            "oauth",
+            "oauth2"
+        ]
+    },
+    {
+        "name": "league/oauth2-google",
+        "version": "2.1.0",
+        "version_normalized": "2.1.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/thephpleague/oauth2-google.git",
+            "reference": "647bfbd47b8cf9d59b26ef1a61b710fe811215cb"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/thephpleague/oauth2-google/zipball/647bfbd47b8cf9d59b26ef1a61b710fe811215cb",
+            "reference": "647bfbd47b8cf9d59b26ef1a61b710fe811215cb",
+            "shasum": ""
+        },
+        "require": {
+            "league/oauth2-client": "^2.0"
+        },
+        "require-dev": {
+            "eloquent/phony": "^0.14.6",
+            "phpunit/phpunit": "^5.7",
+            "satooshi/php-coveralls": "dev-master as 2.0.0",
+            "squizlabs/php_codesniffer": "^2.0"
+        },
+        "time": "2018-03-09T15:47:13+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "League\\OAuth2\\Client\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Woody Gilk",
+                "email": "woody.gilk@gmail.com",
+                "homepage": "http://shadowhand.me"
+            }
+        ],
+        "description": "Google OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
+        "keywords": [
+            "Authentication",
+            "authorization",
+            "client",
+            "google",
+            "oauth",
+            "oauth2"
+        ]
+    },
+    {
+        "name": "league/oauth2-instagram",
+        "version": "2.0.0",
+        "version_normalized": "2.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/thephpleague/oauth2-instagram.git",
+            "reference": "abf6466ebd2c2a73e920b0ce834e2bf50d1abdcc"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/thephpleague/oauth2-instagram/zipball/abf6466ebd2c2a73e920b0ce834e2bf50d1abdcc",
+            "reference": "abf6466ebd2c2a73e920b0ce834e2bf50d1abdcc",
+            "shasum": ""
+        },
+        "require": {
+            "jakeasmith/http_build_url": "^1.0",
+            "league/oauth2-client": "^2.0"
+        },
+        "require-dev": {
+            "mockery/mockery": "~0.9",
+            "phpunit/phpunit": "~4.0",
+            "squizlabs/php_codesniffer": "~2.0"
+        },
+        "time": "2017-01-26T01:21:29+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1065,6 +846,165 @@
             "instagram",
             "oauth",
             "oauth2"
+        ]
+    },
+    {
+        "name": "league/oauth2-linkedin",
+        "version": "3.0.0",
+        "version_normalized": "3.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/thephpleague/oauth2-linkedin.git",
+            "reference": "2f26dac99faf48350e7b3ddc1fba179cc62e8a05"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/thephpleague/oauth2-linkedin/zipball/2f26dac99faf48350e7b3ddc1fba179cc62e8a05",
+            "reference": "2f26dac99faf48350e7b3ddc1fba179cc62e8a05",
+            "shasum": ""
+        },
+        "require": {
+            "league/oauth2-client": "^2.0"
+        },
+        "require-dev": {
+            "mockery/mockery": "~0.9",
+            "phpunit/phpunit": "~4.0",
+            "squizlabs/php_codesniffer": "~2.0"
+        },
+        "time": "2018-03-07T20:52:19+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "League\\OAuth2\\Client\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Steven Maguire",
+                "email": "stevenmaguire@gmail.com",
+                "homepage": "https://github.com/stevenmaguire"
+            }
+        ],
+        "description": "LinkedIn OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
+        "keywords": [
+            "authorisation",
+            "authorization",
+            "client",
+            "linkedin",
+            "oauth",
+            "oauth2"
+        ]
+    },
+    {
+        "name": "paragonie/random_compat",
+        "version": "v2.0.11",
+        "version_normalized": "2.0.11.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/paragonie/random_compat.git",
+            "reference": "5da4d3c796c275c55f057af5a643ae297d96b4d8"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/paragonie/random_compat/zipball/5da4d3c796c275c55f057af5a643ae297d96b4d8",
+            "reference": "5da4d3c796c275c55f057af5a643ae297d96b4d8",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.2.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "4.*|5.*"
+        },
+        "suggest": {
+            "ext-libsodium": "Provides a modern crypto API that can be used to generate random bytes."
+        },
+        "time": "2017-09-27T21:40:39+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "lib/random.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Paragon Initiative Enterprises",
+                "email": "security@paragonie.com",
+                "homepage": "https://paragonie.com"
+            }
+        ],
+        "description": "PHP 5.x polyfill for random_bytes() and random_int() from PHP 7",
+        "keywords": [
+            "csprng",
+            "pseudorandom",
+            "random"
+        ]
+    },
+    {
+        "name": "psr/http-message",
+        "version": "1.0.1",
+        "version_normalized": "1.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/php-fig/http-message.git",
+            "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/php-fig/http-message/zipball/f6561bf28d520154e4b0ec72be95418abe6d9363",
+            "reference": "f6561bf28d520154e4b0ec72be95418abe6d9363",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2016-08-06T14:39:51+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Psr\\Http\\Message\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "PHP-FIG",
+                "homepage": "http://www.php-fig.org/"
+            }
+        ],
+        "description": "Common interface for HTTP messages",
+        "homepage": "https://github.com/php-fig/http-message",
+        "keywords": [
+            "http",
+            "http-message",
+            "psr",
+            "psr-7",
+            "request",
+            "response"
         ]
     }
 ]

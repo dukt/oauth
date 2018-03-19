@@ -19,36 +19,48 @@ class GoogleUser implements ResourceOwnerInterface
 
     public function getId()
     {
+        if (array_key_exists('sub', $this->response)) {
+            return $this->response['sub'];
+        }
         return $this->response['id'];
     }
 
     /**
-     * Get perferred display name.
+     * Get preferred display name.
      *
      * @return string
      */
     public function getName()
     {
+        if (array_key_exists('name', $this->response) && is_string($this->response['name'])) {
+            return $this->response['name'];
+        }
         return $this->response['displayName'];
     }
 
     /**
-     * Get perferred first name.
+     * Get preferred first name.
      *
      * @return string
      */
     public function getFirstName()
     {
+        if (array_key_exists('given_name', $this->response)) {
+            return $this->response['given_name'];
+        }
         return $this->response['name']['givenName'];
     }
 
     /**
-     * Get perferred last name.
+     * Get preferred last name.
      *
      * @return string
      */
     public function getLastName()
     {
+        if (array_key_exists('family_name', $this->response)) {
+            return $this->response['family_name'];
+        }
         return $this->response['name']['familyName'];
     }
 
@@ -59,9 +71,13 @@ class GoogleUser implements ResourceOwnerInterface
      */
     public function getEmail()
     {
+        if (array_key_exists('email', $this->response)) {
+            return $this->response['email'];
+        }
         if (!empty($this->response['emails'])) {
             return $this->response['emails'][0]['value'];
         }
+        return null;
     }
 
     /**
@@ -71,9 +87,13 @@ class GoogleUser implements ResourceOwnerInterface
      */
     public function getAvatar()
     {
+        if (array_key_exists('picture', $this->response)) {
+            return $this->response['picture'];
+        }
         if (!empty($this->response['image']['url'])) {
             return $this->response['image']['url'];
         }
+        return null;
     }
 
     /**

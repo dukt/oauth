@@ -1,5 +1,6 @@
 {
     "name": "dukt/oauth2-google",
+    "version": "2.0.0",
     "description": "Google OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
     "license": "MIT",
     "authors": [
@@ -23,6 +24,6 @@
         }
     },
 	"require": {
-		"league/oauth2-google": "~1.0"
+		"league/oauth2-google": "^2.0"
 	}
 }

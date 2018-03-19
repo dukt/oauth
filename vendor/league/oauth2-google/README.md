@@ -20,10 +20,14 @@ a patch via pull request.
 
 The following versions of PHP are supported.
 
-* PHP 5.5
 * PHP 5.6
 * PHP 7.0
+* PHP 7.1
 * HHVM
+
+[Google Sign In](https://developers.google.com/identity/sign-in/web/sign-in) will also need to be set up, which will provide you with the `{google-app-id}` and `{google-app-secret}` required (see [Usage](#usage) below).
+
+If you're using the default [scopes](#scopes) then you'll also need to enable the [Google+ API](https://developers.google.com/+/web/api/rest/) for your project.
 
 ## Installation
 
@@ -42,19 +46,19 @@ $provider = new League\OAuth2\Client\Provider\Google([
     'clientId'     => '{google-app-id}',
     'clientSecret' => '{google-app-secret}',
     'redirectUri'  => 'https://example.com/callback-url',
-    'hostedDomain' => 'example.com',
+    'hostedDomain' => 'https://example.com',
 ]);
 
 if (!empty($_GET['error'])) {
 
     // Got an error, probably user denied access
-    exit('Got error: ' . $_GET['error']);
+    exit('Got error: ' . htmlspecialchars($_GET['error'], ENT_QUOTES, 'UTF-8'));
 
 } elseif (empty($_GET['code'])) {
 
     // If we don't have an authorization code then get one
     $authUrl = $provider->getAuthorizationUrl();
-    $_SESSION['oauth2state'] = $provider->state;
+    $_SESSION['oauth2state'] = $provider->getState();
     header('Location: ' . $authUrl);
     exit;
 
@@ -88,17 +92,47 @@ if (!empty($_GET['error'])) {
     }
 
     // Use this to interact with an API on the users behalf
-    echo $token->accessToken;
+    echo $token->getToken();
 
     // Use this to get a new access token if the old one expires
-    echo $token->refreshToken;
+    echo $token->getRefreshToken();
 
     // Number of seconds until the access token will expire, and need refreshing
-    echo $token->expires;
+    echo $token->getExpires();
 }
 ```
 
 ### Refreshing a Token
+
+Refresh tokens are only provided to applications which request offline access. You can specify offline access by setting the `accessType` option in your provider:
+
+```php
+$provider = new League\OAuth2\Client\Provider\Google([
+    'clientId'     => '{google-app-id}',
+    'clientSecret' => '{google-app-secret}',
+    'redirectUri'  => 'https://example.com/callback-url',
+    'accessType'   => 'offline',
+]);
+```
+
+It is important to note that the refresh token is only returned on the first request after this it will be `null`. You should securely store the refresh token when it is returned:
+
+```php
+$token = $provider->getAccessToken('authorization_code', [
+    'code' => $code
+]);
+
+// persist the token in a database
+$refreshToken = $token->getRefreshToken();
+```
+
+If you ever need to get a new refresh token you can request one by forcing the approval prompt:
+
+```php
+$authUrl = $provider->getAuthorizationUrl(['approval_prompt' => 'force']);
+```
+
+Now you have everything you need to refresh an access token using a refresh token:
 
 ```php
 $provider = new League\OAuth2\Client\Provider\Google([
@@ -110,6 +144,29 @@ $provider = new League\OAuth2\Client\Provider\Google([
 $grant = new League\OAuth2\Client\Grant\RefreshToken();
 $token = $provider->getAccessToken($grant, ['refresh_token' => $refreshToken]);
 ```
+## Resource Owner Attributes
+
+By default the Google plus API is used to load profile information. If you want to use the OpenIDConnect
+user info endpoint to load profile information then add `useOidcMode => true` to your configuration.
+
+The two endpoints provide attributes with different names and structures. The `GoogleUser` class hides
+these differences for the most common attributes.
+
+## Scopes
+
+If needed, you can include an array of scopes when getting the authorization url. Example:
+
+```
+$authorizationUrl = $provider->getAuthorizationUrl([
+    'scope' => [
+        'https://www.googleapis.com/auth/drive',
+    ]
+]);
+header('Location: ' . $authorizationUrl);
+exit;
+```
+
+Note that the default scopes include `email` and `profile`, which require that the [Google+ API](https://developers.google.com/+/web/api/rest/) is enabled for your project.
 
 ## Testing
 
