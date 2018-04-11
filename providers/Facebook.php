@@ -47,7 +47,7 @@ class Facebook extends BaseProvider
      */
     public function createProvider()
     {
-        $graphApiVersion = 'v2.8';
+        $graphApiVersion = 'v2.12';
 
         if(!empty($this->providerInfos->config['graphApiVersion']))
         {
