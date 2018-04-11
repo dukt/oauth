@@ -5,6 +5,7 @@
     "date": "2018-04-11T11:50:00",
     "notes": [
       "[Improved] Encode Facebook’s OAuth redirect URI query.",
+      "[Improved] Changed default Facebook Graph API version to v2.12.",
     ]
   },
   {
