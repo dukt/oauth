@@ -83,4 +83,23 @@ class Facebook extends BaseProvider
     {
         return 'https://developers.facebook.com/docs/facebook-login/permissions';
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getRedirectUri()
+    {
+        $url = parent::getRedirectUri();
+        $parsedUrl = parse_url($url);
+
+        if (isset($parsedUrl['query'])) {
+            parse_str($parsedUrl['query'], $query);
+
+            $query = http_build_query($query);
+
+            return $parsedUrl['scheme'].'://'.$parsedUrl['host'].$parsedUrl['path'].'?'.$query;
+        }
+
+        return $url;
+    }
 }

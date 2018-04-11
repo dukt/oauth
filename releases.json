@@ -1,5 +1,13 @@
 [
   {
+    "version": "2.1.3",
+    "downloadUrl": "https://github.com/dukt/oauth/archive/2.1.3.zip",
+    "date": "2018-04-11T11:50:00",
+    "notes": [
+      "[Improved] Encode Facebook’s OAuth redirect URI query.",
+    ]
+  },
+  {
     "version": "2.1.2",
     "downloadUrl": "https://github.com/dukt/oauth/archive/2.1.2.zip",
     "date": "2018-03-19T15:43:00",
