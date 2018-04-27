@@ -24,7 +24,7 @@ class Vimeo extends AbstractProvider
 
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-        return 'https://api.vimeo.com/me?access_token='.$token;
+        return 'https://api.vimeo.com/me';
     }
 
 	// Protected Methods
@@ -58,5 +58,24 @@ class Vimeo extends AbstractProvider
     protected function createResourceOwner(array $response, AccessToken $token)
     {
         return new VimeoResourceOwner($response);
+    }
+
+    /**
+     * Requests resource owner details.
+     *
+     * @param  AccessToken $token
+     * @return mixed
+     */
+    protected function fetchResourceOwnerDetails(AccessToken $token)
+    {
+        $url = $this->getResourceOwnerDetailsUrl($token);
+
+        $request = $this->getAuthenticatedRequest(self::METHOD_GET, $url, $token, [
+            'headers' => [
+                'Authorization' => 'Bearer '.$token
+            ]
+        ]);
+
+        return $this->getParsedResponse($request);
     }
 }

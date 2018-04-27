@@ -1,7 +1,7 @@
 {
     "name": "dukt/oauth2-vimeo",
     "description": "Vimeo OAuth 2.0 Client Provider for The PHP League OAuth2-Client",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "license": "MIT",
     "authors": [
         {
