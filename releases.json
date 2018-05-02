@@ -5,6 +5,7 @@
     "date": "2018-04-27T11:50:00",
     "notes": [
       "[Improved] Updated dependencies.",
+      "[Improved] Updated `league/oauth2-google` to 2.2.0",
     ]
   },
   {
@@ -31,6 +32,7 @@
       "[Improved] Updated `league/oauth2-linkedin` dependency to `^3.0`.",
       "[Improved] Updated `adam-paterson/oauth2-slack` dependency to `^1.0`.",
       "[Improved] Updated `league/oauth2-instagram` dependency to `^2.0`.",
+      "[Improved] Updated `league/oauth2-google` to 2.1.0",
       "[Fixed] Fixed a bug LinkedIn OAuth provider which had `Linkedin` instead of `LinkedIn` as a class name.",
       "[Fixed] Fixed a bug where the icon for Slack could not be found."
     ]
@@ -88,6 +90,7 @@
     "notes": [
       "[Added] Added `BaseProvider::getManagerUrl()` which returns `null`",
       "[Added] OAuth providers can provide a `createAccessToken()` to customize access token instantiation",
+      "[Added] Added `league/oauth2-google` 1.0.1",
       "[Improved] Updated schema version to  `1.0.1`",
       "[Improved] Altered accessToken, secret and refreshToken columns to text for oauth_tokens",
       "[Improved] Forcing `addTrailingSlashesToUrls` config to `false` when redirectUri is getting generated",
