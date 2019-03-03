@@ -4,6 +4,12 @@ Helps Craft developers get their plugin connected to OAuth-enabled web services.
 
 -------------------------------------------
 
+## Deprecated
+
+This plugin has been deprecated. To implement OAuth in their plugins, plugin developers are encouraged to implement a library like https://github.com/thephpleague/oauth2-client.
+
+-------------------------------------------
+
 ## Requirements
 
 - [Craft 2.5+](http://craftcms.com/)
